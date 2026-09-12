@@ -1,20 +1,46 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './auth/AuthProvider';
+import { ProtectedRoute } from './auth/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import MyPage from './pages/MyPage';
+import IdentityTestPage from './pages/IdentityTestPage';
+import AccountsPage from './pages/AccountsPage';
 
 function App() {
   return (
     <BrowserRouter>
-      <nav style={{ display: 'flex', gap: '10px', padding: '10px' }}>
-        <Link to="/login">login</Link>
-        <Link to="/signup">signup</Link>
-        <Link to="/mypage">mypage</Link>
-        <Link to="/identity-test">identity-test</Link>
-        <Link to="/accounts">accounts</Link>
-      </nav>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
 
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-      </Routes>
+          <Route
+            path="/mypage"
+            element={
+              <ProtectedRoute>
+                <MyPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/identity-test"
+            element={
+              <ProtectedRoute>
+                <IdentityTestPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/accounts"
+            element={
+              <ProtectedRoute>
+                <AccountsPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
