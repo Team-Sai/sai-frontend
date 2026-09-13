@@ -8,6 +8,7 @@ import SignupPage from './users/pages/SignupPage';
 import MyPage from './users/pages/MyPage';
 import IdentityTestPage from './identity/pages/IdentityTestPage';
 import AccountsPage from './accounts/pages/AccountsPage';
+import AccountLinkSelectPage from './accounts/pages/AccountLinkSelectPage';
 import DashboardPage from './pages/DashboardPage';
 
 function App() {
@@ -51,6 +52,14 @@ function App() {
                   <AccountsPage />
                 </ProtectedRoute>
               }
+            />
+            <Route
+               path="/accounts/link/select"
+               element={
+                  <ProtectedRoute>
+                     <AccountLinkSelectPage />
+                  </ProtectedRoute>
+               }
             />
           </Route>
         </Routes>
