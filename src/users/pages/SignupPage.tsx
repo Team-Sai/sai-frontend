@@ -33,6 +33,32 @@ function formatBirthDate(raw: string): string {
   return `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`;
 }
 
+function isValidBirthDate(digits: string): boolean {
+  if (!DOB_PATTERN.test(digits)) return false;
+
+  const year = Number(digits.slice(0, 4));
+  const month = Number(digits.slice(4, 6));
+  const day = Number(digits.slice(6, 8));
+
+  if (month < 1 || month > 12) return false;
+  if (day < 1 || day > 31) return false;
+  if (year < 1900) return false;
+
+  const date = new Date(year, month - 1, day);
+  const isRealDate =
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day;
+
+  if (!isRealDate) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (date > today) return false;
+
+  return true;
+}
+
 export default function SignupPage() {
   const navigate = useNavigate();
   const password = usePasswordVisibility();
@@ -68,10 +94,12 @@ export default function SignupPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    if (isSubmitting) return;
+
     const emailValid = emailInputRef.current?.validity.valid ?? false;
     const passwordValid = PASSWORD_PATTERN.test(passwordValue);
     const nameValid = name.trim().length > 0;
-    const dobValid = DOB_PATTERN.test(dob);
+    const dobValid = isValidBirthDate(dob);
 
     setEmailError(!emailValid);
     setPasswordError(!passwordValid);
@@ -103,7 +131,11 @@ export default function SignupPage() {
       const responseData = (await readJson(response)) as SignupResponse;
 
       if (!response.ok) {
-        throw new Error(responseData.message || '회원가입에 실패했습니다.');
+        const message =
+            typeof responseData.message === 'string'
+                ? responseData.message
+                : '회원가입에 실패했습니다.';
+        throw new Error(message);
       }
 
       navigate(`${LOGIN_PATH}?signup=success`, { replace: true });
@@ -120,7 +152,7 @@ export default function SignupPage() {
       <main className="flex w-full flex-1 justify-center px-5 pt-9 pb-18">
         <section className="w-full max-w-105">
           <div className="mb-5.5">
-            <h1 className="m-0 text-heading tracking-tight font-bold">회원가입</h1>
+            <h1 className="m-0 text-heading tracking-tight">회원가입</h1>
             <p className="mt-1.75 text-body text-muted">
               사이원장과 함께 거래 관리를 시작하세요.
             </p>
@@ -145,6 +177,8 @@ export default function SignupPage() {
                       setEmail(e.target.value);
                       clearFieldError('email');
                     }}
+                    aria-invalid={emailError}
+                    aria-describedby={emailError ? 'email-error' : undefined}
                     className={`h-11 w-full rounded-md border bg-background px-3.5 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/20 ${
                         emailError ? 'border-error' : 'border-outline'
                     }`}
@@ -153,7 +187,7 @@ export default function SignupPage() {
                   본인 확인 및 알림 수신을 위해 정확한 이메일을 입력해 주세요.
                 </p>
                 {emailError && (
-                    <p className="mt-1.5 text-tiny text-error">
+                    <p id="email-error" className="mt-1.5 text-tiny text-error" role="alert">
                       이메일 주소를 확인해 주세요.
                     </p>
                 )}
@@ -176,6 +210,8 @@ export default function SignupPage() {
                         setPasswordValue(e.target.value);
                         clearFieldError('password');
                       }}
+                      aria-invalid={passwordError}
+                      aria-describedby={passwordError ? 'password-error' : undefined}
                       className={`h-11 w-full rounded-md border bg-background px-3.5 pr-12 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/20 ${
                           passwordError ? 'border-error' : 'border-outline'
                       }`}
@@ -206,7 +242,7 @@ export default function SignupPage() {
                   영문, 숫자, 특수문자를 포함해 8자 이상 입력해 주세요.
                 </p>
                 {passwordError && (
-                    <p className="mt-1.5 text-tiny text-error">
+                    <p id="password-error" className="mt-1.5 text-tiny text-error" role="alert">
                       비밀번호 형식을 확인해 주세요.
                     </p>
                 )}
@@ -228,12 +264,16 @@ export default function SignupPage() {
                       setName(e.target.value);
                       clearFieldError('name');
                     }}
+                    aria-invalid={nameError}
+                    aria-describedby={nameError ? 'name-error' : undefined}
                     className={`h-11 w-full rounded-md border bg-background px-3.5 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/20 ${
                         nameError ? 'border-error' : 'border-outline'
                     }`}
                 />
                 {nameError && (
-                    <p className="mt-1.5 text-tiny text-error">이름을 입력해 주세요.</p>
+                    <p id="name-error" className="mt-1.5 text-tiny text-error" role="alert">
+                      이름을 입력해 주세요.
+                    </p>
                 )}
               </div>
 
@@ -251,6 +291,8 @@ export default function SignupPage() {
                     required
                     value={dob}
                     onChange={handleDobChange}
+                    aria-invalid={dobError}
+                    aria-describedby={dobError ? 'dob-error' : undefined}
                     className={`h-11 w-full rounded-md border bg-background px-3.5 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/20 ${
                         dobError ? 'border-error' : 'border-outline'
                     }`}
@@ -259,14 +301,16 @@ export default function SignupPage() {
                   숫자 8자리를 입력해 주세요.
                 </p>
                 {dobError && (
-                    <p className="mt-1.5 text-tiny text-error">
+                    <p id="dob-error" className="mt-1.5 text-tiny text-error" role="alert">
                       생년월일 8자리를 확인해 주세요.
                     </p>
                 )}
               </div>
 
               {signupError && (
-                  <p className="mt-4.25 text-center text-tiny text-error">{signupError}</p>
+                  <p className="mt-4.25 text-center text-tiny text-error" role="alert">
+                    {signupError}
+                  </p>
               )}
 
               <button
