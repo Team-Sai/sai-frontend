@@ -1,0 +1,269 @@
+.doc {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 48px 44px 40px;
+}
+
+.doc__title {
+  font-family: var(--font-ui);
+  text-align: center;
+  color: var(--primary);
+  font-size: 24px;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  font-weight: 700;
+  margin: 0 0 36px;
+}
+
+.doc__article {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.doc__article:last-of-type {
+  border-bottom: none;
+}
+
+.doc__clause {
+  flex: 0 0 auto;
+  min-width: 112px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.doc__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.doc__text {
+  display: block;
+  color: var(--text);
+}
+
+.doc__text--indent {
+  margin-top: 4px;
+}
+
+.doc__sublist {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: var(--text);
+}
+
+.doc__sublist li {
+  margin-bottom: 4px;
+}
+
+.doc__closing {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin: 28px 0 20px;
+  text-align: center;
+}
+
+.doc__date {
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  color: var(--primary);
+  font-weight: 700;
+  margin: 0 0 28px;
+}
+
+.doc__inline-input {
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--primary);
+  font-weight: 600;
+  border: none;
+  border-bottom: 1.5px solid var(--line);
+  background: transparent;
+  padding: 1px 4px;
+  text-align: center;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.doc__inline-input:focus {
+  outline: none;
+  border-color: var(--primary-bright);
+  background: rgba(0, 200, 83, 0.08);
+}
+
+.doc__inline-input--amount { width: 110px; font-weight: 700; }
+.doc__inline-input--date { width: 140px; }
+.doc__inline-input--rate { width: 64px; }
+.doc__inline-input--day { width: 44px; }
+.doc__inline-input--alias { width: 100%; text-align: left; }
+
+.doc__readonly {
+  color: var(--primary);
+  font-weight: 600;
+  border-bottom: 1.5px dashed var(--line);
+  padding: 1px 4px;
+}
+
+.doc__textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.doc__textarea:focus {
+  outline: none;
+  border-color: var(--primary-bright);
+  background: rgba(0, 200, 83, 0.05);
+}
+
+.doc__inline-input:disabled,
+.doc__textarea:disabled {
+  color: #9AA1AC;
+  cursor: not-allowed;
+  background: rgba(105, 112, 128, 0.06);
+}
+
+.doc__status-banner {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #165c2d;
+  background: #edf9f0;
+  border: 1px solid #b9dfc2;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin: 0 0 24px;
+}
+
+.doc__hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.doc__disclaimer {
+  margin: 20px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.doc__radio-group {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 2px;
+}
+
+.doc__radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.doc__radio input[type="radio"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  display: grid;
+  place-content: center;
+  margin: 0;
+  cursor: pointer;
+}
+
+.doc__radio input[type="radio"]::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  transform: scale(0);
+  transition: transform 0.12s ease;
+}
+
+.doc__radio input[type="radio"]:checked {
+  border-color: var(--primary);
+}
+
+.doc__radio input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+.loan-account {
+  margin-top: 10px;
+}
+
+.loan-account__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.doc__body select#selectedLinkedAccountId {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: var(--surface);
+}
+
+.doc__body select#selectedLinkedAccountId:focus {
+  outline: none;
+  border-color: var(--primary-bright);
+  background: rgba(0, 200, 83, 0.05);
+}
+
+.loan-account__summary {
+  margin-top: 10px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.loan-account__summary th,
+.loan-account__summary td {
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.loan-account__summary th {
+  width: 25%;
+  background: #f3f4f5;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.loan-account__summary[hidden] {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .doc { padding: 32px 20px; }
+  .doc__article { flex-direction: column; gap: 4px; }
+  .doc__clause { min-width: 0; }
+}
