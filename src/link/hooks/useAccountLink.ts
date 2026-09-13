@@ -8,6 +8,7 @@ interface UseAccountLinkOptions {
 interface AccountLinkCompleteMessage {
     type: 'SAI_BANK_LINK_COMPLETE';
     success: boolean;
+    state: string;
 }
 
 function isAccountLinkCompleteMessage(
@@ -25,7 +26,9 @@ function isAccountLinkCompleteMessage(
 
     return (
         message.type === 'SAI_BANK_LINK_COMPLETE' &&
-        typeof message.success === 'boolean'
+        typeof message.success === 'boolean' &&
+        typeof message.state === 'string' &&
+        message.state.trim() !== ''
     );
 }
 
@@ -39,8 +42,13 @@ export function useAccountLink({
         null
     );
 
+    const linkStateRef = useRef<string | null>(
+        null
+    );
+
     const resetLinkState = useCallback(() => {
         bankWindowRef.current = null;
+        linkStateRef.current = null;
         setIsConnecting(false);
     }, []);
 
@@ -95,6 +103,7 @@ export function useAccountLink({
                 return false;
             }
 
+            linkStateRef.current = linkState;
             bankWindowRef.current = bankWindow;
 
             bankWindow.location.href = redirectUrl;
@@ -121,15 +130,27 @@ export function useAccountLink({
     }, [isConnecting, resetLinkState]);
 
     useEffect(() => {
-        function handleMessage(event: MessageEvent) {
+        function handleMessage(
+            event: MessageEvent
+        ) {
             const bankWindow =
                 bankWindowRef.current;
+
+            const expectedState =
+                linkStateRef.current;
 
             if (!bankWindow) {
                 return;
             }
 
-            if (event.origin !== window.location.origin) {
+            if (!expectedState) {
+                return;
+            }
+
+            if (
+                event.origin !==
+                window.location.origin
+            ) {
                 return;
             }
 
@@ -137,7 +158,22 @@ export function useAccountLink({
                 return;
             }
 
-            if (!isAccountLinkCompleteMessage(event.data)) {
+            if (
+                !isAccountLinkCompleteMessage(
+                    event.data
+                )
+            ) {
+                return;
+            }
+
+            if (
+                event.data.state !==
+                expectedState
+            ) {
+                console.warn(
+                    '계좌 연동 state가 일치하지 않습니다.'
+                );
+
                 return;
             }
 
@@ -165,6 +201,7 @@ export function useAccountLink({
 
             bankWindowRef.current?.close();
             bankWindowRef.current = null;
+            linkStateRef.current = null;
         };
     }, [onSuccess, resetLinkState]);
 
@@ -173,27 +210,33 @@ export function useAccountLink({
             return;
         }
 
-        const pollId = window.setInterval(() => {
-            const bankWindow =
-                bankWindowRef.current;
+        const pollId = window.setInterval(
+            () => {
+                const bankWindow =
+                    bankWindowRef.current;
 
-            if (!bankWindow) {
-                return;
-            }
+                if (!bankWindow) {
+                    return;
+                }
 
-            if (bankWindow.closed) {
-                resetLinkState();
+                if (bankWindow.closed) {
+                    resetLinkState();
 
-                window.alert(
-                    '계좌 연동이 취소되었습니다.'
-                );
-            }
-        }, 500);
+                    window.alert(
+                        '계좌 연동이 취소되었습니다.'
+                    );
+                }
+            },
+            500
+        );
 
         return () => {
             window.clearInterval(pollId);
         };
-    }, [isConnecting, resetLinkState]);
+    }, [
+        isConnecting,
+        resetLinkState,
+    ]);
 
     return {
         isConnecting,
