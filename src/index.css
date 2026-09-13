@@ -5,15 +5,15 @@
   src: url("/fonts/Pretendard-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Pretendard";
   src: url("/fonts/Pretendard-Bold.ttf") format("truetype");
-  font-weight: 700 900;
+  font-weight: 700;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 @theme {
@@ -27,6 +27,9 @@
   --color-muted: #667078;
   --color-outline: #c9d1c7;
   --color-error: #ba1a1a;
+  --color-footer-bg: #1f2937;
+  --color-footer-text: #cfd6e3;
+  --color-footer-link: #dce3ef;
 
   --text-heading: 27px;
   --text-heading--line-height: 1.3;

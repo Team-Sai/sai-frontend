@@ -13,7 +13,7 @@ function setAccessToken(accessToken: string): void {
   sessionStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
 }
 
-function clearStoredAuth(): void {
+export function clearStoredAuth(): void {
   sessionStorage.removeItem(ACCESS_TOKEN_KEY);
 }
 
@@ -35,8 +35,22 @@ async function reissueAccessToken(): Promise<string | null> {
       }
 
       const body: ReissueResponse = await response.json();
+
+      if (
+          typeof body.accessToken !== 'string' ||
+          body.accessToken.length === 0
+      ) {
+        console.error('reissue 응답 형식이 올바르지 않습니다:', body);
+        clearStoredAuth();
+        return null;
+      }
+
       setAccessToken(body.accessToken);
       return body.accessToken;
+    } catch (error) {
+      console.error('reissue 요청 실패:', error);
+      clearStoredAuth();
+      return null;
     } finally {
       reissuePromise = null;
     }
@@ -101,4 +115,4 @@ export async function authFetch(
   return retryResponse;
 }
 
-export { setAccessToken, clearStoredAuth, getAccessToken };
+export { setAccessToken, getAccessToken };

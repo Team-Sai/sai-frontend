@@ -1,13 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthProvider';
 import { ProtectedRoute } from './auth/ProtectedRoute';
-import MinimalLayout from './layouts/MinimalLayout';
-import AppLayout from './layouts/AppLayout';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import MyPage from './pages/MyPage';
-import IdentityTestPage from './pages/IdentityTestPage';
-import AccountsPage from './pages/AccountsPage';
+import AppLayout from './common/layouts/AppLayout';
+import MinimalLayout from './common/layouts/MinimalLayout';
+import LoginPage from './users/pages/LoginPage';
+import SignupPage from './users/pages/SignupPage';
+import MyPage from './users/pages/MyPage';
+import IdentityTestPage from './identity/pages/IdentityTestPage';
+import AccountsPage from './accounts/pages/AccountsPage';
+import DashboardPage from './pages/DashboardPage';
 
 function App() {
   return (
@@ -18,8 +19,15 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
           </Route>
-
           <Route element={<AppLayout />}>
+            <Route
+              path="/integration/dashboard"
+              element={
+                <ProtectedRoute>
+                    <DashboardPage/>
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/mypage"
               element={

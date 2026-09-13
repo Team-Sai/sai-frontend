@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { setAccessToken } from '../api/authFetch';
-import { useAuth } from '../auth/useAuth';
-import { usePasswordVisibility } from '../hooks/usePasswordVisibility';
+import { setAccessToken, clearStoredAuth } from '../../auth/authFetch';
+import { useAuth } from '../../auth/useAuth';
+import { usePasswordVisibility } from '../../common/hooks/usePasswordVisibility';
+import { Link } from 'react-router-dom';
 
 const SAVED_EMAIL_KEY = 'saiwonjangSavedEmail';
 const DASHBOARD_PATH = '/integration/dashboard';
@@ -125,10 +126,12 @@ export default function LoginPage() {
         headers: { Authorization: `Bearer ${normalizedToken}` },
       });
 
-      if (meRes.ok) {
-        const userData = await meRes.json();
-        login(userData);
+      if (!meRes.ok) {
+        clearStoredAuth(); // authFetch.ts에서 export 필요
+        throw new Error('사용자 정보를 불러오지 못했습니다. 다시 시도해 주세요.');
       }
+      const userData = await meRes.json();
+      login(userData);
 
       navigate(DASHBOARD_PATH, { replace: true });
     } catch (error) {
@@ -144,7 +147,6 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
       <main className="flex w-full flex-1 justify-center px-5 pt-9 pb-18">
         <section className="w-full max-w-105">
           <div className="mb-5.5">
@@ -294,14 +296,13 @@ export default function LoginPage() {
 
               <div className="mt-5 border-t border-outline pt-5 text-center text-xs text-muted">
                 아직 사이원장 회원이 아니신가요?
-                <a href="/signup" className="ml-1 font-bold text-primary">
+                <Link to="/signup" className="ml-1 font-bold text-primary">
                   회원가입
-                </a>
+                </Link>
               </div>
             </form>
           </div>
         </section>
       </main>
-    </div>
   );
 }
