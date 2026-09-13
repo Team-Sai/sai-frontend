@@ -127,18 +127,18 @@ export default function LoginPage() {
           headers: { Authorization: `Bearer ${normalizedToken}` },
         });
 
-        if (!meRes.ok) {
-          throw new Error('사용자 정보를 불러오지 못했습니다. 다시 시도해 주세요.');
-        }
-
-        const userData = await meRes.json();
-        login(userData);
-      } catch (meError) {
-        clearStoredAuth();
-        throw meError instanceof Error
-            ? meError
-            : new Error('사용자 정보를 불러오지 못했습니다. 다시 시도해 주세요.');
+      if (!meRes.ok) {
+        throw new Error('사용자 정보를 불러오지 못했습니다. 다시 시도해 주세요.');
       }
+
+      const userData = await meRes.json();
+      login(userData);
+    } catch (meError) {
+      clearStoredAuth();
+      throw meError instanceof Error
+          ? meError
+          : new Error('사용자 정보를 불러오지 못했습니다. 다시 시도해 주세요.');
+    }
 
       navigate(DASHBOARD_PATH, { replace: true });
     } catch (error) {
