@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { authFetch } from '../api/authFetch';
+import { authFetch } from './authFetch';
 import { AuthContext } from './AuthContext';
 import type { User } from './AuthContext';
 

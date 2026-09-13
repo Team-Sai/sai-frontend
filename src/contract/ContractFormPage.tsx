@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { authFetch } from "../api/authFetch";
+import { authFetch } from "../auth/authFetch";
 
 export default function ContractFormPage() {
   const [formData, setFormData] = useState({
