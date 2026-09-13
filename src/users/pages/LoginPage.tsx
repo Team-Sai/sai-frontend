@@ -122,16 +122,23 @@ export default function LoginPage() {
       const normalizedToken = normalizeToken(token);
       setAccessToken(normalizedToken);
 
-      const meRes = await fetch('/api/users/me', {
-        headers: { Authorization: `Bearer ${normalizedToken}` },
-      });
+      try {
+        const meRes = await fetch('/api/users/me', {
+          headers: { Authorization: `Bearer ${normalizedToken}` },
+        });
 
       if (!meRes.ok) {
-        clearStoredAuth(); // authFetch.ts에서 export 필요
         throw new Error('사용자 정보를 불러오지 못했습니다. 다시 시도해 주세요.');
       }
+
       const userData = await meRes.json();
       login(userData);
+    } catch (meError) {
+      clearStoredAuth();
+      throw meError instanceof Error
+          ? meError
+          : new Error('사용자 정보를 불러오지 못했습니다. 다시 시도해 주세요.');
+    }
 
       navigate(DASHBOARD_PATH, { replace: true });
     } catch (error) {

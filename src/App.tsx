@@ -12,56 +12,56 @@ import AccountLinkSelectPage from './accounts/pages/AccountLinkSelectPage';
 import DashboardPage from './pages/DashboardPage';
 
 function App() {
-  return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route element={<MinimalLayout />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-          </Route>
-          <Route element={<AppLayout />}>
-            <Route
-              path="/integration/dashboard"
-              element={
-                <ProtectedRoute>
-                    <DashboardPage/>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/mypage"
-              element={
-                <ProtectedRoute>
-                  <MyPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/identity-test"
-              element={
-                <ProtectedRoute>
-                  <IdentityTestPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/accounts"
-              element={
-                <ProtectedRoute>
-                  <AccountsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-               path="/accounts/link/select"
-               element={
-                  <ProtectedRoute>
-                     <AccountLinkSelectPage />
-                  </ProtectedRoute>
-               }
-            />
-          </Route>
+    return (
+      <BrowserRouter>
+         <AuthProvider>
+            <Routes>
+                <Route element={<MinimalLayout />}>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
+                </Route>
+                <Route element={<AppLayout />}>
+                    <Route
+                        path="/integration/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardPage/>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/mypage"
+                        element={
+                            <ProtectedRoute>
+                                <MyPage />
+                            </ProtectedRoute>
+                         }
+                    />
+                    <Route
+                        path="/identity-test"
+                        element={
+                            <ProtectedRoute>
+                                <IdentityTestPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/accounts"
+                        element={
+                            <ProtectedRoute>
+                                <AccountsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                         path="/accounts/link/select"
+                         element={
+                             <ProtectedRoute>
+                                 <AccountLinkSelectPage />
+                             </ProtectedRoute>
+                         }
+                    />
+             </Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>

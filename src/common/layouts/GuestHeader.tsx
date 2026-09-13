@@ -17,7 +17,7 @@ export default function GuestHeader({ activeMenu }: GuestHeaderProps) {
   return (
     <header className="relative z-50 flex h-20 items-center gap-6 bg-surface px-12">
       <Link
-        to="/intro"
+        to="/login"
         className="ml-50.5 flex min-w-40 items-center gap-2.5 font-extrabold text-text"
         aria-label="사이원장 홈"
       >
