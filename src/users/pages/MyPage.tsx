@@ -226,9 +226,7 @@ export default function MyPage() {
             await readJson(accountsResponse);
 
         const rawAccounts =
-            accountsData.data !== undefined
-                ? accountsData.data
-                : accountsData;
+            accountsData.data ?? accountsData ?? [];
 
         if (!isAccountList(rawAccounts)) {
           console.error(
@@ -475,10 +473,13 @@ export default function MyPage() {
     setIsLoggingOut(true);
 
     try {
-      await fetch('/api/auth/logout', {
+      const response = await authFetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'include',
       });
+
+      if (!response.ok) {
+        console.error('로그아웃 API 실패', response.status);
+      }
     } catch (err) {
       console.error('로그아웃 API 호출 실패', err);
     } finally {
