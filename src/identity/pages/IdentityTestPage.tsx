@@ -198,14 +198,77 @@ export default function IdentityTestPage() {
     return responseBody;
   }
 
+  function loadPortOneSdk(): Promise<void> {
+    if (
+        typeof window.PortOne !== 'undefined' &&
+        typeof window.PortOne.requestIdentityVerification ===
+        'function'
+    ) {
+      return Promise.resolve();
+    }
+
+    const existingScript = document.querySelector<HTMLScriptElement>(
+        'script[data-portone-sdk="true"]',
+    );
+
+    if (existingScript) {
+      return new Promise((resolve, reject) => {
+        existingScript.addEventListener('load', () => resolve(), {
+          once: true,
+        });
+
+        existingScript.addEventListener(
+            'error',
+            () =>
+                reject(
+                    new Error(
+                        '포트원 SDK를 불러오지 못했습니다.',
+                    ),
+                ),
+            {
+              once: true,
+            },
+        );
+      });
+    }
+
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+
+      script.src =
+          'https://cdn.portone.io/v2/browser-sdk.js';
+      script.async = true;
+      script.dataset.portoneSdk = 'true';
+
+      script.addEventListener(
+          'load',
+          () => resolve(),
+          { once: true },
+      );
+
+      script.addEventListener(
+          'error',
+          () =>
+              reject(
+                  new Error(
+                      '포트원 SDK를 불러오지 못했습니다.',
+                  ),
+              ),
+          { once: true },
+      );
+
+      document.head.appendChild(script);
+    });
+  }
+
   async function requestPortOneVerification(
       prepare: PrepareIdentityResponse,
   ) {
+    await loadPortOneSdk();
+
     if (
-        typeof window.PortOne ===
-        'undefined' ||
-        typeof window.PortOne
-            .requestIdentityVerification !==
+        typeof window.PortOne === 'undefined' ||
+        typeof window.PortOne.requestIdentityVerification !==
         'function'
     ) {
       throw new Error(
@@ -214,14 +277,12 @@ export default function IdentityTestPage() {
     }
 
     const response =
-        await window.PortOne
-            .requestIdentityVerification({
-              storeId: prepare.storeId,
-              channelKey:
-              prepare.channelKey,
-              identityVerificationId:
-              prepare.identityVerificationId,
-            });
+        await window.PortOne.requestIdentityVerification({
+          storeId: prepare.storeId,
+          channelKey: prepare.channelKey,
+          identityVerificationId:
+          prepare.identityVerificationId,
+        });
 
     if (response.code != null) {
       throw new Error(
@@ -344,20 +405,16 @@ export default function IdentityTestPage() {
           );
 
       if (returnTo) {
-        const separator =
-            returnTo.includes('?')
-                ? '&'
-                : '?';
+        sessionStorage.setItem(
+            'identityVerificationId',
+            prepare.identityVerificationId,
+        );
 
         setIsRedirecting(true);
 
         redirectTimerRef.current =
             window.setTimeout(() => {
-              window.location.href =
-                  `${returnTo}${separator}` +
-                  `identityVerificationId=${encodeURIComponent(
-                      prepare.identityVerificationId,
-                  )}`;
+              window.location.href = returnTo;
             }, 1000);
       }
     } catch (error) {

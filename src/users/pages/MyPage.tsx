@@ -480,6 +480,8 @@ export default function MyPage() {
       if (!response.ok) {
         console.error('로그아웃 API 실패', response.status);
       }
+    }catch (error) {
+      console.error('로그아웃 요청 실패', error);
     }finally {
       clearStoredAuth();
 
