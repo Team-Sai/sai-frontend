@@ -1,12 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authFetch, clearStoredAuth } from '../../auth/authFetch';
-
-interface Account {
-  bankName?: string;
-  maskedAccountNumber?: string;
-  balance?: number | string | null;
-}
+import { getLinkedAccounts } from '../../accounts/api/accountApi';
+import type { LinkedBankAccount } from '../../accounts/types/account';
 
 interface UserData {
   name?: string;
@@ -21,7 +17,6 @@ interface UserData {
   lastLoginAt?: string;
   lastLogin?: string;
   profileImageUrl?: string;
-  accounts?: Account[];
 }
 
 const BACKEND_ORIGIN = (() => {
@@ -71,32 +66,12 @@ function isUserData(value: unknown): value is UserData {
   );
 }
 
-function isAccountList(
-    value: unknown
-): value is Account[] {
-  return (
-      Array.isArray(value) &&
-      value.every(
-          (account) =>
-              typeof account === 'object' &&
-              account !== null &&
-              !Array.isArray(account)
-      )
-  );
-}
-
-function formatBalance(balance: Account['balance']): string {
-  if (balance == null || balance === '') {
+function formatBalance(balance: number): string {
+  if (!Number.isFinite(balance)) {
     return '잔액 확인 불가';
   }
 
-  const numericBalance = Number(balance);
-
-  if (!Number.isFinite(numericBalance)) {
-    return '잔액 확인 불가';
-  }
-
-  return `${numericBalance.toLocaleString('ko-KR')}원`;
+  return `${balance.toLocaleString('ko-KR')}원`;
 }
 
 function formatDateTime(value?: string): string {
@@ -121,9 +96,12 @@ export default function MyPage() {
   const navigate = useNavigate();
 
   const [user, setUser] = useState<UserData | null>(null);
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [accounts, setAccounts] =
+      useState<LinkedBankAccount[]>([]);
+
   const [error, setError] = useState('');
   const [accountError, setAccountError] = useState('');
+
   const [isLoading, setIsLoading] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -135,21 +113,17 @@ export default function MyPage() {
     setError('');
     setAccountError('');
 
-    const [meResult, accountsResult] = await Promise.allSettled([
-      authFetch('/api/users/me', {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-        },
-      }),
+    const [meResult, accountsResult] =
+        await Promise.allSettled([
+          authFetch('/api/users/me', {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+            },
+          }),
 
-      authFetch('/api/linked-accounts', {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-        },
-      }),
-    ]);
+          getLinkedAccounts(),
+        ]);
 
     // =========================
     // 내 정보
@@ -204,44 +178,12 @@ export default function MyPage() {
       );
 
       setAccounts([]);
+
       setAccountError(
           '계좌 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
       );
     } else {
-      const accountsResponse =
-          accountsResult.value;
-
-      if (!accountsResponse.ok) {
-        console.error(
-            '연결된 계좌 조회 실패',
-            accountsResponse.status
-        );
-
-        setAccounts([]);
-        setAccountError(
-            '계좌 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
-        );
-      } else {
-        const accountsData =
-            await readJson(accountsResponse);
-
-        const rawAccounts =
-            accountsData.data ?? accountsData ?? [];
-
-        if (!isAccountList(rawAccounts)) {
-          console.error(
-              '계좌 응답 구조가 올바르지 않습니다.',
-              rawAccounts
-          );
-
-          setAccounts([]);
-          setAccountError(
-              '계좌 정보 응답 형식이 올바르지 않습니다.'
-          );
-        } else {
-          setAccounts(rawAccounts);
-        }
-      }
+      setAccounts(accountsResult.value);
     }
 
     setIsLoading(false);
@@ -266,12 +208,10 @@ export default function MyPage() {
         return;
       }
 
-      // 연동 서버의 origin 확인
       if (event.origin !== BACKEND_ORIGIN) {
         return;
       }
 
-      // 방금 연동을 위해 연 팝업에서 보낸 메시지인지 확인
       if (event.source !== bankWindow) {
         return;
       }
@@ -290,7 +230,6 @@ export default function MyPage() {
       bankWindowRef.current = null;
       linkStateRef.current = null;
 
-      // 연동 프로세스 종료
       setIsConnecting(false);
 
       if (event.data.success) {
@@ -302,7 +241,10 @@ export default function MyPage() {
       }
     }
 
-    window.addEventListener('message', handleMessage);
+    window.addEventListener(
+        'message',
+        handleMessage
+    );
 
     return () => {
       window.removeEventListener(
@@ -331,6 +273,7 @@ export default function MyPage() {
       if (bankWindow.closed) {
         bankWindowRef.current = null;
         linkStateRef.current = null;
+
         setIsConnecting(false);
 
         window.alert(
@@ -355,7 +298,6 @@ export default function MyPage() {
         'width=480,height=720'
     );
 
-    // 팝업 차단 여부 확인
     if (!bankWindow) {
       window.alert(
           '계좌 연동 창을 열 수 없습니다. 브라우저의 팝업 차단을 해제한 후 다시 시도해 주세요.'
@@ -420,10 +362,10 @@ export default function MyPage() {
             redirectUrl,
             window.location.origin
         ).searchParams.get('state');
-      } catch (err) {
+      } catch (error) {
         console.error(
             '계좌 연동 URL 파싱 실패',
-            err
+            error
         );
       }
 
@@ -445,11 +387,10 @@ export default function MyPage() {
       linkStateRef.current = linkState;
 
       bankWindow.location.href = redirectUrl;
-
-    } catch (err) {
+    } catch (error) {
       console.error(
           '계좌 연동 시작 실패',
-          err
+          error
       );
 
       bankWindow.close();
@@ -473,16 +414,25 @@ export default function MyPage() {
     setIsLoggingOut(true);
 
     try {
-      const response = await authFetch('/api/auth/logout', {
-        method: 'POST',
-      });
+      const response = await authFetch(
+          '/api/auth/logout',
+          {
+            method: 'POST',
+          }
+      );
 
       if (!response.ok) {
-        console.error('로그아웃 API 실패', response.status);
+        console.error(
+            '로그아웃 API 실패',
+            response.status
+        );
       }
-    }catch (error) {
-      console.error('로그아웃 요청 실패', error);
-    }finally {
+    } catch (error) {
+      console.error(
+          '로그아웃 요청 실패',
+          error
+      );
+    } finally {
       clearStoredAuth();
 
       navigate('/login', {
@@ -544,6 +494,7 @@ export default function MyPage() {
                                 stroke="currentColor"
                                 strokeWidth="1.9"
                             />
+
                             <path
                                 d="M4 21a8 8 0 0 1 16 0"
                                 fill="none"
@@ -612,6 +563,7 @@ export default function MyPage() {
                               stroke="currentColor"
                               strokeWidth="1.9"
                           />
+
                           <path
                               d="M12 11v5"
                               fill="none"
@@ -619,6 +571,7 @@ export default function MyPage() {
                               strokeWidth="1.9"
                               strokeLinecap="round"
                           />
+
                           <path
                               d="M12 8h.01"
                               fill="none"
@@ -681,6 +634,7 @@ export default function MyPage() {
                               stroke="currentColor"
                               strokeWidth="1.9"
                           />
+
                           <path
                               d="M12 8v8M8 12h8"
                               fill="none"
@@ -736,6 +690,7 @@ export default function MyPage() {
                                     stroke="currentColor"
                                     strokeWidth="1.9"
                                 />
+
                                 <path
                                     d="M12 8v8M8 12h8"
                                     fill="none"
@@ -750,16 +705,16 @@ export default function MyPage() {
                           </div>
                       ) : (
                           <div className="flex flex-col">
-                            {accounts.map((account, index) => (
+                            {accounts.map((account) => (
                                 <div
-                                    key={`${account.bankName ?? 'bank'}-${account.maskedAccountNumber ?? 'account'}-${index}`}
+                                    key={account.linkedAccountId}
                                     className="flex min-h-18.5 items-center border-b border-[#d9dee8] py-3"
                                 >
                                   <div className="min-w-0 flex-1">
                                     <div className="flex items-center justify-between gap-3">
                                       <div className="flex min-w-0 items-center gap-2">
                                         <span className="text-xs font-bold">
-                                          {account.bankName ?? '은행 정보 없음'}
+                                          {account.bankName}
                                         </span>
 
                                         <span className="text-xs text-muted">
@@ -767,7 +722,7 @@ export default function MyPage() {
                                         </span>
 
                                         <span className="truncate text-[10px] tracking-[0.11em] text-muted">
-                                          {account.maskedAccountNumber ?? '계좌번호 없음'}
+                                          {account.maskedAccountNumber}
                                         </span>
                                       </div>
 
@@ -798,6 +753,7 @@ export default function MyPage() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     />
+
                     <path
                         d="m9 12 2 2 4-4"
                         fill="none"
