@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authFetch, clearStoredAuth } from '../../auth/authFetch';
 import { getLinkedAccounts } from '../../accounts/api/accountApi';
 import type { LinkedBankAccount } from '../../accounts/types/account';
+import AccountLinkModal from '../../link/components/AccountLinkModal';
+import { useAccountLink } from '../../link/hooks/useAccountLink';
 
 interface UserData {
   name?: string;
@@ -18,18 +20,6 @@ interface UserData {
   lastLogin?: string;
   profileImageUrl?: string;
 }
-
-const BACKEND_ORIGIN = (() => {
-  const value =
-      import.meta.env.VITE_BACKEND_ORIGIN ??
-      window.location.origin;
-
-  try {
-    return new URL(value).origin;
-  } catch {
-    return window.location.origin;
-  }
-})();
 
 async function readJson(
     response: Response
@@ -96,18 +86,14 @@ export default function MyPage() {
   const navigate = useNavigate();
 
   const [user, setUser] = useState<UserData | null>(null);
-  const [accounts, setAccounts] =
-      useState<LinkedBankAccount[]>([]);
+  const [accounts, setAccounts] = useState<LinkedBankAccount[]>([]);
 
   const [error, setError] = useState('');
   const [accountError, setAccountError] = useState('');
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isConnecting, setIsConnecting] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const bankWindowRef = useRef<Window | null>(null);
-  const linkStateRef = useRef<string | null>(null);
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
 
   const loadMyPage = useCallback(async () => {
     setError('');
@@ -125,9 +111,6 @@ export default function MyPage() {
           getLinkedAccounts(),
         ]);
 
-    // =========================
-    // 내 정보
-    // =========================
     if (meResult.status === 'rejected') {
       console.error(
           '내 정보 조회 실패',
@@ -189,6 +172,25 @@ export default function MyPage() {
     setIsLoading(false);
   }, []);
 
+  const {
+    isConnecting,
+    connectAccount,
+  } = useAccountLink({
+    onSuccess: loadMyPage,
+  });
+
+  const handleCloseAccountLinkModal = useCallback(() => {
+    setIsLinkModalOpen(false);
+  }, []);
+
+  const handleConfirmAccountLink = useCallback(async () => {
+    const started = await connectAccount();
+
+    if (started) {
+      setIsLinkModalOpen(false);
+    }
+  }, [connectAccount]);
+
   useEffect(() => {
     const timerId = window.setTimeout(() => {
       void loadMyPage();
@@ -198,213 +200,6 @@ export default function MyPage() {
       window.clearTimeout(timerId);
     };
   }, [loadMyPage]);
-
-  useEffect(() => {
-    function handleMessage(event: MessageEvent) {
-      const bankWindow = bankWindowRef.current;
-      const expectedState = linkStateRef.current;
-
-      if (!bankWindow || !expectedState) {
-        return;
-      }
-
-      if (event.origin !== BACKEND_ORIGIN) {
-        return;
-      }
-
-      if (event.source !== bankWindow) {
-        return;
-      }
-
-      if (event.data?.type !== 'SAI_BANK_LINK_COMPLETE') {
-        return;
-      }
-
-      if (event.data?.state !== expectedState) {
-        console.warn(
-            '계좌 연동 state가 일치하지 않습니다.'
-        );
-        return;
-      }
-
-      bankWindowRef.current = null;
-      linkStateRef.current = null;
-
-      setIsConnecting(false);
-
-      if (event.data.success) {
-        void loadMyPage();
-      } else {
-        window.alert(
-            '계좌 연동에 실패했습니다.'
-        );
-      }
-    }
-
-    window.addEventListener(
-        'message',
-        handleMessage
-    );
-
-    return () => {
-      window.removeEventListener(
-          'message',
-          handleMessage
-      );
-
-      bankWindowRef.current?.close();
-      bankWindowRef.current = null;
-      linkStateRef.current = null;
-    };
-  }, [loadMyPage]);
-
-  useEffect(() => {
-    if (!isConnecting) {
-      return;
-    }
-
-    const pollId = window.setInterval(() => {
-      const bankWindow = bankWindowRef.current;
-
-      if (!bankWindow) {
-        return;
-      }
-
-      if (bankWindow.closed) {
-        bankWindowRef.current = null;
-        linkStateRef.current = null;
-
-        setIsConnecting(false);
-
-        window.alert(
-            '계좌 연동이 취소되었습니다.'
-        );
-      }
-    }, 500);
-
-    return () => {
-      window.clearInterval(pollId);
-    };
-  }, [isConnecting]);
-
-  async function handleConnectAccount() {
-    if (isConnecting) {
-      return;
-    }
-
-    const bankWindow = window.open(
-        'about:blank',
-        'sai-bank-link',
-        'width=480,height=720'
-    );
-
-    if (!bankWindow) {
-      window.alert(
-          '계좌 연동 창을 열 수 없습니다. 브라우저의 팝업 차단을 해제한 후 다시 시도해 주세요.'
-      );
-      return;
-    }
-
-    setIsConnecting(true);
-
-    try {
-      const response = await authFetch(
-          '/api/accounts/link/start',
-          {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-            },
-          }
-      );
-
-      const data = await readJson(response);
-
-      if (!response.ok) {
-        bankWindow.close();
-
-        bankWindowRef.current = null;
-        linkStateRef.current = null;
-
-        window.alert(
-            typeof data.message === 'string'
-                ? data.message
-                : '계좌 연동을 시작할 수 없습니다.'
-        );
-
-        setIsConnecting(false);
-        return;
-      }
-
-      const redirectUrl = data.redirectUrl;
-
-      if (
-          typeof redirectUrl !== 'string' ||
-          redirectUrl.trim() === ''
-      ) {
-        bankWindow.close();
-
-        bankWindowRef.current = null;
-        linkStateRef.current = null;
-
-        window.alert(
-            '계좌 연동 URL을 전달받지 못했습니다.'
-        );
-
-        setIsConnecting(false);
-        return;
-      }
-
-      let linkState: string | null = null;
-
-      try {
-        linkState = new URL(
-            redirectUrl,
-            window.location.origin
-        ).searchParams.get('state');
-      } catch (error) {
-        console.error(
-            '계좌 연동 URL 파싱 실패',
-            error
-        );
-      }
-
-      if (!linkState) {
-        bankWindow.close();
-
-        bankWindowRef.current = null;
-        linkStateRef.current = null;
-
-        window.alert(
-            '계좌 연동 상태값을 전달받지 못했습니다.'
-        );
-
-        setIsConnecting(false);
-        return;
-      }
-
-      bankWindowRef.current = bankWindow;
-      linkStateRef.current = linkState;
-
-      bankWindow.location.href = redirectUrl;
-    } catch (error) {
-      console.error(
-          '계좌 연동 시작 실패',
-          error
-      );
-
-      bankWindow.close();
-
-      bankWindowRef.current = null;
-      linkStateRef.current = null;
-
-      window.alert(
-          '계좌 연동을 시작할 수 없습니다. 잠시 후 다시 시도해 주세요.'
-      );
-
-      setIsConnecting(false);
-    }
-  }
 
   async function handleLogout() {
     if (isLoggingOut) {
@@ -617,7 +412,7 @@ export default function MyPage() {
 
                       <button
                           type="button"
-                          onClick={handleConnectAccount}
+                          onClick={() => setIsLinkModalOpen(true)}
                           disabled={isConnecting}
                           className="flex h-9 items-center gap-1.5 rounded-lg border-0 bg-primary px-3.5 text-xs font-semibold text-white transition hover:bg-[#0b754f] disabled:cursor-default disabled:opacity-60"
                       >
@@ -673,7 +468,7 @@ export default function MyPage() {
 
                             <button
                                 type="button"
-                                onClick={handleConnectAccount}
+                                onClick={() => setIsLinkModalOpen(true)}
                                 disabled={isConnecting}
                                 className="mt-1.5 inline-flex h-9 items-center gap-1.5 rounded-lg border-0 bg-primary px-4.5 text-xs font-bold text-white hover:bg-[#0b754f] disabled:opacity-60"
                             >
@@ -772,6 +567,14 @@ export default function MyPage() {
               </>
           )}
         </main>
+        {isLinkModalOpen && (
+          <AccountLinkModal
+              isOpen={isLinkModalOpen}
+              isConnecting={isConnecting}
+              onClose={handleCloseAccountLinkModal}
+              onConfirm={handleConfirmAccountLink}
+          />
+        )}
       </>
   );
 }
