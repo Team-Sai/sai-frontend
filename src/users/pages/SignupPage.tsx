@@ -42,7 +42,6 @@ function isValidBirthDate(digits: string): boolean {
 
   if (month < 1 || month > 12) return false;
   if (day < 1 || day > 31) return false;
-  if (year < 1900) return false;
 
   const date = new Date(year, month - 1, day);
   const isRealDate =
@@ -64,6 +63,9 @@ export default function SignupPage() {
   const password = usePasswordVisibility();
 
   const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const dobInputRef = useRef<HTMLInputElement>(null);
 
   const [email, setEmail] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
@@ -106,6 +108,16 @@ export default function SignupPage() {
     setNameError(!nameValid);
     setDobError(!dobValid);
     setSignupError('');
+
+    if (!emailValid) {
+      emailInputRef.current?.focus();
+    } else if (!passwordValid) {
+      passwordInputRef.current?.focus();
+    } else if (!nameValid) {
+      nameInputRef.current?.focus();
+    } else if (!dobValid) {
+      dobInputRef.current?.focus();
+    }
 
     if (!emailValid || !passwordValid || !nameValid || !dobValid) {
       return;
@@ -199,6 +211,7 @@ export default function SignupPage() {
                 </label>
                 <div className="relative">
                   <input
+                      ref={passwordInputRef}
                       id="password"
                       name="password"
                       type={password.inputType}
@@ -219,6 +232,7 @@ export default function SignupPage() {
                   <button
                       type="button"
                       aria-label={password.ariaLabel}
+                      aria-pressed={password.isVisible}
                       onClick={password.toggle}
                       className="absolute top-1/2 right-2.5 h-8 w-8 -translate-y-1/2 cursor-pointer border-0 bg-transparent text-[#6f777c]"
                   >
@@ -253,6 +267,7 @@ export default function SignupPage() {
                   이름
                 </label>
                 <input
+                    ref={nameInputRef}
                     id="full-name"
                     name="name"
                     type="text"
@@ -282,6 +297,7 @@ export default function SignupPage() {
                   생년월일
                 </label>
                 <input
+                    ref={dobInputRef}
                     id="dob"
                     name="birthDate"
                     type="text"
@@ -302,7 +318,7 @@ export default function SignupPage() {
                 </p>
                 {dobError && (
                     <p id="dob-error" className="mt-1.5 text-tiny text-error" role="alert">
-                      생년월일 8자리를 확인해 주세요.
+                      올바른 생년월일을 입력해 주세요.
                     </p>
                 )}
               </div>
