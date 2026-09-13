@@ -56,14 +56,6 @@ export default function AccountLinkModal({
         onConfirm();
     }
 
-    function handleOpenTerms() {
-        window.open(
-            '/terms/account-link',
-            '_blank',
-            'noopener,noreferrer'
-        );
-    }
-
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4"
@@ -186,14 +178,6 @@ export default function AccountLinkModal({
             계좌정보 조회 및 이용에 동의합니다.
           </span>
                 </label>
-
-                <button
-                    type="button"
-                    onClick={handleOpenTerms}
-                    className="mt-2 text-xs font-medium text-muted underline underline-offset-2"
-                >
-                    자세히 보기
-                </button>
 
                 <div className="mt-7 flex gap-3">
                     <button

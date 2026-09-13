@@ -567,12 +567,14 @@ export default function MyPage() {
               </>
           )}
         </main>
-        <AccountLinkModal
-            isOpen={isLinkModalOpen}
-            isConnecting={isConnecting}
-            onClose={handleCloseAccountLinkModal}
-            onConfirm={handleConfirmAccountLink}
-        />
+        {isLinkModalOpen && (
+          <AccountLinkModal
+              isOpen={isLinkModalOpen}
+              isConnecting={isConnecting}
+              onClose={handleCloseAccountLinkModal}
+              onConfirm={handleConfirmAccountLink}
+          />
+        )}
       </>
   );
 }
