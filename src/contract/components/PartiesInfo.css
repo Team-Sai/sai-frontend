@@ -1,0 +1,83 @@
+.parties {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin-top: 8px;
+  border-top: 2px solid var(--primary);
+  font-size: 13px;
+}
+
+.parties th,
+.parties td {
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  overflow: hidden;
+}
+
+.parties__role {
+  background: rgba(0, 110, 42, 0.04);
+  color: var(--primary);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.parties__label {
+  background: #f3f4f5;
+  color: var(--muted);
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.parties__value {
+  background: var(--surface);
+}
+
+.parties__input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  padding: 4px 2px;
+}
+
+.parties__input:focus {
+  outline: none;
+  background: rgba(0, 200, 83, 0.08);
+  border-radius: 4px;
+}
+
+.parties__input::placeholder {
+  color: #B0B7C3;
+}
+
+.parties__input:disabled {
+  color: #9AA1AC;
+  cursor: not-allowed;
+  background: rgba(105, 112, 128, 0.06);
+}
+
+.parties__seal {
+  border: 1px dashed var(--line);
+  background: var(--surface);
+  color: var(--primary);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+  margin-left: 6px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+  .parties, .parties tbody, .parties tr, .parties th, .parties td {
+    display: block;
+    width: 100% !important;
+  }
+  .parties tr { margin-bottom: 8px; }
+}

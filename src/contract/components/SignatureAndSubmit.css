@@ -1,0 +1,149 @@
+.sign {
+  margin-bottom: 20px;
+}
+
+.sign__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 8px;
+}
+
+.sign__pad-wrap {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--page);
+  text-align: center;
+  overflow: hidden;
+}
+
+.sign__placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(105, 112, 128, 0.15);
+  font-weight: 800;
+  font-size: 32px;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  user-select: none;
+}
+
+.sign__canvas {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.sign__clear {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.sign__clear:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.agreement {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 20px 0 4px;
+}
+
+.agreement__checkbox {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.agreement__label {
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.doc__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.btn {
+  border-radius: var(--radius-sm);
+  padding: 11px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: opacity 0.18s ease, transform 0.1s ease, background 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.99);
+}
+
+.btn--ghost {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.btn--ghost:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn--primary {
+  background: var(--primary);
+  color: var(--surface);
+}
+
+.btn--primary:hover {
+  opacity: 0.9;
+}
+
+.btn--primary:disabled {
+  background: var(--line);
+  color: #9AA1AC;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.doc__status {
+  text-align: right;
+  font-size: 12.5px;
+  color: var(--primary);
+  min-height: 18px;
+  margin: 10px 0 0;
+}
+
+.doc__status.is-error {
+  color: var(--error);
+}
