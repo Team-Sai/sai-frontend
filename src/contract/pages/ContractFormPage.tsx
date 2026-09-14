@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import './shared.css';
-import { authFetch } from '../auth/authFetch';
-import { getPreviousPrincipalSum } from './api/contractApi';
-import Stepper from './components/Stepper';
-import ContractDocument from './components/ContractDocument';
-import PartiesInfo from './components/PartiesInfo';
-import ContractActions from './components/ContractActions';
-import RiskModal from './components/RiskModal';
-import { LOAN_CONTRACT_DRAFT_KEY, toDraft, type ContractFormData, type CreditorInfo } from './types/contract';
+import '../shared.css';
+import { authFetch } from '../../auth/authFetch';
+import { getPreviousPrincipalSum } from '../api/contractApi';
+import Stepper from '../components/Stepper';
+import ContractDocument from '../components/ContractDocument';
+import PartiesInfo from '../components/PartiesInfo';
+import ContractActions from '../components/ContractActions';
+import RiskModal from '../components/RiskModal';
+import { LOAN_CONTRACT_DRAFT_KEY, toDraft, type ContractFormData, type CreditorInfo } from '../types/contract';
 
 function createInitialFormData(): ContractFormData {
   return {

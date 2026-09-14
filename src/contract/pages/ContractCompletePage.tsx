@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import './shared.css';
+import '../shared.css';
 import './ContractCompletePage.css';
-import Stepper from './components/Stepper';
-import { getContractSummary } from './api/contractApi';
+import Stepper from '../components/Stepper';
+import { getContractSummary } from '../api/contractApi';
 
 export default function ContractCompletePage() {
   const navigate = useNavigate();

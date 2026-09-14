@@ -9,9 +9,11 @@ import MyPage from './users/pages/MyPage';
 import IdentityTestPage from './identity/pages/IdentityTestPage';
 import LinkCompletePage from './link/pages/LinkCompletePage';
 import DashboardPage from './pages/DashboardPage';
-import ContractFormPage from './contract/ContractFormPage';
-import ContractSignaturePage from './contract/ContractSignaturePage';
-import ContractCompletePage from './contract/ContractCompletePage';
+import ContractFormPage from './contract/pages/ContractFormPage';
+import ContractSignaturePage from './contract/pages/ContractSignaturePage';
+import ContractCompletePage from './contract/pages/ContractCompletePage';
+import DebtorContractFormPage from './contract/pages/DebtorContractFormPage';
+import DebtorSignaturePage from './contract/pages/DebtorSignaturePage';
 
 function App() {
     return (
@@ -72,6 +74,22 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <ContractCompletePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/contracts/:contractId/approve"
+                        element={
+                            <ProtectedRoute>
+                                <DebtorContractFormPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/contracts/:contractId/approve/signature"
+                        element={
+                            <ProtectedRoute>
+                                <DebtorSignaturePage />
                             </ProtectedRoute>
                         }
                     />
