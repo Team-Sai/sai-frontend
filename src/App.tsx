@@ -7,6 +7,7 @@ import LoginPage from './users/pages/LoginPage';
 import SignupPage from './users/pages/SignupPage';
 import MyPage from './users/pages/MyPage';
 import IdentityTestPage from './identity/pages/IdentityTestPage';
+import LinkCompletePage from './link/pages/LinkCompletePage';
 import DashboardPage from './pages/DashboardPage';
 import ContractFormPage from './contract/ContractFormPage';
 import ContractSignaturePage from './contract/ContractSignaturePage';
@@ -17,6 +18,10 @@ function App() {
       <BrowserRouter>
          <AuthProvider>
             <Routes>
+                <Route
+                    path="/link/complete"
+                    element={<LinkCompletePage />}
+                />
                 <Route element={<MinimalLayout />}>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/signup" element={<SignupPage />} />
