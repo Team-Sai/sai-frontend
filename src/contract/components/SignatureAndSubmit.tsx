@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './SignatureAndSubmit.css';
 
 interface SignatureAndSubmitProps {
@@ -22,8 +22,15 @@ export default function SignatureAndSubmit({
 }: SignatureAndSubmitProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef(false);
+  const isSubmittingRef = useRef(false);
   const [hasSignature, setHasSignature] = useState(false);
   const [agreed, setAgreed] = useState(false);
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      isSubmittingRef.current = false;
+    }
+  }, [isSubmitting]);
 
   function getContext() {
     const canvas = canvasRef.current;
@@ -80,13 +87,20 @@ export default function SignatureAndSubmit({
 
   function handleSubmitClick() {
     if (!debtorUserToken.trim() || !hasSignature || !agreed || isSubmitting) return;
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      isSubmittingRef.current = false;
+      return;
+    }
 
     canvas.toBlob((blob) => {
       if (blob) {
         onSubmit(blob);
+      } else {
+        isSubmittingRef.current = false;
       }
     }, 'image/png');
   }
