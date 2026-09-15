@@ -1,3 +1,4 @@
+import { Input } from '../../common/components';
 import './PartiesInfo.css';
 import type { CreditorInfo } from '../types/contract';
 
@@ -43,9 +44,8 @@ export default function PartiesInfo({
             </td>
             <td className="parties__label">주 소</td>
             <td className="parties__value">
-              <input
+              <Input variant="borderless" aria-label="채권자 주소"
                 type="text"
-                className="parties__input"
                 placeholder="주소를 입력하세요"
                 value={creditorAddress}
                 onChange={(event) => onCreditorAddressChange(event.target.value)}
@@ -57,17 +57,16 @@ export default function PartiesInfo({
             <th className="parties__role">채무자</th>
             <td className="parties__label">성 명</td>
             <td className="parties__value">
-              <input type="text" className="parties__input" disabled placeholder="자동 입력" />
+              <Input variant="borderless" aria-label="채무자 성명" type="text" disabled placeholder="자동 입력" />
             </td>
             <td className="parties__label">생년월일</td>
             <td className="parties__value">
-              <input type="text" className="parties__input" disabled placeholder="자동 입력" />
+              <Input variant="borderless" aria-label="채무자 생년월일" type="text" disabled placeholder="자동 입력" />
             </td>
             <td className="parties__label">주 소</td>
             <td className="parties__value">
-              <input
+              <Input variant="borderless" aria-label="채무자 주소"
                 type="text"
-                className="parties__input"
                 disabled
                 placeholder="채무자 확인 후 자동 입력됩니다"
               />

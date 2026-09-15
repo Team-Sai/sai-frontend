@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { usePasswordVisibility } from '../../common/hooks/usePasswordVisibility';
+import { Button, FormField, Input, PasswordInput } from '../../common/components';
 
 const SIGNUP_API = '/api/auth/signup';
 const LOGIN_PATH = '/login';
@@ -60,7 +60,6 @@ function isValidBirthDate(digits: string): boolean {
 
 export default function SignupPage() {
   const navigate = useNavigate();
-  const password = usePasswordVisibility();
 
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
@@ -172,156 +171,34 @@ export default function SignupPage() {
 
           <div className="rounded-lg border border-outline bg-surface p-6">
             <form noValidate onSubmit={handleSubmit}>
-              <div>
-                <label htmlFor="email" className="mb-1.75 block text-body font-bold">
-                  이메일 주소
-                </label>
-                <input
-                    ref={emailInputRef}
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="example@email.com"
-                    autoComplete="email"
-                    required
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      clearFieldError('email');
-                    }}
-                    aria-invalid={emailError}
-                    aria-describedby={emailError ? 'email-error' : undefined}
-                    className={`h-11 w-full rounded-md border bg-background px-3.5 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/20 ${
-                        emailError ? 'border-error' : 'border-outline'
-                    }`}
-                />
-                <p className="mt-1.5 text-[10px] leading-relaxed text-[#7a8288]">
-                  본인 확인 및 알림 수신을 위해 정확한 이메일을 입력해 주세요.
-                </p>
-                {emailError && (
-                    <p id="email-error" className="mt-1.5 text-tiny text-error" role="alert">
-                      이메일 주소를 확인해 주세요.
-                    </p>
-                )}
-              </div>
+              <FormField id="email" label="이메일 주소"
+                hint="본인 확인 및 알림 수신을 위해 정확한 이메일을 입력해 주세요."
+                error={emailError ? '이메일 주소를 확인해 주세요.' : undefined}>
+                <Input ref={emailInputRef} name="email" type="email" placeholder="example@email.com"
+                  autoComplete="email" required value={email}
+                  onChange={(e) => { setEmail(e.target.value); clearFieldError('email'); }} />
+              </FormField>
 
-              <div className="mt-5.5">
-                <label htmlFor="password" className="mb-1.75 block text-body font-bold">
-                  비밀번호 설정
-                </label>
-                <div className="relative">
-                  <input
-                      ref={passwordInputRef}
-                      id="password"
-                      name="password"
-                      type={password.inputType}
-                      placeholder="비밀번호 입력"
-                      autoComplete="new-password"
-                      required
-                      value={passwordValue}
-                      onChange={(e) => {
-                        setPasswordValue(e.target.value);
-                        clearFieldError('password');
-                      }}
-                      aria-invalid={passwordError}
-                      aria-describedby={passwordError ? 'password-error' : undefined}
-                      className={`h-11 w-full rounded-md border bg-background px-3.5 pr-12 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/20 ${
-                          passwordError ? 'border-error' : 'border-outline'
-                      }`}
-                  />
-                  <button
-                      type="button"
-                      aria-label={password.ariaLabel}
-                      aria-pressed={password.isVisible}
-                      onClick={password.toggle}
-                      className="absolute top-1/2 right-2.5 h-8 w-8 -translate-y-1/2 cursor-pointer border-0 bg-transparent text-[#6f777c]"
-                  >
-                    {password.isVisible ? (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="m2 2 20 20" />
-                          <path d="M6.71 6.71C4.93 7.9 3.57 9.62 2.81 11.65a1 1 0 0 0 0 .7C4.32 16.12 7.89 18.5 12 18.5c1.18 0 2.29-.2 3.31-.56" />
-                          <path d="M10.73 10.73a2 2 0 0 0 2.54 2.54" />
-                          <path d="M14.12 5.68A9.95 9.95 0 0 0 12 5.5c-4.11 0-7.68 2.38-9.19 6.15" />
-                          <path d="M16.61 7.39c2.05 1.15 3.63 3 4.58 5.26a1 1 0 0 1 0 .7 10.1 10.1 0 0 1-1.46 2.4" />
-                        </svg>
-                    ) : (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M2.062 12.348a1 1 0 0 1 0-.696C3.574 7.884 7.269 5.5 12 5.5s8.426 2.384 9.938 6.152a1 1 0 0 1 0 .696C20.426 16.116 16.731 18.5 12 18.5S3.574 16.116 2.062 12.348Z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
-                    )}
-                  </button>
-                </div>
-                <p className="mt-1.5 text-[10px] leading-relaxed text-[#7a8288]">
-                  영문, 숫자, 특수문자를 포함해 8자 이상 입력해 주세요.
-                </p>
-                {passwordError && (
-                    <p id="password-error" className="mt-1.5 text-tiny text-error" role="alert">
-                      비밀번호 형식을 확인해 주세요.
-                    </p>
-                )}
-              </div>
+              <FormField id="password" label="비밀번호 설정" className="mt-5.5"
+                hint="영문, 숫자, 특수문자를 포함해 8자 이상 입력해 주세요."
+                error={passwordError ? '비밀번호 형식을 확인해 주세요.' : undefined}>
+                <PasswordInput ref={passwordInputRef} name="password" placeholder="비밀번호 입력"
+                  autoComplete="new-password" required value={passwordValue}
+                  onChange={(e) => { setPasswordValue(e.target.value); clearFieldError('password'); }} />
+              </FormField>
 
-              <div className="mt-5.5">
-                <label htmlFor="full-name" className="mb-1.75 block text-body font-bold">
-                  이름
-                </label>
-                <input
-                    ref={nameInputRef}
-                    id="full-name"
-                    name="name"
-                    type="text"
-                    placeholder="실명을 입력하세요"
-                    autoComplete="name"
-                    required
-                    value={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                      clearFieldError('name');
-                    }}
-                    aria-invalid={nameError}
-                    aria-describedby={nameError ? 'name-error' : undefined}
-                    className={`h-11 w-full rounded-md border bg-background px-3.5 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/20 ${
-                        nameError ? 'border-error' : 'border-outline'
-                    }`}
-                />
-                {nameError && (
-                    <p id="name-error" className="mt-1.5 text-tiny text-error" role="alert">
-                      이름을 입력해 주세요.
-                    </p>
-                )}
-              </div>
+              <FormField id="full-name" label="이름" className="mt-5.5" errorId="name-error"
+                error={nameError ? '이름을 입력해 주세요.' : undefined}>
+                <Input ref={nameInputRef} name="name" type="text" placeholder="실명을 입력하세요"
+                  autoComplete="name" required value={name}
+                  onChange={(e) => { setName(e.target.value); clearFieldError('name'); }} />
+              </FormField>
 
-              <div className="mt-5.5">
-                <label htmlFor="dob" className="mb-1.75 block text-body font-bold">
-                  생년월일
-                </label>
-                <input
-                    ref={dobInputRef}
-                    id="dob"
-                    name="birthDate"
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={8}
-                    placeholder="예: 19900101"
-                    required
-                    value={dob}
-                    onChange={handleDobChange}
-                    aria-invalid={dobError}
-                    aria-describedby={dobError ? 'dob-error' : undefined}
-                    className={`h-11 w-full rounded-md border bg-background px-3.5 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/20 ${
-                        dobError ? 'border-error' : 'border-outline'
-                    }`}
-                />
-                <p className="mt-1.5 text-[10px] leading-relaxed text-[#7a8288]">
-                  숫자 8자리를 입력해 주세요.
-                </p>
-                {dobError && (
-                    <p id="dob-error" className="mt-1.5 text-tiny text-error" role="alert">
-                      올바른 생년월일을 입력해 주세요.
-                    </p>
-                )}
-              </div>
+              <FormField id="dob" label="생년월일" className="mt-5.5" hint="숫자 8자리를 입력해 주세요."
+                error={dobError ? '올바른 생년월일을 입력해 주세요.' : undefined}>
+                <Input ref={dobInputRef} name="birthDate" type="text" inputMode="numeric" maxLength={8}
+                  placeholder="예: 19900101" required value={dob} onChange={handleDobChange} />
+              </FormField>
 
               {signupError && (
                   <p className="mt-4.25 text-center text-tiny text-error" role="alert">
@@ -329,13 +206,9 @@ export default function SignupPage() {
                   </p>
               )}
 
-              <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="mt-7 h-12 w-full rounded-md bg-primary text-sm font-bold text-white transition hover:opacity-90 active:scale-99 disabled:cursor-default disabled:opacity-60"
-              >
+              <Button type="submit" isLoading={isSubmitting} controlSize="lg" fullWidth className="mt-7 border-0 disabled:cursor-default">
                 {isSubmitting ? '가입 처리 중' : '가입하기'}
-              </button>
+              </Button>
 
               <div className="mt-5 border-t border-outline pt-5 text-center text-xs text-muted">
                 이미 계정이 있으신가요?

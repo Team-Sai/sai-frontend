@@ -5,6 +5,7 @@ import { getLinkedAccounts } from '../../accounts/api/accountApi';
 import type { LinkedBankAccount } from '../../accounts/types/account';
 import AccountLinkModal from '../../link/components/AccountLinkModal';
 import { useAccountLink } from '../../link/hooks/useAccountLink';
+import { Button } from '../../common/components';
 
 interface UserData {
   name?: string;
@@ -320,16 +321,17 @@ export default function MyPage() {
                     </div>
 
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <button
-                          type="button"
+                      <Button
+                          variant="secondary"
                           onClick={handleLogout}
                           disabled={isLoggingOut}
-                          className="h-7.5 min-w-22 rounded-lg border border-[#c9cfdb] bg-white px-3.5 text-[11px] font-semibold text-[#23262d] transition hover:border-primary hover:text-primary disabled:cursor-default disabled:opacity-50"
+                          isLoading={isLoggingOut}
+                          className="h-7.5 min-w-22 rounded-lg border border-[#c9cfdb] px-3.5 py-0 text-[11px] font-semibold text-[#23262d] transition hover:border-primary hover:text-primary disabled:cursor-default disabled:opacity-50 active:transform-none"
                       >
                         {isLoggingOut
                             ? '로그아웃 중'
                             : '로그아웃'}
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </section>
@@ -410,11 +412,11 @@ export default function MyPage() {
                         연결된 계좌
                       </h2>
 
-                      <button
-                          type="button"
+                      <Button
                           onClick={() => setIsLinkModalOpen(true)}
                           disabled={isConnecting}
-                          className="flex h-9 items-center gap-1.5 rounded-lg border-0 bg-primary px-3.5 text-xs font-semibold text-white transition hover:bg-[#0b754f] disabled:cursor-default disabled:opacity-60"
+                          isLoading={isConnecting}
+                          className="flex h-9 rounded-lg border-0 px-3.5 py-0 text-xs font-semibold transition hover:bg-[#0b754f] enabled:hover:opacity-100 disabled:cursor-default active:transform-none"
                       >
                         <svg
                             viewBox="0 0 24 24"
@@ -442,7 +444,7 @@ export default function MyPage() {
                         {isConnecting
                             ? '연결 중'
                             : '계좌 추가'}
-                      </button>
+                      </Button>
                     </div>
 
                     <div className="mt-2 max-h-65 overflow-y-auto">
@@ -466,11 +468,11 @@ export default function MyPage() {
                               자동화되어 더욱 편리해집니다.
                             </p>
 
-                            <button
-                                type="button"
+                            <Button
                                 onClick={() => setIsLinkModalOpen(true)}
                                 disabled={isConnecting}
-                                className="mt-1.5 inline-flex h-9 items-center gap-1.5 rounded-lg border-0 bg-primary px-4.5 text-xs font-bold text-white hover:bg-[#0b754f] disabled:opacity-60"
+                                isLoading={isConnecting}
+                                className="mt-1.5 h-9 rounded-lg border-0 px-4.5 py-0 text-xs hover:bg-[#0b754f] enabled:hover:opacity-100 active:transform-none"
                             >
                               <svg
                                   viewBox="0 0 24 24"
@@ -496,7 +498,7 @@ export default function MyPage() {
                               </svg>
 
                               지금 바로 연결하기
-                            </button>
+                            </Button>
                           </div>
                       ) : (
                           <div className="flex flex-col">

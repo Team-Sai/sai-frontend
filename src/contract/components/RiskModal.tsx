@@ -1,3 +1,4 @@
+import { Button } from '../../common/components';
 import './RiskModal.css';
 
 const STANDARD_INTEREST_RATE = 4.6;
@@ -54,9 +55,9 @@ export default function RiskModal({
       <div className="notice">
         <header className="notice__header">
           <span className="notice__eyebrow">안심거래진단</span>
-          <button type="button" className="notice__close" onClick={onClose} aria-label="닫기">
+          <Button type="button" variant="text" className="notice__close" onClick={onClose} aria-label="닫기">
             ×
-          </button>
+          </Button>
         </header>
 
         <div className="notice__body">
@@ -109,9 +110,9 @@ export default function RiskModal({
         </div>
 
         <footer className="notice__footer">
-          <button type="button" className="btn btn--primary btn--block" onClick={handleActionClick}>
+          <Button type="button" fullWidth onClick={handleActionClick}>
             {isSafe ? '이대로 작성 완료하기' : `안전 이자율(${safeRate}%) 적용하기`}
-          </button>
+          </Button>
         </footer>
       </div>
     </div>
