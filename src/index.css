@@ -30,6 +30,8 @@
   --color-footer-bg: #1f2937;
   --color-footer-text: #cfd6e3;
   --color-footer-link: #dce3ef;
+  --color-nav-default: #667085;
+  --color-nav-active: #0f8a5f;
 
   --text-heading: 27px;
   --text-heading--line-height: 1.3;

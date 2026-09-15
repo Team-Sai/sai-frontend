@@ -6,9 +6,9 @@ export default function AppLayout() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <div className="flex-1">
+      <main className="app-layout__main">
         <Outlet />
-      </div>
+      </main>
       <Footer />
     </div>
   );

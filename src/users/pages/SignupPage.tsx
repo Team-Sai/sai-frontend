@@ -161,7 +161,7 @@ export default function SignupPage() {
   }
 
   return (
-      <main className="flex w-full flex-1 justify-center px-5 pt-9 pb-18">
+      <div className="flex w-full flex-1 justify-center px-5 pt-9 pb-18">
         <section className="w-full max-w-105">
           <div className="mb-5.5">
             <h1 className="m-0 text-heading tracking-tight">회원가입</h1>
@@ -346,6 +346,6 @@ export default function SignupPage() {
             </form>
           </div>
         </section>
-      </main>
+      </div>
   );
 }

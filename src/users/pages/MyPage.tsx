@@ -240,7 +240,7 @@ export default function MyPage() {
 
   return (
       <>
-        <main className="mx-auto w-[min(1040px,calc(100%-40px))] py-9 pb-18">
+        <div className="mx-auto w-[min(1040px,calc(100%-40px))] py-9 pb-18">
           <section className="mb-6">
             <h1 className="m-0 text-[36px] leading-none font-extrabold">
               내 정보
@@ -566,7 +566,7 @@ export default function MyPage() {
                 </section>
               </>
           )}
-        </main>
+        </div>
         {isLinkModalOpen && (
           <AccountLinkModal
               isOpen={isLinkModalOpen}
