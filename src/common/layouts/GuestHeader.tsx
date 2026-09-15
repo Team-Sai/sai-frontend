@@ -16,7 +16,7 @@ const NAV_ITEMS: { key: MenuKey; label: string }[] = [
 
 export default function GuestHeader({ activeMenu }: GuestHeaderProps) {
   return (
-    <header className="app-header app-header--guest">
+    <header className="app-header">
       <div className="app-header__inner">
         <BrandLink to="/login" />
         <nav className="app-nav" aria-label="주요 메뉴">
@@ -25,7 +25,7 @@ export default function GuestHeader({ activeMenu }: GuestHeaderProps) {
               key={item.key}
               className={`app-nav__link${activeMenu === item.key ? ' is-active' : ''} app-nav__link--disabled`}
               aria-disabled="true"
-              title="소개 페이지 준비 중입니다"
+              title="준비 중입니다"
             >
               {item.label}
             </span>
