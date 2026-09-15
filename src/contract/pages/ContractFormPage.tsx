@@ -133,7 +133,7 @@ export default function ContractFormPage() {
   }
 
   return (
-    <div className="page">
+    <div className="contract-scope">
       <Stepper currentStep={1} />
 
       <ContractDocument

@@ -43,15 +43,15 @@ export default function DashboardPage() {
   }, [keyword, statusFilter, sortType, page]);
 
   if (isLoading) {
-    return <div className="page">불러오는 중이에요...</div>;
+    return <div className="contract-scope contract-scope--dashboard">불러오는 중이에요...</div>;
   }
 
   if (error || !data) {
-    return <div className="page">{error ?? "데이터가 없습니다."}</div>;
+    return <div className="contract-scope contract-scope--dashboard">{error ?? "데이터가 없습니다."}</div>;
   }
 
   return (
-    <div className="page">
+    <div className="contract-scope contract-scope--dashboard">
       <section className="dashboard-summary">
         <div className="summary-card">
           <span className="summary-card__label">전체 계약</span>

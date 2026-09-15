@@ -10,6 +10,10 @@ import IdentityTestPage from './identity/pages/IdentityTestPage';
 import LinkCompletePage from './link/pages/LinkCompletePage';
 import DashboardPage from './pages/DashboardPage';
 import ContractDashboardPage from './contract/DashboardPage';
+
+
+
+import NotificationCenter from './notification/NotificationCenter';
 import ContractFormPage from './contract/pages/ContractFormPage';
 import ContractSignaturePage from './contract/pages/ContractSignaturePage';
 import ContractCompletePage from './contract/pages/ContractCompletePage';
@@ -32,6 +36,7 @@ function App() {
                     <Route path="/signup" element={<SignupPage />} />
                 </Route>
                 <Route element={<AppLayout />}>
+                    <Route path="/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
                     <Route
                         path="/integration/dashboard"
                         element={
