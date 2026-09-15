@@ -9,6 +9,7 @@ import MyPage from './users/pages/MyPage';
 import IdentityTestPage from './identity/pages/IdentityTestPage';
 import LinkCompletePage from './link/pages/LinkCompletePage';
 import DashboardPage from './pages/DashboardPage';
+import ContractDashboardPage from './contract/DashboardPage';
 import ContractFormPage from './contract/pages/ContractFormPage';
 import ContractSignaturePage from './contract/pages/ContractSignaturePage';
 import ContractCompletePage from './contract/pages/ContractCompletePage';
@@ -74,6 +75,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <ContractCompletePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/contracts/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <ContractDashboardPage />
                             </ProtectedRoute>
                         }
                     />

@@ -1,3 +1,4 @@
+import { Button } from '../../common/components';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../shared.css';
@@ -66,28 +67,28 @@ export default function ContractCompletePage() {
         </section>
 
         <footer className="action-group">
-          <button
+          <Button
             type="button"
-            className="btn btn--primary"
+            className="complete-action complete-action--primary"
             disabled={!contractId}
             onClick={() => navigate(`/contracts/${contractId}/contract-detail`)}
           >
-            <svg className="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+            <svg className="complete-action__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
             </svg>
             <span>차용증 확인</span>
-          </button>
+          </Button>
 
-          <button type="button" className="btn btn--secondary" onClick={() => navigate('/integration/dashboard')}>
-            <svg className="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+          <Button type="button" variant="text" className="complete-action complete-action--secondary" onClick={() => navigate('/integration/dashboard')}>
+            <svg className="complete-action__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <rect x="3" y="3" width="7" height="9" />
               <rect x="14" y="3" width="7" height="5" />
               <rect x="14" y="12" width="7" height="9" />
               <rect x="3" y="16" width="7" height="5" />
             </svg>
             <span>대시보드로 이동</span>
-          </button>
+          </Button>
         </footer>
       </div>
     </div>

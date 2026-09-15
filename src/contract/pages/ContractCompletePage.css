@@ -129,7 +129,7 @@
   align-items: center;
 }
 
-.action-group .btn {
+.complete-action {
   width: 100%;
   max-width: 320px;
   height: 48px;
@@ -145,25 +145,29 @@
   transition: all 0.2s ease;
 }
 
-.action-group .btn__icon {
+.complete-action__icon {
   width: 16px;
   height: 16px;
 }
 
-.action-group .btn--primary {
+.complete-action--primary {
   background-color: #2d6a4f;
   color: #ffffff;
 }
 
-.action-group .btn--primary:hover {
+.complete-action--primary:hover {
   background-color: #1b4332;
 }
 
-.action-group .btn--secondary {
+.complete-action--primary:disabled {
+  opacity: 1;
+}
+
+.complete-action--secondary {
   background-color: transparent;
   color: #4b5563;
 }
 
-.action-group .btn--secondary:hover {
+.complete-action--secondary:hover {
   color: #111827;
 }

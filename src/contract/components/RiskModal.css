@@ -40,6 +40,8 @@
   width: 25px;
   height: 25px;
   padding: 4px;
+  font-size: inherit;
+  font-weight: inherit;
   border: none;
   border-radius: 9999px;
   background: rgba(0, 110, 42, 0.08);
@@ -50,6 +52,10 @@
 
 .notice__close:hover {
   background: rgba(0, 110, 42, 0.16);
+}
+
+.notice__close:active {
+  transform: none;
 }
 
 .notice__body {
@@ -153,8 +159,4 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--text);
-}
-
-.btn--block {
-  width: 100%;
 }
