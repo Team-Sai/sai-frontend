@@ -77,7 +77,7 @@ export default function ContractSignaturePage() {
   }
 
   return (
-    <div className="page">
+    <div className="contract-scope">
       <Stepper currentStep={2} />
 
       <SignatureAndSubmit

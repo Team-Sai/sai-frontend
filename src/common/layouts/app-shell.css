@@ -148,6 +148,7 @@
 }
 
 /* Keep the focus ring inside the horizontally scrolling menu. */
+
 .app-nav a:focus-visible {
   outline-offset: -3px;
 }
@@ -224,7 +225,6 @@
     gap: 8px 20px;
     padding-block: 12px 0;
   }
-
   .app-nav {
     grid-column: 1 / -1;
     grid-row: 2;
@@ -233,15 +233,12 @@
     overflow-x: auto;
     scrollbar-width: none;
   }
-
   .app-nav::-webkit-scrollbar {
     display: none;
   }
-
   .app-nav__link {
     min-height: 48px;
   }
-
   .app-header-actions {
     grid-column: 2;
     grid-row: 1;
@@ -253,45 +250,36 @@
   .app-footer__inner {
     padding-inline: 20px;
   }
-
   .app-header__inner {
     gap: 4px 12px;
   }
-
   .app-brand {
     gap: 8px;
   }
-
   .app-brand__logo {
     width: 38px;
     height: 38px;
   }
-
   .app-brand__name {
     font-size: 20px;
   }
-
   .app-header-actions {
     gap: 2px;
   }
-
   .app-header-actions__disabled,
   .app-header-profile {
     width: 40px;
     height: 40px;
   }
-
   .app-header-actions__disabled img,
   .app-header-profile img {
     width: 26px;
     height: 26px;
   }
-
   .app-nav {
     gap: 20px;
     font-size: 14px;
   }
-
   .app-footer__inner {
     min-height: 0;
     align-items: flex-start;
@@ -299,7 +287,6 @@
     gap: 20px;
     padding-block: 28px;
   }
-
   .app-footer__nav {
     flex-wrap: wrap;
     gap: 12px;
@@ -312,17 +299,14 @@
   .app-footer__inner {
     padding-inline: 14px;
   }
-
   .app-brand__name {
     font-size: 18px;
   }
-
   .app-header-actions__disabled,
   .app-header-profile {
     width: 34px;
     height: 38px;
   }
-
   .app-header-actions__disabled img,
   .app-header-profile img {
     width: 23px;
@@ -331,6 +315,7 @@
 }
 
 /* The logo-only header has no second menu row. */
+
 .app-header--minimal .app-header__inner {
   grid-template-columns: minmax(0, 1fr);
   padding-block: 0;

@@ -28,14 +28,39 @@
   font-variant-numeric: tabular-nums;
 }
 
-.deposit { color: #056347; }
-.withdrawal { color: #a23d3d; }
+.deposit {
+  color: #056347;
+}
 
-.meta { flex: 1 1 230px; min-width: 0; margin: 0; font-size: 14px; }
-.meta > div { display: grid; grid-template-columns: 4.5em minmax(0, 1fr); gap: 8px; }
-.meta dt { color: #66706c; }
-.meta dd { min-width: 0; margin: 0; }
-.memo { white-space: pre-wrap; }
+.withdrawal {
+  color: #a23d3d;
+}
+
+.meta {
+  flex: 1 1 230px;
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.meta > div {
+  display: grid;
+  grid-template-columns: 4.5em minmax(0, 1fr);
+  gap: 8px;
+}
+
+.meta dt {
+  color: #66706c;
+}
+
+.meta dd {
+  min-width: 0;
+  margin: 0;
+}
+
+.memo {
+  white-space: pre-wrap;
+}
 
 .badge {
   max-width: 100%;
@@ -44,10 +69,27 @@
   font-size: 12px;
   font-weight: 800;
 }
-.PENDING, .UNMATCHED { background: #f0f3f2; color: #50605a; }
-.APPLIED { background: #eef9f5; color: #056347; }
-.NEEDS_CHECK { background: #fff3e9; color: #954711; }
-.FAILED { background: #fff0f0; color: #a23d3d; }
+
+.PENDING,
+.UNMATCHED {
+  background: #f0f3f2;
+  color: #50605a;
+}
+
+.APPLIED {
+  background: #eef9f5;
+  color: #056347;
+}
+
+.NEEDS_CHECK {
+  background: #fff3e9;
+  color: #954711;
+}
+
+.FAILED {
+  background: #fff0f0;
+  color: #a23d3d;
+}
 
 .actions {
   min-width: 0;
@@ -57,8 +99,15 @@
   flex-wrap: wrap;
   gap: 12px;
 }
-.actions > * { min-width: 0; max-width: 100%; }
-.actions:empty { display: none; }
+
+.actions > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.actions:empty {
+  display: none;
+}
 
 .srOnly {
   position: absolute;
@@ -71,8 +120,17 @@
 }
 
 @media (max-width: 720px) {
-  .summary { padding: 16px; gap: 10px; }
-  .amount { flex: 1 1 100%; }
-  .meta { flex-basis: 100%; }
-  .actions { padding: 14px 16px 16px; }
+  .summary {
+    padding: 16px;
+    gap: 10px;
+  }
+  .amount {
+    flex: 1 1 100%;
+  }
+  .meta {
+    flex-basis: 100%;
+  }
+  .actions {
+    padding: 14px 16px 16px;
+  }
 }

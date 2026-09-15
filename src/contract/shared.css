@@ -1,43 +1,24 @@
-:root {
-  --page: #f5f7fb;
-  --surface: #FFFFFF;
-  --text: #17191D;
-  --muted: #697080;
-  --line: #d9dee8;
-  --primary: #0f8a5f;
-  --primary-bright: #0f8a5f;
-  --error: #d94c4c;
-
-  --font-ui: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
-
+.contract-scope {
+  --page: var(--color-background);
+  --surface: var(--color-surface);
+  --text: var(--color-text);
+  --muted: var(--color-muted);
+  --line: var(--color-outline);
+  --primary: var(--color-primary);
+  --primary-bright: var(--color-primary);
+  --error: var(--color-error);
+  --font-ui: var(--font-sans);
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 8px;
-  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04);
-}
-
-* { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--page);
-  font-family: var(--font-ui);
-  color: var(--text);
-}
-
-body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-button { font-family: inherit; }
-
-.page {
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 4%);
+  box-sizing: border-box;
   width: 100%;
   max-width: 900px;
+  min-width: 0;
   margin: 32px auto 80px;
   padding: 0 20px;
   flex: 1 0 auto;
+  color: var(--text);
+  font-family: var(--font-ui);
 }
