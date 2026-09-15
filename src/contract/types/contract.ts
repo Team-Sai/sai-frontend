@@ -61,3 +61,36 @@ export function toDraft(formData: ContractFormData): LoanContractDraft {
     repaymentType: formData.repaymentType,
   };
 }
+
+export type ContractStatus = 'DRAFT' | 'PENDING' | 'COMPLETED';
+
+export const CONTRACT_STATUS_LABELS: Record<ContractStatus, string> = {
+  DRAFT: '작성중 (아직 채권자가 전송하지 않았습니다)',
+  PENDING: '전송됨 (채무자 확인 대기중)',
+  COMPLETED: '완료',
+};
+
+export interface ContractDetail {
+  status: ContractStatus;
+  previousContractId: number | null;
+  creditorName: string | null;
+  creditorBirthDate: string | null;
+  creditorAddress: string | null;
+  debtorName: string | null;
+  debtorBirthDate: string | null;
+  debtorAddress: string | null;
+  principalAmount: number | null;
+  interestRate: number | null;
+  repaymentType: RepaymentMethod | null;
+  startDate: string | null;
+  maturityDate: string | null;
+  repaymentDay: number | null;
+  contractAlias: string | null;
+  terms: string | null;
+}
+
+export const DEBTOR_APPROVAL_DRAFT_KEY = 'debtorApprovalDraft';
+
+export interface DebtorApprovalDraft {
+  debtorAddress: string;
+}
