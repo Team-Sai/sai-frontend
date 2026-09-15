@@ -75,25 +75,6 @@
   margin: 0 0 28px;
 }
 
-.doc__inline-input {
-  font-family: inherit;
-  font-size: 13.5px;
-  color: var(--primary);
-  font-weight: 600;
-  border: none;
-  border-bottom: 1.5px solid var(--line);
-  background: transparent;
-  padding: 1px 4px;
-  text-align: center;
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.doc__inline-input:focus {
-  outline: none;
-  border-color: var(--primary-bright);
-  background: rgba(0, 200, 83, 0.08);
-}
-
 .doc__inline-input--amount { width: 110px; font-weight: 700; }
 .doc__inline-input--date { width: 140px; }
 .doc__inline-input--rate { width: 64px; }
@@ -105,30 +86,6 @@
   font-weight: 600;
   border-bottom: 1.5px dashed var(--line);
   padding: 1px 4px;
-}
-
-.doc__textarea {
-  width: 100%;
-  font-family: inherit;
-  font-size: 13.5px;
-  color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  resize: vertical;
-}
-
-.doc__textarea:focus {
-  outline: none;
-  border-color: var(--primary-bright);
-  background: rgba(0, 200, 83, 0.05);
-}
-
-.doc__inline-input:disabled,
-.doc__textarea:disabled {
-  color: #9AA1AC;
-  cursor: not-allowed;
-  background: rgba(105, 112, 128, 0.06);
 }
 
 .doc__status-banner {
@@ -212,29 +169,11 @@
 }
 
 .loan-account__title {
+  display: block;
   font-size: 14px;
   font-weight: 700;
   color: var(--primary);
   margin-bottom: 6px;
-}
-
-.doc__body select#selectedLinkedAccountId {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  font-family: inherit;
-  font-size: 13.5px;
-  color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  background: var(--surface);
-}
-
-.doc__body select#selectedLinkedAccountId:focus {
-  outline: none;
-  border-color: var(--primary-bright);
-  background: rgba(0, 200, 83, 0.05);
 }
 
 .loan-account__summary {

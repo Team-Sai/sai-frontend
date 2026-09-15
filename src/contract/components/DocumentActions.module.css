@@ -1,0 +1,25 @@
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.primary:disabled {
+  background: var(--line);
+  color: #9AA1AC;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.status {
+  text-align: right;
+  font-size: 12.5px;
+  color: var(--primary);
+  min-height: 18px;
+  margin: 10px 0 0;
+}
+
+.error {
+  color: var(--error);
+}

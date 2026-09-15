@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { setAccessToken, clearStoredAuth } from '../../auth/authFetch';
 import { useAuth } from '../../auth/useAuth';
-import { usePasswordVisibility } from '../../common/hooks/usePasswordVisibility';
+import { Button, FormField, Input, PasswordInput } from '../../common/components';
 import { Link } from 'react-router-dom';
 
 const SAVED_EMAIL_KEY = 'saiwonjangSavedEmail';
@@ -32,7 +32,6 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
-  const password = usePasswordVisibility();
 
   const emailInputRef = useRef<HTMLInputElement>(null);
 
@@ -171,105 +170,16 @@ export default function LoginPage() {
 
           <div className="rounded-lg border border-outline bg-surface p-6">
             <form noValidate onSubmit={handleSubmit}>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="mb-1.75 block text-body font-bold"
-                >
-                  이메일 주소
-                </label>
-                <input
-                  ref={emailInputRef}
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="example@email.com"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={handleEmailChange}
-                  className={`h-11 w-full rounded-md border bg-background px-3.5 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/20 ${
-                    emailError ? 'border-error' : 'border-outline'
-                  }`}
-                />
-                {emailError && (
-                  <p className="mt-1.5 text-tiny text-error">
-                    이메일 주소를 확인해 주세요.
-                  </p>
-                )}
-              </div>
+              <FormField id="email" label="이메일 주소" error={emailError ? '이메일 주소를 확인해 주세요.' : undefined}>
+                <Input ref={emailInputRef} name="email" type="email" placeholder="example@email.com"
+                  autoComplete="email" required value={email} onChange={handleEmailChange} />
+              </FormField>
 
-              <div className="mt-5.5">
-                <label
-                  htmlFor="password"
-                  className="mb-1.75 block text-body font-bold"
-                >
-                  비밀번호
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={password.inputType}
-                    placeholder="비밀번호 입력"
-                    autoComplete="current-password"
-                    required
-                    value={passwordValue}
-                    onChange={handlePasswordChange}
-                    className={`h-11 w-full rounded-md border bg-background px-3.5 pr-12 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/20 ${
-                      passwordError ? 'border-error' : 'border-outline'
-                    }`}
-                  />
-
-                  <button
-                    type="button"
-                    aria-label={password.ariaLabel}
-                    onClick={password.toggle}
-                    className="absolute top-1/2 right-2.5 h-8 w-8 -translate-y-1/2 cursor-pointer border-0 bg-transparent text-[#6f777c]"
-                  >
-                    {password.isVisible ? (
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="m2 2 20 20" />
-                        <path d="M6.71 6.71C4.93 7.9 3.57 9.62 2.81 11.65a1 1 0 0 0 0 .7C4.32 16.12 7.89 18.5 12 18.5c1.18 0 2.29-.2 3.31-.56" />
-                        <path d="M10.73 10.73a2 2 0 0 0 2.54 2.54" />
-                        <path d="M14.12 5.68A9.95 9.95 0 0 0 12 5.5c-4.11 0-7.68 2.38-9.19 6.15" />
-                        <path d="M16.61 7.39c2.05 1.15 3.63 3 4.58 5.26a1 1 0 0 1 0 .7 10.1 10.1 0 0 1-1.46 2.4" />
-                      </svg>
-                    ) : (
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M2.062 12.348a1 1 0 0 1 0-.696C3.574 7.884 7.269 5.5 12 5.5s8.426 2.384 9.938 6.152a1 1 0 0 1 0 .696C20.426 16.116 16.731 18.5 12 18.5S3.574 16.116 2.062 12.348Z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-
-                {passwordError && (
-                  <p className="mt-1.5 text-tiny text-error">
-                    비밀번호를 입력해 주세요.
-                  </p>
-                )}
-              </div>
+              <FormField id="password" label="비밀번호" className="mt-5.5"
+                error={passwordError ? '비밀번호를 입력해 주세요.' : undefined}>
+                <PasswordInput name="password" placeholder="비밀번호 입력" autoComplete="current-password"
+                  required value={passwordValue} onChange={handlePasswordChange} />
+              </FormField>
 
               <div className="mt-4.5 flex items-center justify-between gap-3.5 text-xs font-semibold">
                 <label className="flex cursor-pointer items-center gap-1.5">
@@ -293,13 +203,9 @@ export default function LoginPage() {
                 </p>
               )}
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="mt-7 h-12 w-full rounded-md bg-primary text-sm font-bold text-white transition hover:opacity-90 active:scale-99 disabled:cursor-default disabled:opacity-60"
-              >
+              <Button type="submit" isLoading={isSubmitting} controlSize="lg" fullWidth className="mt-7 border-0 disabled:cursor-default">
                 {isSubmitting ? '로그인 중' : '로그인'}
-              </button>
+              </Button>
 
               <div className="mt-5 border-t border-outline pt-5 text-center text-xs text-muted">
                 아직 사이원장 회원이 아니신가요?

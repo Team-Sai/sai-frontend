@@ -61,6 +61,10 @@
   color: var(--primary);
 }
 
+.sign__clear:active {
+  transform: none;
+}
+
 .agreement {
   display: flex;
   align-items: flex-start;
@@ -82,68 +86,4 @@
   color: var(--text);
   line-height: 1.6;
   cursor: pointer;
-}
-
-.doc__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 32px;
-}
-
-.btn {
-  border-radius: var(--radius-sm);
-  padding: 11px 22px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  border: 1.5px solid transparent;
-  transition: opacity 0.18s ease, transform 0.1s ease, background 0.15s ease;
-}
-
-.btn:active {
-  transform: scale(0.99);
-}
-
-.btn--ghost {
-  background: var(--surface);
-  border-color: var(--line);
-  color: var(--muted);
-}
-
-.btn--ghost:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.btn--primary {
-  background: var(--primary);
-  color: var(--surface);
-}
-
-.btn--primary:hover {
-  opacity: 0.9;
-}
-
-.btn--primary:disabled {
-  background: var(--line);
-  color: #9AA1AC;
-  cursor: not-allowed;
-  opacity: 1;
-}
-
-.btn--block {
-  width: 100%;
-}
-
-.doc__status {
-  text-align: right;
-  font-size: 12.5px;
-  color: var(--primary);
-  min-height: 18px;
-  margin: 10px 0 0;
-}
-
-.doc__status.is-error {
-  color: var(--error);
 }

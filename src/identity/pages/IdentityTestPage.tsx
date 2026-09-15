@@ -5,6 +5,7 @@ import {
 } from 'react';
 
 import { authFetch } from '../../auth/authFetch';
+import { Button, Select } from '../../common/components';
 
 type IdentityPurpose =
     | 'LOAN_CONTRACT'
@@ -526,7 +527,7 @@ export default function IdentityTestPage() {
                             본인인증 목적
                         </label>
 
-                        <select
+                        <Select
                             id="purpose"
                             value={purpose}
                             onChange={(event) =>
@@ -539,7 +540,7 @@ export default function IdentityTestPage() {
                                 isLoading ||
                                 isRedirecting
                             }
-                            className="h-12 w-full rounded-lg border border-outline bg-surface px-4 text-sm text-text outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:cursor-not-allowed disabled:bg-surface-low disabled:text-muted"
+                            className="h-12 rounded-lg bg-surface px-4 py-0 text-sm text-text transition focus:shadow-none focus:ring-2 focus:ring-primary/15 disabled:bg-surface-low disabled:text-muted"
                         >
                             <option value="LOAN_CONTRACT">
                                 금전소비대차 계약
@@ -548,25 +549,26 @@ export default function IdentityTestPage() {
                             <option value="SETTLEMENT">
                                 정산
                             </option>
-                        </select>
+                        </Select>
                     </div>
 
-                    <button
+                    <Button
                         id="verification-button"
-                        type="button"
+                        fullWidth
+                        isLoading={isLoading || isRedirecting}
                         onClick={startVerification}
                         disabled={
                             isLoading ||
                             isRedirecting
                         }
-                        className="flex h-12 w-full items-center justify-center rounded-lg bg-primary px-5 text-sm font-bold text-white transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="flex h-12 rounded-lg border-0 px-5 py-0 text-sm transition hover:bg-primary/90 enabled:hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary/25 active:transform-none"
                     >
                         {isRedirecting
                             ? '이동 중...'
                             : isLoading
                                 ? '본인인증 처리 중...'
                                 : '본인인증 시작'}
-                    </button>
+                    </Button>
                 </div>
 
                 <div className="border-t border-outline bg-surface-low px-6 py-6 md:px-10">

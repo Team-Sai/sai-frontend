@@ -1,4 +1,5 @@
-import './ContractActions.css';
+import { Button } from '../../common/components';
+import styles from './DocumentActions.module.css';
 
 interface ContractActionsProps {
   isProcessing: boolean;
@@ -16,13 +17,13 @@ export default function ContractActions({ isProcessing, statusMessage, isError, 
         구체적인 법적 조언이나 강제집행력이 필요한 경우 법률 전문가의 상담 또는 공증 절차를 진행하시길 권장합니다.
       </p>
 
-      <div className="doc__actions">
-        <button type="button" className="btn btn--primary" onClick={onNext} disabled={isProcessing}>
+      <div className={styles.actions}>
+        <Button type="button" className={styles.primary} onClick={onNext} disabled={isProcessing} isLoading={isProcessing}>
           {isProcessing ? '확인 중...' : '다음 (전자서명)'}
-        </button>
+        </Button>
       </div>
 
-      <p className={`doc__status ${isError ? 'is-error' : ''}`.trim()} role="status" aria-live="polite">
+      <p className={`${styles.status} ${isError ? styles.error : ''}`} role="status" aria-live="polite">
         {statusMessage}
       </p>
     </>

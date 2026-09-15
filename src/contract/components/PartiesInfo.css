@@ -35,32 +35,6 @@
   background: var(--surface);
 }
 
-.parties__input {
-  width: 100%;
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 13px;
-  color: var(--text);
-  padding: 4px 2px;
-}
-
-.parties__input:focus {
-  outline: none;
-  background: rgba(0, 200, 83, 0.08);
-  border-radius: 4px;
-}
-
-.parties__input::placeholder {
-  color: #B0B7C3;
-}
-
-.parties__input:disabled {
-  color: #9AA1AC;
-  cursor: not-allowed;
-  background: rgba(105, 112, 128, 0.06);
-}
-
 .parties__seal {
   border: 1px dashed var(--line);
   background: var(--surface);

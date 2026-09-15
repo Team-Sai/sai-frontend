@@ -1,3 +1,5 @@
+import { Button, Input } from '../../common/components';
+import styles from './DocumentActions.module.css';
 import { useEffect, useRef, useState } from 'react';
 import './SignatureAndSubmit.css';
 
@@ -115,9 +117,9 @@ export default function SignatureAndSubmit({
         <span className="doc__clause">상대방 지정</span>
         <div className="doc__body">
           <span className="doc__text">차용증을 전달받을 채무자의 회원 토큰을 입력하세요.</span>
-          <input
+          <Input variant="document" aria-label="채무자 회원 토큰"
             type="text"
-            className="doc__inline-input doc__inline-input--alias"
+            className="doc__inline-input--alias"
             placeholder="예: SAI_ABCD1234"
             value={debtorUserToken}
             onChange={(event) => onDebtorUserTokenChange(event.target.value)}
@@ -142,9 +144,9 @@ export default function SignatureAndSubmit({
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
           />
-          <button type="button" className="sign__clear" onClick={handleClear}>
+          <Button type="button" variant="secondary" className="sign__clear" onClick={handleClear}>
             지우기
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -161,16 +163,16 @@ export default function SignatureAndSubmit({
         </label>
       </div>
 
-      <div className="doc__actions">
-        <button type="button" className="btn btn--ghost" onClick={onCancel} disabled={isSubmitting}>
+      <div className={styles.actions}>
+        <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
           취소
-        </button>
-        <button type="button" className="btn btn--primary" onClick={handleSubmitClick} disabled={!canSubmit}>
+        </Button>
+        <Button type="button" className={styles.primary} onClick={handleSubmitClick} disabled={!canSubmit} isLoading={isSubmitting}>
           {isSubmitting ? '전송 중...' : '전송'}
-        </button>
+        </Button>
       </div>
 
-      <p className={`doc__status ${isError ? 'is-error' : ''}`.trim()} role="status" aria-live="polite">
+      <p className={`${styles.status} ${isError ? styles.error : ''}`} role="status" aria-live="polite">
         {statusMessage}
       </p>
     </div>
