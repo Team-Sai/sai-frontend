@@ -8,7 +8,7 @@ import SignupPage from './users/pages/SignupPage';
 import MyPage from './users/pages/MyPage';
 import IdentityTestPage from './identity/pages/IdentityTestPage';
 import LinkCompletePage from './link/pages/LinkCompletePage';
-import DashboardPage from './pages/DashboardPage';
+import ContractDashboardPage from './contract/DashboardPage';
 import ContractFormPage from './contract/ContractFormPage';
 import ContractSignaturePage from './contract/ContractSignaturePage';
 import ContractCompletePage from './contract/ContractCompletePage';
@@ -27,14 +27,6 @@ function App() {
                     <Route path="/signup" element={<SignupPage />} />
                 </Route>
                 <Route element={<AppLayout />}>
-                    <Route
-                        path="/integration/dashboard"
-                        element={
-                            <ProtectedRoute>
-                                <DashboardPage/>
-                            </ProtectedRoute>
-                        }
-                    />
                     <Route
                         path="/mypage"
                         element={
@@ -72,6 +64,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <ContractCompletePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/contracts/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <ContractDashboardPage />
                             </ProtectedRoute>
                         }
                     />
