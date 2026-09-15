@@ -15,6 +15,8 @@ import ContractSignaturePage from './contract/pages/ContractSignaturePage';
 import ContractCompletePage from './contract/pages/ContractCompletePage';
 import DebtorContractFormPage from './contract/pages/DebtorContractFormPage';
 import DebtorSignaturePage from './contract/pages/DebtorSignaturePage';
+import ArchivePage from './archive/ArchivePage';
+import SettlementArchivePreviewPage from './archive/pages/SettlementArchivePreviewPage';
 
 function App() {
     return (
@@ -99,6 +101,22 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <DebtorSignaturePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/archive"
+                        element={
+                            <ProtectedRoute>
+                                <ArchivePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/archive/settlements/:settlementId"
+                        element={
+                            <ProtectedRoute>
+                                <SettlementArchivePreviewPage />
                             </ProtectedRoute>
                         }
                     />
