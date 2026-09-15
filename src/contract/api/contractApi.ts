@@ -1,6 +1,6 @@
 import { authFetch } from '../../auth/authFetch';
 import type { LinkedBankAccount } from '../../accounts/types/account';
-import type { LoanContractDraft } from '../types/contract';
+import type { ContractDetail, LoanContractDraft } from '../types/contract';
 
 function isLinkedBankAccount(value: unknown): value is LinkedBankAccount {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -116,16 +116,55 @@ export interface ContractSummary {
   previousContractId: number | null;
 }
 
-export async function getContractSummary(contractId: number): Promise<ContractSummary> {
+export async function getContractDetail(contractId: number): Promise<ContractDetail> {
   const response = await authFetch(`/api/contracts/${contractId}/listdetails`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
 
   if (!response.ok) {
-    throw new Error(`차용증 정보를 불러오지 못했습니다. (HTTP ${response.status})`);
+    const error = new Error(`차용증 정보를 불러오지 못했습니다. (HTTP ${response.status})`) as Error & {
+      status: number;
+    };
+    error.status = response.status;
+    throw error;
   }
 
-  const data = await response.json();
-  return { previousContractId: data?.previousContractId ?? null };
+  return response.json();
+}
+
+export async function getContractSummary(contractId: number): Promise<ContractSummary> {
+  const data = await getContractDetail(contractId);
+  return { previousContractId: data.previousContractId };
+}
+
+export async function linkAsDebtor(contractId: number): Promise<void> {
+  const response = await authFetch(`/api/contracts/${contractId}/debtor`, {
+    method: 'PATCH',
+  });
+
+  if (!response.ok) {
+    throw new Error(await readErrorMessage(response, '계약서에 채무자로 연결하지 못했습니다.'));
+  }
+}
+
+export async function submitDebtorApproval(
+    contractId: number,
+    debtorAddress: string,
+    signature: Blob,
+    identityVerificationId: string,
+): Promise<void> {
+  const form = new FormData();
+  form.append('debtorAddress', debtorAddress);
+  form.append('signature', signature, 'signature.png');
+  form.append('identityVerificationId', identityVerificationId);
+
+  const response = await authFetch(`/api/contracts/${contractId}/approve`, {
+    method: 'PATCH',
+    body: form,
+  });
+
+  if (!response.ok) {
+    throw new Error(await readErrorMessage(response, `서명 제출에 실패했습니다. (HTTP ${response.status})`));
+  }
 }

@@ -8,10 +8,13 @@ import SignupPage from './users/pages/SignupPage';
 import MyPage from './users/pages/MyPage';
 import IdentityTestPage from './identity/pages/IdentityTestPage';
 import LinkCompletePage from './link/pages/LinkCompletePage';
+import DashboardPage from './pages/DashboardPage';
 import ContractDashboardPage from './contract/DashboardPage';
-import ContractFormPage from './contract/ContractFormPage';
-import ContractSignaturePage from './contract/ContractSignaturePage';
-import ContractCompletePage from './contract/ContractCompletePage';
+import ContractFormPage from './contract/pages/ContractFormPage';
+import ContractSignaturePage from './contract/pages/ContractSignaturePage';
+import ContractCompletePage from './contract/pages/ContractCompletePage';
+import DebtorContractFormPage from './contract/pages/DebtorContractFormPage';
+import DebtorSignaturePage from './contract/pages/DebtorSignaturePage';
 
 function App() {
     return (
@@ -27,6 +30,14 @@ function App() {
                     <Route path="/signup" element={<SignupPage />} />
                 </Route>
                 <Route element={<AppLayout />}>
+                    <Route
+                        path="/integration/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <DashboardPage/>
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route
                         path="/mypage"
                         element={
@@ -72,6 +83,22 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <ContractDashboardPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/contracts/:contractId/approve"
+                        element={
+                            <ProtectedRoute>
+                                <DebtorContractFormPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/contracts/:contractId/approve/signature"
+                        element={
+                            <ProtectedRoute>
+                                <DebtorSignaturePage />
                             </ProtectedRoute>
                         }
                     />
