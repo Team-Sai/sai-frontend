@@ -441,7 +441,7 @@ export default function IdentityTestPage() {
     }
 
     return (
-        <main className="mx-auto w-full max-w-240 px-5 py-10 md:px-8">
+        <div className="mx-auto w-full max-w-240 px-5 py-10 md:px-8">
             {/* Stepper */}
             <section className="mb-6 rounded-xl border border-outline bg-surface px-6 py-5 shadow-sm">
                 <ol className="flex items-start justify-between gap-3">
@@ -579,6 +579,6 @@ export default function IdentityTestPage() {
           </pre>
                 </div>
             </section>
-        </main>
+        </div>
     );
 }
