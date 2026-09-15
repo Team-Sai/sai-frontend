@@ -3,6 +3,7 @@ import "./shared.css";
 import "./DashboardPage.css";
 import { getDashboard } from "./api/dashboardApi";
 import type { DashboardResponse } from "./types/dashboard";
+import { useNavigate } from "react-router-dom";
 import {
   CONTRACT_ROLE_LABELS,
   CONTRACT_STATUS_LABELS,
@@ -16,12 +17,29 @@ export default function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [sortType, setSortType] = useState("");
   const [page, setPage] = useState(1);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    getDashboard({ keyword, statusFilter, sortType, page })
-      .then(setData)
-      .catch(() => setError("대시보드 정보를 불러오지 못했습니다."))
-      .finally(() => setIsLoading(false));
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      getDashboard({ keyword, statusFilter, sortType, page })
+        .then((res) => {
+          if (cancelled) return;
+          setData(res);
+          setError(null);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setError("대시보드 정보를 불러오지 못했습니다.");
+        })
+        .finally(() => {
+          if (!cancelled) setIsLoading(false);
+        });
+    }, 300);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [keyword, statusFilter, sortType, page]);
 
   if (isLoading) {
@@ -112,7 +130,13 @@ export default function DashboardPage() {
           </div>
 
           {data.contracts.map((contract) => (
-            <div key={contract.contractId} className="contract-table__row">
+            <div
+              key={contract.contractId}
+              className="contract-table__row"
+              onClick={() =>
+                navigate(`/contracts/${contract.contractId}/schedule`)
+              }
+            >
               <span className="contract-table__alias">
                 {contract.contractAlias}
               </span>

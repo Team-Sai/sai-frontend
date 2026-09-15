@@ -69,6 +69,7 @@ select {
 .contract-table__row {
   font-size: 14px;
   border-bottom: 1px solid var(--line);
+  cursor: pointer;
 }
 
 .contract-table__row:last-child {
@@ -139,4 +140,22 @@ select {
   color: #999;
   margin-top: 20px;
   line-height: 1.5;
+}
+
+.detail-link {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 20px;
+  color: var(--text);
+}
+
+.detail-link:hover {
+  background: #f5f7f9;
+}
+
+.contract-table__row:hover {
+  background: #f9fafc;
 }
