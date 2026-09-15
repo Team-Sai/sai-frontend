@@ -12,7 +12,9 @@ import DashboardPage from './pages/DashboardPage';
 import ContractFormPage from './contract/ContractFormPage';
 import ContractSignaturePage from './contract/ContractSignaturePage';
 import ContractCompletePage from './contract/ContractCompletePage';
-
+import SettlementListPage from './settlement/pages/SettlementListPage';
+import SettlementCreatePage from './settlement/pages/SettlementCreatePage';
+import SettlementDetailPage from './settlement/pages/SettlementDetailPage';
 function App() {
     return (
       <BrowserRouter>
@@ -72,6 +74,32 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <ContractCompletePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/settlements"
+                        element={
+                            <ProtectedRoute>
+                                <SettlementListPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/settlements/new"
+                        element={
+                            <ProtectedRoute>
+                                <SettlementCreatePage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/settlements/:settlementId"
+                        element={
+                            <ProtectedRoute>
+                                <SettlementDetailPage />
                             </ProtectedRoute>
                         }
                     />
