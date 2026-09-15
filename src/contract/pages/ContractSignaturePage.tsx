@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './shared.css';
-import './components/ContractDocument.css';
-import Stepper from './components/Stepper';
-import SignatureAndSubmit from './components/SignatureAndSubmit';
-import { createContract, submitCreditorSignature } from './api/contractApi';
-import { LOAN_CONTRACT_DRAFT_KEY, type LoanContractDraft } from './types/contract';
+import '../shared.css';
+import '../components/ContractDocument.css';
+import Stepper from '../components/Stepper';
+import SignatureAndSubmit from '../components/SignatureAndSubmit';
+import { createContract, submitCreditorSignature } from '../api/contractApi';
+import { LOAN_CONTRACT_DRAFT_KEY, type LoanContractDraft } from '../types/contract';
 
 export default function ContractSignaturePage() {
   const navigate = useNavigate();
