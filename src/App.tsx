@@ -12,6 +12,7 @@ import ContractDashboardPage from './contract/DashboardPage';
 import ContractFormPage from './contract/ContractFormPage';
 import ContractSignaturePage from './contract/ContractSignaturePage';
 import ContractCompletePage from './contract/ContractCompletePage';
+import NotificationCenter from './notification/NotificationCenter';
 
 function App() {
     return (
@@ -27,6 +28,7 @@ function App() {
                     <Route path="/signup" element={<SignupPage />} />
                 </Route>
                 <Route element={<AppLayout />}>
+                    <Route path="/notifications" element={<ProtectedRoute><NotificationCenter /></ProtectedRoute>} />
                     <Route
                         path="/mypage"
                         element={
