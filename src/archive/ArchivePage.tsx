@@ -28,6 +28,7 @@ export default function ArchivePage() {
   const [settlements, setSettlements] = useState<ArchiveSettlementRow[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -75,19 +76,29 @@ export default function ArchivePage() {
 
   async function handleContractPdfClick(event: React.MouseEvent, contractId: number) {
     event.stopPropagation();
+    if (downloadingId !== null) return;
+
+    setDownloadingId(contractId);
     try {
       await downloadContractPdf(contractId);
     } catch {
       alert('차용증 PDF 생성 중 오류가 발생했습니다.');
+    } finally {
+      setDownloadingId(null);
     }
   }
 
   async function handleSettlementPdfClick(event: React.MouseEvent, settlementId: number) {
     event.stopPropagation();
+    if (downloadingId !== null) return;
+
+    setDownloadingId(settlementId);
     try {
       await downloadSettlementPdf(settlementId);
     } catch {
       alert('정산 PDF 생성 중 오류가 발생했습니다.');
+    } finally {
+      setDownloadingId(null);
     }
   }
 
@@ -149,9 +160,10 @@ export default function ArchivePage() {
                     <button
                       type="button"
                       className="btn-pdf-download"
+                      disabled={downloadingId !== null}
                       onClick={(event) => handleContractPdfClick(event, contract.contractId)}
                     >
-                      PDF 다운로드
+                      {downloadingId === contract.contractId ? '다운로드 중...' : 'PDF 다운로드'}
                     </button>
                   </div>
                 </div>
@@ -208,9 +220,10 @@ export default function ArchivePage() {
                   <button
                     type="button"
                     className="btn-pdf-download"
+                    disabled={downloadingId !== null}
                     onClick={(event) => handleSettlementPdfClick(event, settlement.settlementId)}
                   >
-                    PDF 다운로드
+                    {downloadingId === settlement.settlementId ? '다운로드 중...' : 'PDF 다운로드'}
                   </button>
                 </div>
               </div>

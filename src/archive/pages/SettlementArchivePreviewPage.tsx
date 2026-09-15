@@ -33,6 +33,7 @@ function formatDateTime(isoString: string | null | undefined): string {
 export default function SettlementArchivePreviewPage() {
   const navigate = useNavigate();
   const { settlementId } = useParams<{ settlementId: string }>();
+  const numericSettlementId = settlementId !== undefined ? Number(settlementId) : NaN;
 
   const [preview, setPreview] = useState<SettlementArchivePreview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,9 +42,16 @@ export default function SettlementArchivePreviewPage() {
 
   useEffect(() => {
     if (!settlementId) return;
+
+    if (Number.isNaN(numericSettlementId)) {
+      setError('잘못된 정산 번호입니다.');
+      setIsLoading(false);
+      return;
+    }
+
     let cancelled = false;
 
-    getSettlementArchivePreview(Number(settlementId))
+    getSettlementArchivePreview(numericSettlementId)
       .then((data) => {
         if (cancelled) return;
         setPreview(data);
@@ -62,10 +70,10 @@ export default function SettlementArchivePreviewPage() {
   }, [settlementId]);
 
   async function handleDownloadClick() {
-    if (!settlementId || isDownloading) return;
+    if (Number.isNaN(numericSettlementId) || isDownloading) return;
     setIsDownloading(true);
     try {
-      await downloadSettlementPdf(Number(settlementId));
+      await downloadSettlementPdf(numericSettlementId);
     } catch {
       alert('정산 PDF 생성 중 오류가 발생했습니다.');
     } finally {
