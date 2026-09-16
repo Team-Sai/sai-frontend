@@ -1,4 +1,4 @@
-.success-container {
+.contract-scope--complete .success-container {
   width: 100%;
   max-width: 520px;
   margin: 32px auto 80px;
@@ -10,11 +10,11 @@
   flex: 1 0 auto;
 }
 
-.success-header {
+.contract-scope--complete .success-header {
   margin-bottom: 24px;
 }
 
-.success-title {
+.contract-scope--complete .success-title {
   font-size: 26px;
   font-weight: 700;
   color: #111827;
@@ -22,18 +22,18 @@
   word-break: keep-all;
 }
 
-.success-icon {
+.contract-scope--complete .success-icon {
   font-size: 40px;
   margin-bottom: 16px;
 }
 
-.success-description {
+.contract-scope--complete .success-description {
   font-size: 14px;
   color: #6b7280;
   word-break: keep-all;
 }
 
-.contract-card {
+.contract-scope--complete .contract-card {
   position: relative;
   width: 100%;
   background-color: #ffffff;
@@ -44,7 +44,7 @@
   overflow: hidden;
 }
 
-.contract-card__title {
+.contract-scope--complete .contract-card__title {
   font-size: 18px;
   font-weight: 600;
   color: #1f2937;
@@ -52,7 +52,7 @@
   margin-bottom: 28px;
 }
 
-.contract-card__decorations {
+.contract-scope--complete .contract-card__decorations {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,20 +61,34 @@
   margin-bottom: 24px;
 }
 
-.decor-line {
+.contract-scope--complete .decor-line {
   height: 6px;
   background-color: #d1d5db;
   border-radius: 9999px;
   width: 100%;
 }
 
-.decor-line:nth-child(1) { width: 50%; }
-.decor-line:nth-child(2) { width: 80%; }
-.decor-line:nth-child(3) { width: 70%; }
-.decor-line:nth-child(4) { width: 60%; }
-.decor-line:nth-child(5) { width: 75%; }
+.contract-scope--complete .decor-line:nth-child(1) {
+  width: 50%;
+}
 
-.stamp-seal {
+.contract-scope--complete .decor-line:nth-child(2) {
+  width: 80%;
+}
+
+.contract-scope--complete .decor-line:nth-child(3) {
+  width: 70%;
+}
+
+.contract-scope--complete .decor-line:nth-child(4) {
+  width: 60%;
+}
+
+.contract-scope--complete .decor-line:nth-child(5) {
+  width: 75%;
+}
+
+.contract-scope--complete .stamp-seal {
   position: absolute;
   top: 52%;
   left: 50%;
@@ -87,7 +101,7 @@
   pointer-events: none;
 }
 
-.stamp-seal__text {
+.contract-scope--complete .stamp-seal__text {
   font-size: 26px;
   font-weight: 800;
   color: #c0392b;
@@ -95,13 +109,13 @@
   white-space: nowrap;
 }
 
-.contract-card__badge-group {
+.contract-scope--complete .contract-card__badge-group {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
 }
 
-.badge {
+.contract-scope--complete .badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -111,17 +125,17 @@
   border-radius: 4px;
 }
 
-.badge__icon {
+.contract-scope--complete .badge__icon {
   width: 12px;
   height: 12px;
 }
 
-.badge--digital {
+.contract-scope--complete .badge--digital {
   background-color: #1f2937;
   color: #ffffff;
 }
 
-.action-group {
+.contract-scope--complete .action-group {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -129,7 +143,7 @@
   align-items: center;
 }
 
-.action-group .btn {
+.contract-scope--complete .complete-action {
   width: 100%;
   max-width: 320px;
   height: 48px;
@@ -145,25 +159,29 @@
   transition: all 0.2s ease;
 }
 
-.action-group .btn__icon {
+.contract-scope--complete .complete-action__icon {
   width: 16px;
   height: 16px;
 }
 
-.action-group .btn--primary {
+.contract-scope--complete .complete-action--primary {
   background-color: #2d6a4f;
   color: #ffffff;
 }
 
-.action-group .btn--primary:hover {
+.contract-scope--complete .complete-action--primary:hover {
   background-color: #1b4332;
 }
 
-.action-group .btn--secondary {
+.contract-scope--complete .complete-action--primary:disabled {
+  opacity: 1;
+}
+
+.contract-scope--complete .complete-action--secondary {
   background-color: transparent;
   color: #4b5563;
 }
 
-.action-group .btn--secondary:hover {
+.contract-scope--complete .complete-action--secondary:hover {
   color: #111827;
 }

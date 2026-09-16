@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Button } from '../../common/components';
 
 interface AccountLinkModalProps {
     isOpen: boolean;
@@ -72,9 +73,9 @@ export default function AccountLinkModal({
                 aria-modal="true"
                 aria-labelledby="account-link-modal-title"
             >
-                <button
-                    type="button"
-                    className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center text-muted transition hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
+                <Button
+                    variant="text"
+                    className="absolute right-5 top-5 h-8 w-8 rounded-none border-0 p-0 text-muted transition hover:text-text disabled:opacity-50 active:transform-none"
                     aria-label="닫기"
                     disabled={isConnecting}
                     onClick={handleClose}
@@ -87,7 +88,7 @@ export default function AccountLinkModal({
                         <path d="M18 6 6 18" />
                         <path d="m6 6 12 12" />
                     </svg>
-                </button>
+                </Button>
 
                 <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <svg
@@ -180,25 +181,25 @@ export default function AccountLinkModal({
                 </label>
 
                 <div className="mt-7 flex gap-3">
-                    <button
-                        type="button"
+                    <Button
+                        variant="secondary"
                         disabled={isConnecting}
                         onClick={handleClose}
-                        className="h-11 flex-1 rounded-lg border border-outline bg-surface text-sm font-bold text-text transition hover:bg-surface-low disabled:cursor-not-allowed disabled:opacity-50"
+                        className="h-11 flex-1 rounded-lg border border-outline bg-surface p-0 text-sm text-text transition hover:border-outline hover:bg-surface-low hover:text-text disabled:opacity-50 active:transform-none"
                     >
                         취소
-                    </button>
+                    </Button>
 
-                    <button
-                        type="button"
+                    <Button
                         disabled={!agreed || isConnecting}
+                        isLoading={isConnecting}
                         onClick={handleConfirm}
-                        className="h-11 flex-1 rounded-lg bg-primary text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                        className="h-11 flex-1 rounded-lg border-0 p-0 text-sm transition hover:opacity-90 disabled:opacity-40 active:transform-none"
                     >
                         {isConnecting
                             ? '연동 중...'
                             : '동의하고 계속하기'}
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

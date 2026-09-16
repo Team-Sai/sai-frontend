@@ -1,3 +1,4 @@
+import { Input, Select, Textarea } from '../../common/components';
 import { useEffect, useState } from 'react';
 import './ContractDocument.css';
 import type { LinkedBankAccount } from '../../accounts/types/account';
@@ -60,8 +61,8 @@ export default function ContractDocument({
           </span>
           <span className="doc__text doc__text--indent">
             금{' '}
-            <input
-              className="doc__inline-input doc__inline-input--amount"
+            <Input variant="document" aria-label="대출원금"
+              className="doc__inline-input--amount"
               type="text"
               inputMode="numeric"
               placeholder="0"
@@ -75,8 +76,8 @@ export default function ContractDocument({
           </span>
 
           <div className="loan-account">
-            <div className="loan-account__title">대출금 지급 계좌</div>
-            <select
+            <label htmlFor="selectedLinkedAccountId" className="loan-account__title">대출금 지급 계좌</label>
+            <Select variant="document"
               id="selectedLinkedAccountId"
               value={formData.selectedLinkedAccountId}
               onChange={(event) => onFieldChange('selectedLinkedAccountId', event.target.value)}
@@ -88,7 +89,7 @@ export default function ContractDocument({
                   {account.bankName} · {account.accountHolderName} · {account.maskedAccountNumber}
                 </option>
               ))}
-            </select>
+            </Select>
 
             {accountsError && (
               <p className="doc__hint" style={{ color: 'var(--error)' }}>
@@ -121,8 +122,8 @@ export default function ContractDocument({
         <div className="doc__body">
           <span className="doc__text">
             대출 시작일은{' '}
-            <input
-              className="doc__inline-input doc__inline-input--date"
+            <Input variant="document" aria-label="대출 시작일"
+              className="doc__inline-input--date"
               type="date"
               value={formData.startDate}
               onChange={(event) => onFieldChange('startDate', event.target.value)}
@@ -132,8 +133,8 @@ export default function ContractDocument({
           </span>
           <span className="doc__text doc__text--indent">
             차용금의 변제기한(만기일)은{' '}
-            <input
-              className="doc__inline-input doc__inline-input--date"
+            <Input variant="document" aria-label="대출 만기일"
+              className="doc__inline-input--date"
               type="date"
               value={formData.maturityDate}
               onChange={(event) => onFieldChange('maturityDate', event.target.value)}
@@ -148,8 +149,8 @@ export default function ContractDocument({
         <span className="doc__clause">제3조(이자)</span>
         <span className="doc__text">
           이자는 연{' '}
-          <input
-            className="doc__inline-input doc__inline-input--rate"
+          <Input variant="document" aria-label="연이자율"
+            className="doc__inline-input--rate"
             type="number"
             step={0.5}
             min={0.5}
@@ -169,8 +170,8 @@ export default function ContractDocument({
           <span className="doc__text">채무의 변제는 갑의 주소 또는 갑이 지정하는 장소에 지참 또는 송금해서 지불하며,</span>
           <span className="doc__text doc__text--indent">
             매월{' '}
-            <input
-              className="doc__inline-input doc__inline-input--day"
+            <Input variant="document" aria-label="상환일"
+              className="doc__inline-input--day"
               type="number"
               min={1}
               max={31}
@@ -206,8 +207,8 @@ export default function ContractDocument({
       <div className="doc__article">
         <span className="doc__clause">제6조(계약의 목적)</span>
         <span className="doc__text">
-          <input
-            className="doc__inline-input doc__inline-input--alias"
+          <Input variant="document" aria-label="계약의 목적"
+            className="doc__inline-input--alias"
             type="text"
             placeholder="예: 생활비 차용"
             value={formData.contractAlias}
@@ -220,8 +221,7 @@ export default function ContractDocument({
       <div className="doc__article">
         <span className="doc__clause">제7조(특약사항)</span>
         <span className="doc__text">
-          <textarea
-            className="doc__textarea"
+          <Textarea variant="document" aria-label="특약사항"
             rows={3}
             placeholder="추가로 약정할 내용이 있다면 입력하세요 (선택)"
             value={formData.terms}

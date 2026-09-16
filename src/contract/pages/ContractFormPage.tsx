@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import './shared.css';
-import { authFetch } from '../auth/authFetch';
-import { getPreviousPrincipalSum } from './api/contractApi';
-import Stepper from './components/Stepper';
-import ContractDocument from './components/ContractDocument';
-import PartiesInfo from './components/PartiesInfo';
-import ContractActions from './components/ContractActions';
-import RiskModal from './components/RiskModal';
-import { LOAN_CONTRACT_DRAFT_KEY, toDraft, type ContractFormData, type CreditorInfo } from './types/contract';
+import '../shared.css';
+import { authFetch } from '../../auth/authFetch';
+import { getPreviousPrincipalSum } from '../api/contractApi';
+import Stepper from '../components/Stepper';
+import ContractDocument from '../components/ContractDocument';
+import PartiesInfo from '../components/PartiesInfo';
+import ContractActions from '../components/ContractActions';
+import RiskModal from '../components/RiskModal';
+import { LOAN_CONTRACT_DRAFT_KEY, toDraft, type ContractFormData, type CreditorInfo } from '../types/contract';
 
 function createInitialFormData(): ContractFormData {
   return {
@@ -46,8 +46,8 @@ function validate(formData: ContractFormData): string | null {
   }
 
   const day = Number(formData.repaymentDay);
-  if (formData.repaymentDay.trim() === '' || Number.isNaN(day) || day < 1 || day > 31) {
-    return '상환일은 1일에서 31일 사이여야 합니다.';
+  if (formData.repaymentDay.trim() === '' || !Number.isInteger(day) || day < 1 || day > 31) {
+    return '상환일은 1일부터 31일까지의 정수로 입력해 주세요.';
   }
   if (!formData.creditorAddress.trim()) {
     return '채권자 주소를 입력해 주세요.';
@@ -133,7 +133,7 @@ export default function ContractFormPage() {
   }
 
   return (
-    <div className="page">
+    <div className="contract-scope">
       <Stepper currentStep={1} />
 
       <ContractDocument

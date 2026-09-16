@@ -1,24 +1,32 @@
-import { useEffect, useRef, useState } from 'react';
-import './SignatureAndSubmit.css';
+import { Button } from "../../common/components";
+import styles from "./DocumentActions.module.css";
+import { useEffect, useRef, useState } from "react";
+import "./SignatureAndSubmit.css";
 
 interface SignatureAndSubmitProps {
-  debtorUserToken: string;
-  onDebtorUserTokenChange: (value: string) => void;
+  title?: string;
+  debtorUserToken?: string;
+  onDebtorUserTokenChange?: (value: string) => void;
   isSubmitting: boolean;
   statusMessage: string | null;
   isError: boolean;
-  onCancel: () => void;
+  onCancel?: () => void;
   onSubmit: (signature: Blob) => void;
+  submitLabel?: string;
+  agreementText?: string;
 }
 
 export default function SignatureAndSubmit({
-  debtorUserToken,
+  title = "금 전 차 용 계 약 서",
+  debtorUserToken = "",
   onDebtorUserTokenChange,
   isSubmitting,
   statusMessage,
   isError,
   onCancel,
   onSubmit,
+  submitLabel = "전송",
+  agreementText = "위 약정 내용을 모두 확인하였으며, 전자 서명을 통한 최종 합의 의사를 기록합니다.",
 }: SignatureAndSubmitProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawingRef = useRef(false);
@@ -35,7 +43,7 @@ export default function SignatureAndSubmit({
   function getContext() {
     const canvas = canvasRef.current;
     if (!canvas) return null;
-    return canvas.getContext('2d');
+    return canvas.getContext("2d");
   }
 
   function getPoint(event: React.PointerEvent<HTMLCanvasElement>) {
@@ -66,8 +74,8 @@ export default function SignatureAndSubmit({
 
     const { x, y } = getPoint(event);
     ctx.lineWidth = 2.5;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = '#181c1e';
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#181c1e";
     ctx.lineTo(x, y);
     ctx.stroke();
     setHasSignature(true);
@@ -86,7 +94,8 @@ export default function SignatureAndSubmit({
   }
 
   function handleSubmitClick() {
-    if (!debtorUserToken.trim() || !hasSignature || !agreed || isSubmitting) return;
+    if (onDebtorUserTokenChange && !debtorUserToken.trim()) return;
+    if (!hasSignature || !agreed || isSubmitting) return;
     if (isSubmittingRef.current) return;
     isSubmittingRef.current = true;
 
@@ -102,36 +111,45 @@ export default function SignatureAndSubmit({
       } else {
         isSubmittingRef.current = false;
       }
-    }, 'image/png');
+    }, "image/png");
   }
 
-  const canSubmit = Boolean(debtorUserToken.trim()) && hasSignature && agreed && !isSubmitting;
+  const canSubmit =
+    (!onDebtorUserTokenChange || Boolean(debtorUserToken.trim())) &&
+    hasSignature &&
+    agreed &&
+    !isSubmitting;
 
   return (
     <div className="doc" id="signatureCard">
-      <h1 className="doc__title">금 전 차 용 계 약 서</h1>
-
-      <section className="doc__article">
-        <span className="doc__clause">상대방 지정</span>
-        <div className="doc__body">
-          <span className="doc__text">차용증을 전달받을 채무자의 회원 토큰을 입력하세요.</span>
-          <input
-            type="text"
-            className="doc__inline-input doc__inline-input--alias"
-            placeholder="예: SAI_ABCD1234"
-            value={debtorUserToken}
-            onChange={(event) => onDebtorUserTokenChange(event.target.value)}
-            disabled={isSubmitting}
-            required
-          />
-        </div>
-      </section>
+      <h1 className="doc__title">{title}</h1>
+      {onDebtorUserTokenChange && (
+        <section className="doc__article">
+          <span className="doc__clause">상대방 지정</span>
+          <div className="doc__body">
+            <span className="doc__text">
+              차용증을 전달받을 채무자의 회원 토큰을 입력하세요.
+            </span>
+            <input
+              type="text"
+              className="doc__inline-input doc__inline-input--alias"
+              placeholder="예: SAI_ABCD1234"
+              value={debtorUserToken}
+              onChange={(event) => onDebtorUserTokenChange(event.target.value)}
+              disabled={isSubmitting}
+              required
+            />
+          </div>
+        </section>
+      )}
 
       <section className="sign">
         <h2 className="sign__title">서명 (Signature)</h2>
         <p className="doc__hint">서명 패드에 수기 서명을 남겨주세요.</p>
         <div className="sign__pad-wrap">
-          {!hasSignature && <span className="sign__placeholder">SIGN HERE</span>}
+          {!hasSignature && (
+            <span className="sign__placeholder">SIGN HERE</span>
+          )}
           <canvas
             ref={canvasRef}
             className="sign__canvas"
@@ -142,9 +160,14 @@ export default function SignatureAndSubmit({
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
           />
-          <button type="button" className="sign__clear" onClick={handleClear}>
+          <Button
+            type="button"
+            variant="secondary"
+            className="sign__clear"
+            onClick={handleClear}
+          >
             지우기
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -157,20 +180,36 @@ export default function SignatureAndSubmit({
           onChange={(event) => setAgreed(event.target.checked)}
         />
         <label className="agreement__label" htmlFor="agreeCheckbox">
-          위 약정 내용을 모두 확인하였으며, 전자 서명을 통한 최종 합의 의사를 기록합니다.
+          {agreementText}
         </label>
       </div>
 
       <div className="doc__actions">
-        <button type="button" className="btn btn--ghost" onClick={onCancel} disabled={isSubmitting}>
-          취소
-        </button>
-        <button type="button" className="btn btn--primary" onClick={handleSubmitClick} disabled={!canSubmit}>
-          {isSubmitting ? '전송 중...' : '전송'}
+        {onCancel && (
+          <button
+            type="button"
+            className="btn btn--ghost"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            취소
+          </button>
+        )}
+        <button
+          type="button"
+          className="btn btn--primary"
+          onClick={handleSubmitClick}
+          disabled={!canSubmit}
+        >
+          {isSubmitting ? "전송 중..." : submitLabel}
         </button>
       </div>
 
-      <p className={`doc__status ${isError ? 'is-error' : ''}`.trim()} role="status" aria-live="polite">
+      <p
+        className={`${styles.status} ${isError ? styles.error : ""}`}
+        role="status"
+        aria-live="polite"
+      >
         {statusMessage}
       </p>
     </div>

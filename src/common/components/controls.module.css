@@ -1,0 +1,199 @@
+/* Utilities and page-scoped rules may refine sizes without global .btn collisions. */
+
+@layer theme, base, components, utilities;
+
+@layer components {
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-sizing: border-box;
+    border: 1.5px solid transparent;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: inherit;
+    cursor: pointer;
+    transition: opacity .18s ease, transform .1s ease, background .15s ease;
+  }
+  .button:enabled:active {
+    transform: scale(.99);
+  }
+  .button:focus-visible {
+    outline: 2px solid var(--color-primary, #0f8a5f);
+    outline-offset: 2px;
+  }
+  .button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+  .primary {
+    background: var(--color-primary, #0f8a5f);
+    color: #fff;
+  }
+  .primary:enabled:hover {
+    opacity: .9;
+  }
+  .secondary {
+    background: #fff;
+    border-color: #d9dee8;
+    color: #697080;
+  }
+  .secondary:enabled:hover {
+    border-color: var(--color-primary, #0f8a5f);
+    color: var(--color-primary, #0f8a5f);
+  }
+  .text {
+    background: transparent;
+    color: inherit;
+  }
+  .sm {
+    padding: 6px 12px;
+    font-size: 12.5px;
+  }
+  .md {
+    padding: 11px 22px;
+  }
+  .lg {
+    height: 48px;
+    padding: 0 22px;
+  }
+  .fullWidth {
+    width: 100%;
+  }
+  .input,
+  .select,
+  .textarea {
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    font-family: inherit;
+  }
+  .outlined {
+    width: 100%;
+    height: 44px;
+    border: 1px solid var(--color-outline, #c9d1c7);
+    border-radius: 6px;
+    background: var(--color-background, #f8f9fa);
+    padding: 0 14px;
+    color: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .outlined:focus {
+    outline: none;
+    border-color: var(--color-primary, #0f8a5f);
+    box-shadow: 0 0 0 1px rgb(15 138 95 / 20%);
+  }
+  .outlined:disabled {
+    cursor: not-allowed;
+    color: var(--color-muted, #667078);
+    background: var(--color-surface-low, #f3f4f5);
+  }
+  .document {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--color-primary, #0f8a5f);
+    border: none;
+    border-bottom: 1.5px solid #d9dee8;
+    background: transparent;
+    padding: 1px 4px;
+    text-align: center;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .document:focus,
+  .borderless:focus {
+    outline: none;
+    border-color: var(--color-primary, #0f8a5f);
+    background: rgb(0 200 83 / 8%);
+  }
+  .documentBox {
+    width: 100%;
+    font-size: 13.5px;
+    color: #17191d;
+    border: 1px solid #d9dee8;
+    border-radius: 6px;
+    padding: 8px 10px;
+    background: #fff;
+  }
+  .documentBox:focus {
+    outline: none;
+    border-color: var(--color-primary, #0f8a5f);
+    background: rgb(0 200 83 / 5%);
+  }
+  .borderless {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: #17191d;
+    padding: 4px 2px;
+  }
+  .borderless:focus {
+    border-radius: 4px;
+  }
+  .borderless::placeholder {
+    color: #b0b7c3;
+  }
+  .document:disabled,
+  .textarea.documentBox:disabled,
+  .borderless:disabled {
+    color: #9aa1ac;
+    cursor: not-allowed;
+    background: rgb(105 112 128 / 6%);
+  }
+  .textarea {
+    height: auto;
+    resize: vertical;
+  }
+  .textarea.outlined {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .input[aria-invalid="true"],
+  .select[aria-invalid="true"],
+  .textarea[aria-invalid="true"] {
+    border-color: var(--color-error, #ba1a1a);
+  }
+  .label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 700;
+  }
+  .hint {
+    margin: 6px 0 0;
+    font-size: 10px;
+    line-height: 1.625;
+    color: #7a8288;
+  }
+  .error {
+    margin: 6px 0 0;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--color-error, #ba1a1a);
+  }
+  .password {
+    position: relative;
+  }
+  .passwordInput {
+    padding-right: 48px;
+  }
+  .passwordToggle {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    transform: translateY(-50%);
+    padding: 0;
+    border: 0;
+    color: #6f777c;
+  }
+  .passwordToggle:enabled:active {
+    transform: translateY(-50%);
+  }
+}
