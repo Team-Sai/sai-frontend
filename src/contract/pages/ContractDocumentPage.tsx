@@ -131,7 +131,7 @@ function ContractDocumentContent({contractId} : {contractId: string}) {
                 <p className="document-notice">현재 진행 중인 요청이 있어, 새 변경 요청을 할 수 없습니다.</p>
             )}
             <p className="disclaimer">
-             * 본 계약서는 당사자 간 입력 정보 및 전자적으로 기록된 서명 이미지를 기반으로 작성·보관되는 문서로,
+             * 본 계약서는 당사자 간 입력 정보 및 전자적으로 기록된 것을 기반으로 작성·보관되는 문서로,
              서명 및 본인확인 절차의 방식에 따라 그 법적 효력의 범위나 효력 발생 요건에 관한 해석이 달라질 수 있어
              구체적인 법적 효력 여부는 별도 확인이 필요할 수 있습니다.
             </p>
