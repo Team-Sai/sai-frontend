@@ -52,7 +52,7 @@ export default function MatchingReviewModal({ open, onClose, options }: Props) {
       if(!r.ok) throw new Error(b?.message||'미매칭 처리하지 못했습니다.'); setChanged(true); setResults(v=>({...v,[rejectId]:{type:'UNMATCHED',message:'이 거래는 어느 후보에도 반영되지 않았습니다.'}})); setRejectId(null);
     }catch(e){setMessage(e instanceof Error?e.message:'미매칭 처리 실패')}
   }
-  const completed=Object.values(results).filter(v=>v.type!=='DEFERRED').length;
+  const completed=(Object.values(results) as Array<{type:string;message:string}>).filter(v=>v.type!=='DEFERRED').length;
   return <>
     <div className="matching-review-overlay">
       <section className="matching-review-modal" role="dialog" aria-modal="true">

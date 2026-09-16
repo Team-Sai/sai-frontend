@@ -3,8 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { settlementApi } from '../api/settlementApi';
 import MatchingReviewModal from '../components/MatchingReviewModal';
 import type { SettlementListItem, SettlementSummary } from '../types/settlement';
-import '../settlement-common.css';
-import '../settlement-list.css';
+import '../styles/settlement-common.css';
+import '../styles/settlement-list.css';
 
 const money = (v?: number) => Number(v ?? 0).toLocaleString('ko-KR');
 const date = (v?: string | null) => v ? v.split('T')[0].split('-').join('.') : '-';
@@ -45,8 +45,9 @@ export default function SettlementListPage() {
     const created = searchParams.get('created');
     if (!created) return;
     showToast(`정산 #${created}이 생성되었습니다.`);
-    searchParams.delete('created');
-    setSearchParams(searchParams, { replace: true });
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('created');
+    setSearchParams(nextParams, { replace: true });
   }, [searchParams, setSearchParams]);
 
   const filtered = useMemo(() => {
@@ -54,9 +55,24 @@ export default function SettlementListPage() {
       const keywordMatch = !keyword || String(s.title || '').toLowerCase().includes(keyword.toLowerCase());
       return keywordMatch && (type === 'ALL' || s.settlementType === type) && (status === 'ALL' || s.settlementStatus === status);
     });
-    if (sort === 'LATEST') copy.sort((a,b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-    if (sort === 'AMOUNT_DESC') copy.sort((a,b) => Number(b.totalAmount || 0) - Number(a.totalAmount || 0));
-    if (sort === 'DEADLINE') copy.sort((a,b) => String(a.dueDate || '').localeCompare(String(b.dueDate || '')));
+    if (sort === 'LATEST') {
+      copy.sort((a, b) => b.settlementId - a.settlementId);
+    }
+
+    if (sort === 'AMOUNT_DESC') {
+      copy.sort(
+        (a, b) => Number(b.totalAmount || 0) - Number(a.totalAmount || 0),
+      );
+    }
+
+    if (sort === 'DEADLINE') {
+      const deadline = (item: SettlementListItem) =>
+        item.settlementType === 'RECURRING'
+          ? item.cycleDate || item.startDate || item.endDate || ''
+          : item.dueDate || '';
+
+      copy.sort((a, b) => deadline(a).localeCompare(deadline(b)));
+    }
     return copy;
   }, [items, keyword, type, status, sort]);
 
@@ -73,7 +89,7 @@ export default function SettlementListPage() {
   }
 
   return <>
-    <main className="page-shell">
+    <main className="page-shell settlement-list-page">
       <section className="page-heading unified-page-header">
         <div><h1 className="unified-page-title">내 정산</h1></div>
         <div className="heading-actions">
@@ -107,7 +123,7 @@ export default function SettlementListPage() {
           <span className={`status-badge ${s.settlementStatus === 'CLOSED' ? 'badge-completed' : 'badge-progress'}`}>{s.settlementStatus === 'CLOSED' ? '완료' : '진행 중'}</span>
           <span>{s.settlementType === 'RECURRING' ? period(s.startDate, s.endDate) : date(s.dueDate)}</span>
           <Link className="detail-link" to={`/settlements/${s.settlementId}`} aria-label={`${s.title || '정산'} 상세 조회`}>›</Link>
-        </article>)}</div> : <div className="empty-state"><div className="empty-icon">₩</div><h2>아직 생성된 정산이 없습니다.</h2><p>공동정산을 생성하면 최근 생성 결과가 이 화면에 표시됩니다.</p><Link className="button button-primary" to="/settlements/new">첫 정산 만들기</Link></div>}
+        </article>)}</div> : <div className="empty-state"><div className="empty-icon">₩</div><h2>아직 생성된 정산이 없습니다.</h2><p>공동정산이나 정기정산을 생성하면 이 화면에서 조회할 수 있습니다.</p><Link className="button button-primary" to="/settlements/new">첫 정산 만들기</Link></div>}
       </section>
     </main>
     {toast && <div className={`toast visible${toast.error ? ' error' : ''}`} role="status">{toast.text}</div>}

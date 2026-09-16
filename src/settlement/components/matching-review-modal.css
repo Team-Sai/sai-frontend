@@ -40,7 +40,6 @@ body.matching-review-scroll-locked {
     background: #ffffff;
     color: #18231f;
     box-shadow: 0 24px 70px rgba(8, 25, 18, 0.25);
-    font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
 }
 
 .matching-review-modal__header {
@@ -135,7 +134,7 @@ body.matching-review-scroll-locked {
 
 .matching-review-card__amount {
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .matching-review-card__meta {
@@ -157,7 +156,7 @@ body.matching-review-scroll-locked {
     background: #f0f3f2;
     color: #50605a;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .matching-review-badge--warning {
@@ -233,7 +232,7 @@ body.matching-review-scroll-locked {
 .matching-review-candidate__difference {
     align-items: flex-end;
     color: #0f8a5f;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .matching-review-candidate__difference.is-short {
@@ -253,7 +252,7 @@ body.matching-review-scroll-locked {
     border: 1px solid transparent;
     border-radius: 7px;
     font: inherit;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
 }
 
@@ -343,7 +342,6 @@ body.matching-review-scroll-locked {
     color: #18231f;
     box-shadow: 0 24px 70px rgba(8, 25, 18, 0.25);
     text-align: center;
-    font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
 }
 
 .matching-review-confirm h3 {

@@ -1,21 +1,23 @@
 export type SettlementType = 'SHARED' | 'RECURRING';
-export type SettlementStatus = 'IN_PROGRESS' | 'CLOSED' | 'CANCELLED';
+export type SettlementStatus = 'IN_PROGRESS' | 'CLOSED';
 export type SettlementRole = 'OWNER' | 'MEMBER';
+export type SplitType = 'EQUAL' | 'CUSTOM';
+export type ObligationStatus = 'ACTIVE' | 'WRITTEN_OFF' | 'EXCLUDED' | 'CANCELLED';
 export type PaymentStatus = 'UNPAID' | 'PARTIALLY_PAID' | 'PAID';
 
 export interface SettlementListItem {
   settlementId: number;
   title?: string;
-  settlementType: SettlementType;
   role: SettlementRole;
   settlementCategory?: string;
-  splitType?: 'EQUAL' | 'CUSTOM';
+  settlementType: SettlementType;
+  splitType?: SplitType;
   settlementStatus: SettlementStatus;
   totalAmount?: number;
-  createdAt?: string;
   dueDate?: string | null;
   startDate?: string | null;
   endDate?: string | null;
+  cycleDate?: string | null;
 }
 
 export interface SettlementSummary {
@@ -27,8 +29,12 @@ export interface SettlementSummary {
 
 export interface ParticipantLookup {
   userId?: number;
+  id?: number;
   userToken: string;
+  token?: string;
   name: string;
+  userName?: string;
+  nickname?: string;
   email?: string;
 }
 
@@ -43,20 +49,34 @@ export interface LinkedSettlementAccount {
   connectionStatus?: string;
 }
 
+export interface SettlementAccount {
+  settlementAccountId?: number;
+  settlementId?: number;
+  linkedAccountId: number;
+  accountStatus?: 'ACTIVE' | 'ENDED';
+  bankName?: string;
+  maskedAccountNumber?: string;
+  accountHolderName?: string;
+  selectedAt?: string | null;
+}
+
 export interface SettlementDetail {
   settlementId: number;
   title?: string;
-  settlementType: SettlementType;
+  ownerName?: string;
   settlementCategory?: string;
-  splitType?: 'EQUAL' | 'CUSTOM';
+  settlementType: SettlementType;
   settlementStatus: SettlementStatus;
-  role: SettlementRole;
+  splitType?: SplitType;
   dueDate?: string | null;
   startDate?: string | null;
   endDate?: string | null;
+  createdAt?: string | null;
+  role: SettlementRole;
 }
 
 export interface PaymentObligation {
+  paymentObligationId: number;
   participantId: number;
   participantName?: string;
   expectedAmount?: number;
@@ -64,14 +84,18 @@ export interface PaymentObligation {
   remainingAmount?: number;
   latestPaymentAt?: string | null;
   paymentStatus: PaymentStatus;
-  obligationStatus?: string;
+  obligationStatus?: ObligationStatus;
   overdueSince?: string | null;
 }
 
 export interface SettlementPaymentStatus {
+  settlementId?: number;
   totalExpectedAmount?: number;
   totalPaidAmount?: number;
   totalRemainingAmount?: number;
+  paidCount?: number;
+  partiallyPaidCount?: number;
+  unpaidCount?: number;
   progressRate?: number;
   closable?: boolean;
   obligations?: PaymentObligation[];
@@ -83,10 +107,36 @@ export interface SyncResult {
   unmatchedCount?: number;
 }
 
-export interface CreateSettlementPayload {
+export interface CurrentUser {
+  name?: string;
+  userName?: string;
+}
+
+export interface CreateSharedSettlementPayload {
   settlementCategory: string;
   title: string;
-  totalAmount: number | null;
-  linkedAccountId: number | null;
+  dueDate: string;
+  totalAmount: number;
+  linkedAccountId: number;
   participants: Array<{ userToken: string }>;
+}
+
+export interface CreateRecurringSettlementPayload {
+  settlementCategory: string;
+  title: string;
+  totalAmount: number;
+  cycleRule: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+  startDate: string;
+  endDate: string | null;
+  linkedAccountId: number;
+  participants: Array<{ userToken: string }>;
+}
+
+export interface CreateSharedSettlementResponse {
+  settlementId: number;
+}
+
+export interface CreateRecurringSettlementResponse {
+  firstSettlementId: number;
+  recurringSettlementId: number;
 }

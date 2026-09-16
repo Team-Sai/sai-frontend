@@ -27,15 +27,6 @@ html {
     min-width: 320px;
     color: var(--gray-950);
     background: var(--blue-050);
-    font-family:
-            Pretendard,
-            "Noto Sans KR",
-            "Apple SD Gothic Neo",
-            system-ui,
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            sans-serif;
 }
 
 body {
@@ -80,7 +71,7 @@ a {
     flex: 0 0 auto;
     color: var(--navy-950);
     font-size: 23px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: -1px;
 }
 
@@ -145,7 +136,7 @@ a {
     border: 1px solid var(--gray-350);
     border-radius: 50%;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .text-link {
@@ -263,6 +254,36 @@ a {
     background: #a6282d;
 }
 
+
+/*
+ * React 앱에서는 Tailwind Preflight가 h1/h2/strong 등의 브라우저 기본
+ * 타이포그래피를 초기화한다. 기존 Thymeleaf 화면이 의존하던 Pretendard와
+ * 굵기를 명시적으로 복원한다.
+ */
+html,
+body,
+#root,
+.page-shell,
+.create-shell {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.page-shell h1,
+.create-shell h1 {
+    font-weight: 700;
+}
+
+.page-shell h2,
+.create-shell h2 {
+    font-weight: 700;
+}
+
+.page-shell strong,
+.create-shell strong {
+    font-weight: 700;
+}
+
 @media (max-width: 800px) {
     .header-inner,
     .footer-inner {
@@ -283,4 +304,15 @@ a {
     .footer-inner nav {
         flex-wrap: wrap;
     }
+}
+
+.page-shell,
+.create-shell,
+.button,
+.badge,
+.status-badge,
+.type-badge,
+.split-badge {
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }

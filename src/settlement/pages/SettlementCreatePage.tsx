@@ -2,10 +2,16 @@ import { useEffect, useState } from 'react';
 import type { FormEvent, KeyboardEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { settlementApi } from '../api/settlementApi';
-import type { LinkedSettlementAccount, ParticipantLookup, SettlementType } from '../types/settlement';
-import '../settlement-common.css';
-import '../settlement-create.css';
-import '../settlement-create-payer.css';
+import type {
+  CreateRecurringSettlementPayload,
+  CreateSharedSettlementPayload,
+  LinkedSettlementAccount,
+  ParticipantLookup,
+  SettlementType,
+} from '../types/settlement';
+import '../styles/settlement-common.css';
+import '../styles/settlement-create.css';
+import '../styles/settlement-create-payer.css';
 
 type Errors = Record<string,string>;
 const sharedCategories=['여행','생활비','회식','공동구매','모임','기타'];
@@ -31,7 +37,10 @@ export default function SettlementCreatePage(){
   const [toast,setToast]=useState<{text:string;error?:boolean}|null>(null);
   const [looking,setLooking]=useState(false);
   const [submitting,setSubmitting]=useState(false);
-  const today=new Date().toISOString().slice(0,10);
+  const now=new Date();
+  const today=new Date(
+    now.getTime()-now.getTimezoneOffset()*60_000,
+  ).toISOString().slice(0,10);
   const rawAmount=Number(amount.replace(/[^\d]/g,''))||0;
   const perPerson=Math.floor(rawAmount/(participants.length+1));
   const selectedAccount=accounts.find(a=>String(a.linkedAccountId)===accountId);
@@ -44,8 +53,14 @@ export default function SettlementCreatePage(){
       try{
         const [accountResult,userResult]=await Promise.allSettled([settlementApi.linkedAccounts(),settlementApi.currentUser()]);
         if(accountResult.status==='fulfilled'){
-          const data:any=accountResult.value;
-          setAccounts(Array.isArray(data)?data:Array.isArray(data?.data)?data.data:[]);
+          const data=accountResult.value;
+          setAccounts(
+            Array.isArray(data)
+              ? data
+              : Array.isArray(data?.data)
+                ? data.data
+                : [],
+          );
         }
         if(userResult.status==='fulfilled') setOwnerName(userResult.value?.name||userResult.value?.userName||'나');
       }catch{/* handled individually */}
@@ -59,7 +74,7 @@ export default function SettlementCreatePage(){
     if(!token){setError('participantLookup','조회할 회원 코드를 입력해 주세요.');return}
     if(participants.some(p=>p.userToken===token)){setError('participantLookup','이미 추가한 참여자입니다.');return}
     try{
-      setLooking(true); const u:any=await settlementApi.lookupParticipant(token);
+      setLooking(true); const u=await settlementApi.lookupParticipant(token);
       const p:ParticipantLookup={userId:u?.userId??u?.id,userToken:u?.userToken||u?.token||token,name:u?.name||u?.userName||u?.nickname||'이름 없는 회원'};
       if(participants.some(x=>x.userToken===p.userToken)){setError('participantLookup','이미 추가한 참여자입니다.');return}
       setParticipants(prev=>[...prev,p]);setParticipantToken('');showToast(`${p.name} 님을 참여자로 추가했습니다.`);
@@ -85,18 +100,40 @@ export default function SettlementCreatePage(){
 
   async function submit(ev:FormEvent){
     ev.preventDefault(); if(!validate()){showToast('필수 입력값을 확인해 주세요.',true);return}
-    const common={settlementCategory:category,title:title.trim(),totalAmount:rawAmount,linkedAccountId:Number(accountId),participants:participants.map(p=>({userToken:p.userToken}))};
+    const common={
+      settlementCategory:category,
+      title:title.trim(),
+      totalAmount:rawAmount,
+      linkedAccountId:Number(accountId),
+      participants:participants.map(p=>({userToken:p.userToken})),
+    };
+
     try{
       setSubmitting(true);
-      const result:any=type==='SHARED'?await settlementApi.createShared({...common,dueDate}):await settlementApi.createRecurring({...common,cycleRule,startDate,endDate:endDate||null});
-      const id=result?.firstSettlementId??result?.settlementId;
-      navigate(id?`/settlements?created=${encodeURIComponent(id)}`:'/settlements');
+
+      if(type==='SHARED'){
+        const payload:CreateSharedSettlementPayload={
+          ...common,
+          dueDate,
+        };
+        const result=await settlementApi.createShared(payload);
+        navigate(`/settlements?created=${encodeURIComponent(result.settlementId)}`);
+      }else{
+        const payload:CreateRecurringSettlementPayload={
+          ...common,
+          cycleRule:cycleRule as CreateRecurringSettlementPayload['cycleRule'],
+          startDate,
+          endDate:endDate||null,
+        };
+        const result=await settlementApi.createRecurring(payload);
+        navigate(`/settlements?created=${encodeURIComponent(result.firstSettlementId)}`);
+      }
     }catch(e){showToast(e instanceof Error?e.message:'요청 처리 중 오류가 발생했습니다.',true)}finally{setSubmitting(false)}
   }
 
   const summaryDue=type==='SHARED'?fmtDate(dueDate):fmtDate(startDate);
   return <>
-    <main className="create-shell">
+    <main className="create-shell settlement-create-page">
       <div className="breadcrumb"><Link to="/settlements">정산 서비스</Link><span>/</span><strong>정산 생성</strong></div>
       <div className="create-heading unified-page-header"><h1 className="unified-page-title">새로운 정산 만들기</h1><p>{type==='SHARED'?'총 금액과 참여자를 선택하면 참여자별 납부 예정 금액을 균등하게 계산합니다.':'구독료, 회비, 공과금, 간병비처럼 반복되는 공동 비용을 정기적으로 관리합니다.'}</p></div>
       <div className="settlement-type-tabs" role="tablist"><button className={`type-tab${type==='SHARED'?' active':''}`} type="button" onClick={()=>setType('SHARED')}>공동정산</button><button className={`type-tab${type==='RECURRING'?' active':''}`} type="button" onClick={()=>setType('RECURRING')}>정기정산</button></div>
