@@ -3,24 +3,32 @@ import { AuthProvider } from "./auth/AuthProvider";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
 import AppLayout from "./common/layouts/AppLayout";
 import MinimalLayout from "./common/layouts/MinimalLayout";
+
 import LoginPage from "./users/pages/LoginPage";
 import SignupPage from "./users/pages/SignupPage";
 import MyPage from "./users/pages/MyPage";
 import IdentityTestPage from "./identity/pages/IdentityTestPage";
 import LinkCompletePage from "./link/pages/LinkCompletePage";
+
 import DashboardPage from "./pages/DashboardPage";
+
 import ContractDashboardPage from "./contract/pages/DashboardPage";
 import ContractDocumentPage from "./contract/pages/ContractDocumentPage";
-
-import NotificationCenter from "./notification/NotificationCenter";
 import ContractFormPage from "./contract/pages/ContractFormPage";
 import ContractSignaturePage from "./contract/pages/ContractSignaturePage";
 import ContractCompletePage from "./contract/pages/ContractCompletePage";
 import SchedulePage from "./contract/pages/SchedulePage";
 import DebtorContractFormPage from "./contract/pages/DebtorContractFormPage";
 import DebtorSignaturePage from "./contract/pages/DebtorSignaturePage";
+
+import NotificationCenter from "./notification/NotificationCenter";
+
 import ArchivePage from "./archive/ArchivePage";
 import SettlementArchivePreviewPage from "./archive/pages/SettlementArchivePreviewPage";
+
+import SettlementListPage from "./settlement/pages/SettlementListPage";
+import SettlementCreatePage from "./settlement/pages/SettlementCreatePage";
+import SettlementDetailPage from "./settlement/pages/SettlementDetailPage";
 
 function App() {
   return (
@@ -28,10 +36,13 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/link/complete" element={<LinkCompletePage />} />
+
           <Route element={<MinimalLayout />}>
             <Route path="/login" element={<LoginPage />} />
+
             <Route path="/signup" element={<SignupPage />} />
           </Route>
+
           <Route element={<AppLayout />}>
             <Route
               path="/notifications"
@@ -41,6 +52,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/integration/dashboard"
               element={
@@ -49,6 +61,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/mypage"
               element={
@@ -57,6 +70,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/identity-test"
               element={
@@ -65,6 +79,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/contracts/new"
               element={
@@ -73,6 +88,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/contracts/signature"
               element={
@@ -81,6 +97,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/contracts/complete"
               element={
@@ -89,6 +106,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/contracts/dashboard"
               element={
@@ -97,6 +115,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/contracts/:contractId/schedule"
               element={
@@ -105,6 +124,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/contracts/:contractId/contract-detail"
               element={
@@ -112,7 +132,8 @@ function App() {
                   <ContractDocumentPage />
                 </ProtectedRoute>
               }
-             /> 
+            />
+
             <Route
               path="/contracts/:contractId/approve"
               element={
@@ -121,6 +142,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/contracts/:contractId/approve/signature"
               element={
@@ -129,6 +151,34 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="/settlements"
+              element={
+                <ProtectedRoute>
+                  <SettlementListPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/settlements/new"
+              element={
+                <ProtectedRoute>
+                  <SettlementCreatePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/settlements/:settlementId"
+              element={
+                <ProtectedRoute>
+                  <SettlementDetailPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/archive"
               element={
@@ -137,6 +187,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/archive/settlements/:settlementId"
               element={

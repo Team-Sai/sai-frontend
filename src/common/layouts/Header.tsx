@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { key: 'calendar', label: '캘린더', to: '/calendar', activeOn: ['/calendar'] },
 ];
 
-const IMPLEMENTED_PATHS = new Set(['/integration/dashboard']);
+const IMPLEMENTED_PATHS = new Set(['/integration/dashboard', '/settlements']);
 
 export default function Header() {
   const { pathname } = useLocation();
