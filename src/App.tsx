@@ -10,6 +10,7 @@ import IdentityTestPage from "./identity/pages/IdentityTestPage";
 import LinkCompletePage from "./link/pages/LinkCompletePage";
 import DashboardPage from "./pages/DashboardPage";
 import ContractDashboardPage from "./contract/pages/DashboardPage";
+import ContractDocumentPage from "./contract/pages/ContractDocumentPage";
 
 import NotificationCenter from "./notification/NotificationCenter";
 import ContractFormPage from "./contract/pages/ContractFormPage";
@@ -104,6 +105,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/contracts/:contractId/contract-detail"
+              element={
+                <ProtectedRoute>
+                  <ContractDocumentPage />
+                </ProtectedRoute>
+              }
+             /> 
             <Route
               path="/contracts/:contractId/approve"
               element={
