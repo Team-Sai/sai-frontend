@@ -35,6 +35,14 @@ function formatDateTimeKorean(dateString: string): string {
 
 export default function SchedulePage() {
   const { contractId } = useParams();
+
+  if (!contractId) {
+    return <div className="contract-scope contract-scope--schedule">잘못된 접근입니다.</div>;
+  }
+  return <ScheduleContent key={contractId} contractId={contractId} />;
+}
+
+  function ScheduleContent({contractId}: {contractId: string}) {
   const navigate = useNavigate();
   const [schedule, setSchedule] = useState<RepaymentScheduleSummary | null>(
     null,
@@ -46,10 +54,8 @@ export default function SchedulePage() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    if (!contractId) return;
-
     let cancelled = false;
-
+    
     Promise.all([
       getScheduleSummary(Number(contractId)),
       getContractDetailForSchedule(Number(contractId)),
@@ -111,7 +117,7 @@ export default function SchedulePage() {
           <button
             type="button"
             className="btn-primary-small"
-            onClick={() => navigate(`/contracts/${contractId}/detail`)}
+            onClick={() => navigate(`/contracts/${contractId}/contract-detail`)}
           >
             계약서 보기
           </button>
