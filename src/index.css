@@ -18,6 +18,7 @@
 
 @theme {
   --font-sans: "Pretendard", Arial, sans-serif;
+
   --color-primary: #0f8a5f;
   --color-background: #f8f9fa;
   --color-surface: #ffffff;
@@ -31,10 +32,13 @@
   --color-footer-link: #dce3ef;
   --color-nav-default: #667085;
   --color-nav-active: #0f8a5f;
+
   --text-heading: 27px;
   --text-heading--line-height: 1.3;
+
   --text-body: 13px;
   --text-body--line-height: 1.6;
+
   --text-tiny: 11px;
   --text-tiny--line-height: 1.5;
 }

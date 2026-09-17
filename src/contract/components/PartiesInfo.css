@@ -1,4 +1,4 @@
-.contract-scope .parties {
+.parties {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
@@ -7,14 +7,14 @@
   font-size: 13px;
 }
 
-.contract-scope .parties th,
-.contract-scope .parties td {
+.parties th,
+.parties td {
   border: 1px solid var(--line);
   padding: 10px 12px;
   overflow: hidden;
 }
 
-.contract-scope .parties__role {
+.parties__role {
   background: rgba(0, 110, 42, 0.04);
   color: var(--primary);
   font-weight: 700;
@@ -23,7 +23,7 @@
   white-space: nowrap;
 }
 
-.contract-scope .parties__label {
+.parties__label {
   background: #f3f4f5;
   color: var(--muted);
   font-weight: 600;
@@ -31,11 +31,11 @@
   white-space: nowrap;
 }
 
-.contract-scope .parties__value {
+.parties__value {
   background: var(--surface);
 }
 
-.contract-scope .parties__seal {
+.parties__seal {
   border: 1px dashed var(--line);
   background: var(--surface);
   color: var(--primary);
@@ -49,15 +49,9 @@
 }
 
 @media (max-width: 640px) {
-  .contract-scope .parties,
-  .contract-scope .parties tbody,
-  .contract-scope .parties tr,
-  .contract-scope .parties th,
-  .contract-scope .parties td {
+  .parties, .parties tbody, .parties tr, .parties th, .parties td {
     display: block;
-    width: 100%;
+    width: 100% !important;
   }
-  .contract-scope .parties tr {
-    margin-bottom: 8px;
-  }
+  .parties tr { margin-bottom: 8px; }
 }
