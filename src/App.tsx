@@ -17,6 +17,7 @@ import DebtorContractFormPage from './contract/pages/DebtorContractFormPage';
 import DebtorSignaturePage from './contract/pages/DebtorSignaturePage';
 import ArchivePage from './archive/ArchivePage';
 import SettlementArchivePreviewPage from './archive/pages/SettlementArchivePreviewPage';
+import ContractArchivePreviewPage from './archive/pages/ContractArchivePreviewPage';
 
 function App() {
     return (
@@ -117,6 +118,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <SettlementArchivePreviewPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/archive/contracts/:contractId"
+                        element={
+                            <ProtectedRoute>
+                                <ContractArchivePreviewPage />
                             </ProtectedRoute>
                         }
                     />

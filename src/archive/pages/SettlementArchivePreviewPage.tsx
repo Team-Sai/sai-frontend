@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { pdf, PDFViewer } from '@react-pdf/renderer';
+import { PDFViewer } from '@react-pdf/renderer';
 import '../../contract/shared.css';
 import './SettlementArchivePreviewPage.css';
 import { getSettlementArchivePreview } from '../api/archiveApi';
+import { downloadSettlementPdf } from '../pdf/downloadSettlementPdf';
 import SettlementPdfTemplate from '../pdf/SettlementPdfTemplate';
 import type { SettlementArchivePreview } from '../types/archive';
 
@@ -45,17 +46,7 @@ export default function SettlementArchivePreviewPage() {
     if (!preview || isDownloading) return;
     setIsDownloading(true);
     try {
-      const blob = await pdf(<SettlementPdfTemplate preview={preview} />).toBlob();
-      const objectUrl = window.URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = objectUrl;
-      a.download = `정산_${preview.settlementId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      window.URL.revokeObjectURL(objectUrl);
+      await downloadSettlementPdf(preview.settlementId);
     } catch {
       alert('정산 PDF 생성 중 오류가 발생했습니다.');
     } finally {
