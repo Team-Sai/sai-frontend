@@ -44,32 +44,3 @@ export async function getSettlementArchivePreview(settlementId: number): Promise
   return response.json();
 }
 
-async function downloadPdf(url: string, fileName: string): Promise<void> {
-  const response = await authFetch(url, {
-    headers: { Accept: 'application/pdf' },
-  });
-
-  if (!response.ok) {
-    throw new Error('PDF 생성에 실패했습니다.');
-  }
-
-  const blob = await response.blob();
-  const objectUrl = window.URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = objectUrl;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  window.URL.revokeObjectURL(objectUrl);
-}
-
-export function downloadContractPdf(contractId: number): Promise<void> {
-  return downloadPdf(`/api/contracts/${contractId}/pdf`, `차용증_${contractId}.pdf`);
-}
-
-export function downloadSettlementPdf(settlementId: number): Promise<void> {
-  return downloadPdf(`/api/settlements/${settlementId}/pdf`, `정산_${settlementId}.pdf`);
-}

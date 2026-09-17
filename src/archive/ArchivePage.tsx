@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../contract/shared.css';
 import './ArchivePage.css';
-import {
-  downloadContractPdf,
-  downloadSettlementPdf,
-  getArchiveContracts,
-  getArchiveSettlements,
-} from './api/archiveApi';
+import { getArchiveContracts, getArchiveSettlements } from './api/archiveApi';
+import { downloadContractPdf } from './pdf/downloadContractPdf';
+import { downloadSettlementPdf } from './pdf/downloadSettlementPdf';
 import {
   ARCHIVE_CONTRACT_STATUS_LABELS,
   ARCHIVE_ROLE_LABELS,
