@@ -78,7 +78,7 @@ export default function ContractSignaturePage() {
 
   return (
     <div className="page">
-      <Stepper currentStep={2} />
+      <Stepper currentStep={3} />
 
       <SignatureAndSubmit
         debtorUserToken={debtorUserToken}

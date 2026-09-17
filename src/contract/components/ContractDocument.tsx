@@ -50,7 +50,7 @@ export default function ContractDocument({
       : formData.principalAmount;
 
   return (
-    <div className="doc">
+    <>
       <h1 className="doc__title">금 전 차 용 계 약 서</h1>
 
       <div className="doc__article">
@@ -230,6 +230,6 @@ export default function ContractDocument({
           />
         </span>
       </div>
-    </div>
+    </>
   );
 }

@@ -6,6 +6,7 @@ import {
 
 import { authFetch } from '../../auth/authFetch';
 import { Button, Select } from '../../common/components';
+import Stepper from '../../contract/components/Stepper';
 
 type IdentityPurpose =
     | 'LOAN_CONTRACT'
@@ -443,64 +444,7 @@ export default function IdentityTestPage() {
 
     return (
         <div className="mx-auto w-full max-w-240 px-5 py-10 md:px-8">
-            {/* Stepper */}
-            <section className="mb-6 rounded-xl border border-outline bg-surface px-6 py-5 shadow-sm">
-                <ol className="flex items-start justify-between gap-3">
-                    <li className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
-              <svg
-                  viewBox="0 0 16 16"
-                  width="12"
-                  height="12"
-                  fill="none"
-                  aria-hidden="true"
-              >
-                <path
-                    d="M3 8.5 6.2 12 13 4"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-
-                        <span className="text-center text-xs font-bold text-primary sm:text-sm">
-              차용증 작성
-            </span>
-                    </li>
-
-                    <li className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
-              2
-            </span>
-
-                        <span className="text-center text-xs font-bold text-primary sm:text-sm">
-              본인인증 · 서명날인
-            </span>
-                    </li>
-
-                    <li className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-outline bg-surface text-sm font-bold text-muted">
-              3
-            </span>
-
-                        <span className="text-center text-xs font-medium text-muted sm:text-sm">
-              상대확인
-            </span>
-                    </li>
-
-                    <li className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-outline bg-surface text-sm font-bold text-muted">
-              4
-            </span>
-
-                        <span className="text-center text-xs font-medium text-muted sm:text-sm">
-              저장
-            </span>
-                    </li>
-                </ol>
-            </section>
+            <Stepper currentStep={1} />
 
             {/* Identity Card */}
             <section className="overflow-hidden rounded-2xl border border-outline bg-surface shadow-sm">

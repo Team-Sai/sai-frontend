@@ -69,7 +69,7 @@ export default function DebtorSignaturePage() {
 
   return (
     <div className="page">
-      <Stepper currentStep={4} />
+      <Stepper currentStep={3} />
 
       <SignatureAndSubmit
         title="전 자 서 명"
