@@ -137,7 +137,7 @@ export default function ArchivePage() {
                 <div
                   key={contract.contractId}
                   className="archive-card"
-                  onClick={() => navigate(`/contracts/${contract.contractId}/contract-detail`)}
+                  onClick={() => navigate(`/archive/contracts/${contract.contractId}`)}
                 >
                   <div className="archive-card-main">
                     <div className="archive-card-title">

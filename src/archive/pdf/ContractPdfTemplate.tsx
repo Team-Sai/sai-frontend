@@ -1,4 +1,4 @@
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
 import { registerPdfFonts, PDF_FONT_FAMILY } from './fonts';
 import { REPAYMENT_METHOD_LABELS, type LoanContractResponse } from '../../contract/types/contract';
 
@@ -112,6 +112,13 @@ const styles = StyleSheet.create({
   },
   partiesValueName: {
     width: '20%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  signatureImage: {
+    width: 14,
+    height: 14,
+    marginLeft: 4,
   },
   partiesValueBirth: {
     width: '14%',
@@ -129,9 +136,15 @@ const styles = StyleSheet.create({
 
 interface ContractPdfTemplateProps {
   contract: LoanContractResponse;
+  creditorSignatureDataUri?: string | null;
+  debtorSignatureDataUri?: string | null;
 }
 
-export default function ContractPdfTemplate({ contract }: ContractPdfTemplateProps) {
+export default function ContractPdfTemplate({
+  contract,
+  creditorSignatureDataUri,
+  debtorSignatureDataUri,
+}: ContractPdfTemplateProps) {
   const repaymentTypeLabel = REPAYMENT_METHOD_LABELS[contract.repaymentType] ?? contract.repaymentType;
 
   return (
@@ -220,9 +233,10 @@ export default function ContractPdfTemplate({ contract }: ContractPdfTemplatePro
           <View style={styles.partiesRow} wrap={false}>
             <Text style={styles.partiesRole}>채권자</Text>
             <Text style={styles.partiesLabel}>성 명</Text>
-            <Text style={[styles.partiesValue, styles.partiesValueName]}>
-              <Text style={styles.readonly}>{contract.creditorName}</Text> (인)
-            </Text>
+            <View style={[styles.partiesValue, styles.partiesValueName]}>
+              <Text style={styles.readonly}>{contract.creditorName} (인)</Text>
+              {creditorSignatureDataUri && <Image src={creditorSignatureDataUri} style={styles.signatureImage} />}
+            </View>
             <Text style={styles.partiesLabel}>생년월일</Text>
             <Text style={[styles.partiesValue, styles.partiesValueBirth, styles.readonly]}>
               {contract.creditorBirthDate}
@@ -235,9 +249,10 @@ export default function ContractPdfTemplate({ contract }: ContractPdfTemplatePro
           <View style={styles.partiesRow} wrap={false}>
             <Text style={styles.partiesRole}>채무자</Text>
             <Text style={styles.partiesLabel}>성 명</Text>
-            <Text style={[styles.partiesValue, styles.partiesValueName]}>
-              <Text style={styles.readonly}>{contract.debtorName ?? '-'}</Text> (인)
-            </Text>
+            <View style={[styles.partiesValue, styles.partiesValueName]}>
+              <Text style={styles.readonly}>{contract.debtorName ?? '-'} (인)</Text>
+              {debtorSignatureDataUri && <Image src={debtorSignatureDataUri} style={styles.signatureImage} />}
+            </View>
             <Text style={styles.partiesLabel}>생년월일</Text>
             <Text style={[styles.partiesValue, styles.partiesValueBirth, styles.readonly]}>
               {contract.debtorBirthDate ?? '-'}
