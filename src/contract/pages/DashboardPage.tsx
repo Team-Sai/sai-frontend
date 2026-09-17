@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import "./shared.css";
+import "../shared.css";
 import "./DashboardPage.css";
-import { getDashboard } from "./api/dashboardApi";
-import type { DashboardResponse } from "./types/dashboard";
+import { getDashboard } from "../api/dashboardApi";
+import type { DashboardResponse } from "../types/dashboard";
 import { useNavigate } from "react-router-dom";
 import {
   CONTRACT_ROLE_LABELS,
   CONTRACT_STATUS_LABELS,
-} from "./types/dashboard";
+} from "../types/dashboard";
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardResponse | null>(null);
@@ -43,15 +43,15 @@ export default function DashboardPage() {
   }, [keyword, statusFilter, sortType, page]);
 
   if (isLoading) {
-    return <div className="page">불러오는 중이에요...</div>;
+    return <div className="contract-scope contract-scope--dashboard">불러오는 중이에요...</div>;
   }
 
   if (error || !data) {
-    return <div className="page">{error ?? "데이터가 없습니다."}</div>;
+    return <div className="contract-scope contract-scope--dashboard">{error ?? "데이터가 없습니다."}</div>;
   }
 
   return (
-    <div className="page">
+    <div className="contract-scope contract-scope--dashboard">
       <section className="dashboard-summary">
         <div className="summary-card">
           <span className="summary-card__label">전체 계약</span>

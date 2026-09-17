@@ -32,8 +32,6 @@ export default function ArchivePage() {
 
   useEffect(() => {
     let cancelled = false;
-    setIsLoading(true);
-    setError(null);
 
     if (activeTab === 'contract') {
       getArchiveContracts(page)
@@ -70,8 +68,16 @@ export default function ArchivePage() {
 
   function handleTabChange(tab: ArchiveTabType) {
     if (tab === activeTab) return;
+    setIsLoading(true);
+    setError(null);
     setActiveTab(tab);
     setPage(1);
+  }
+
+  function handlePageChange(nextPage: number) {
+    setIsLoading(true);
+    setError(null);
+    setPage(nextPage);
   }
 
   async function handleContractPdfClick(event: React.MouseEvent, contractId: number) {
@@ -173,7 +179,7 @@ export default function ArchivePage() {
 
           {contractData && contractData.totalPages > 1 && (
             <div className="pager">
-              <button type="button" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+              <button type="button" disabled={page <= 1} onClick={() => handlePageChange(page - 1)}>
                 이전
               </button>
               <span className="pager-label">
@@ -182,7 +188,7 @@ export default function ArchivePage() {
               <button
                 type="button"
                 disabled={page >= contractData.totalPages}
-                onClick={() => setPage((p) => p + 1)}
+                onClick={() => handlePageChange(page + 1)}
               >
                 다음
               </button>

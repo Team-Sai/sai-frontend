@@ -1,4 +1,4 @@
-.doc {
+.contract-scope .doc {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
@@ -6,7 +6,7 @@
   padding: 48px 44px 40px;
 }
 
-.doc__title {
+.contract-scope .doc__title {
   font-family: var(--font-ui);
   text-align: center;
   color: var(--primary);
@@ -17,48 +17,48 @@
   margin: 0 0 36px;
 }
 
-.doc__article {
+.contract-scope .doc__article {
   padding-bottom: 16px;
   margin-bottom: 16px;
   border-bottom: 1px dashed var(--line);
 }
 
-.doc__article:last-of-type {
+.contract-scope .doc__article:last-of-type {
   border-bottom: none;
 }
 
-.doc__clause {
+.contract-scope .doc__clause {
   flex: 0 0 auto;
   min-width: 112px;
   color: var(--primary);
   font-weight: 700;
 }
 
-.doc__body {
+.contract-scope .doc__body {
   flex: 1 1 auto;
   min-width: 0;
 }
 
-.doc__text {
+.contract-scope .doc__text {
   display: block;
   color: var(--text);
 }
 
-.doc__text--indent {
+.contract-scope .doc__text--indent {
   margin-top: 4px;
 }
 
-.doc__sublist {
+.contract-scope .doc__sublist {
   margin: 6px 0 0;
   padding-left: 18px;
   color: var(--text);
 }
 
-.doc__sublist li {
+.contract-scope .doc__sublist li {
   margin-bottom: 4px;
 }
 
-.doc__closing {
+.contract-scope .doc__closing {
   font-size: 13.5px;
   color: var(--muted);
   line-height: 1.8;
@@ -66,7 +66,7 @@
   text-align: center;
 }
 
-.doc__date {
+.contract-scope .doc__date {
   text-align: center;
   font-family: var(--font-ui);
   font-size: 16px;
@@ -75,20 +75,36 @@
   margin: 0 0 28px;
 }
 
-.doc__inline-input--amount { width: 110px; font-weight: 700; }
-.doc__inline-input--date { width: 140px; }
-.doc__inline-input--rate { width: 64px; }
-.doc__inline-input--day { width: 44px; }
-.doc__inline-input--alias { width: 100%; text-align: left; }
+.contract-scope .doc__inline-input--amount {
+  width: 110px;
+  font-weight: 700;
+}
 
-.doc__readonly {
+.contract-scope .doc__inline-input--date {
+  width: 140px;
+}
+
+.contract-scope .doc__inline-input--rate {
+  width: 64px;
+}
+
+.contract-scope .doc__inline-input--day {
+  width: 44px;
+}
+
+.contract-scope .doc__inline-input--alias {
+  width: 100%;
+  text-align: left;
+}
+
+.contract-scope .doc__readonly {
   color: var(--primary);
   font-weight: 600;
   border-bottom: 1.5px dashed var(--line);
   padding: 1px 4px;
 }
 
-.doc__status-banner {
+.contract-scope .doc__status-banner {
   text-align: center;
   font-size: 13px;
   font-weight: 600;
@@ -100,14 +116,14 @@
   margin: 0 0 24px;
 }
 
-.doc__hint {
+.contract-scope .doc__hint {
   margin: 10px 0 0;
   font-size: 12px;
   color: var(--muted);
   text-align: center;
 }
 
-.doc__disclaimer {
+.contract-scope .doc__disclaimer {
   margin: 20px 0 0;
   padding-top: 12px;
   border-top: 1px solid var(--line);
@@ -117,7 +133,7 @@
   text-align: justify;
 }
 
-.doc__radio-group {
+.contract-scope .doc__radio-group {
   display: flex;
   gap: 22px;
   flex-wrap: wrap;
@@ -125,7 +141,7 @@
   padding-top: 2px;
 }
 
-.doc__radio {
+.contract-scope .doc__radio {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -134,7 +150,7 @@
   cursor: pointer;
 }
 
-.doc__radio input[type="radio"] {
+.contract-scope .doc__radio input[type="radio"] {
   appearance: none;
   width: 16px;
   height: 16px;
@@ -146,7 +162,7 @@
   cursor: pointer;
 }
 
-.doc__radio input[type="radio"]::before {
+.contract-scope .doc__radio input[type="radio"]::before {
   content: "";
   width: 8px;
   height: 8px;
@@ -156,19 +172,19 @@
   transition: transform 0.12s ease;
 }
 
-.doc__radio input[type="radio"]:checked {
+.contract-scope .doc__radio input[type="radio"]:checked {
   border-color: var(--primary);
 }
 
-.doc__radio input[type="radio"]:checked::before {
+.contract-scope .doc__radio input[type="radio"]:checked::before {
   transform: scale(1);
 }
 
-.loan-account {
+.contract-scope .loan-account {
   margin-top: 10px;
 }
 
-.loan-account__title {
+.contract-scope .loan-account__title {
   display: block;
   font-size: 14px;
   font-weight: 700;
@@ -176,33 +192,41 @@
   margin-bottom: 6px;
 }
 
-.loan-account__summary {
+.contract-scope .loan-account__summary {
   margin-top: 10px;
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
 }
 
-.loan-account__summary th,
-.loan-account__summary td {
+.contract-scope .loan-account__summary th,
+.contract-scope .loan-account__summary td {
   border: 1px solid var(--line);
   padding: 8px 10px;
   text-align: left;
 }
 
-.loan-account__summary th {
+.contract-scope .loan-account__summary th {
   width: 25%;
   background: #f3f4f5;
   color: var(--muted);
   font-weight: 600;
 }
 
-.loan-account__summary[hidden] {
+.contract-scope .loan-account__summary[hidden] {
   display: none;
 }
 
 @media (max-width: 640px) {
-  .doc { padding: 32px 20px; }
-  .doc__article { flex-direction: column; gap: 4px; }
-  .doc__clause { min-width: 0; }
+  .contract-scope .doc {
+    padding: 32px 20px;
+  }
+  .contract-scope .doc__article {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .contract-scope .doc__clause {
+    min-width: 0;
+  }
 }

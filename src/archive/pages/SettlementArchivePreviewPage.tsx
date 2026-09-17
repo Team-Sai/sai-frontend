@@ -30,44 +30,55 @@ function formatDateTime(isoString: string | null | undefined): string {
   return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+type PreviewRequestState =
+  | { settlementId: number; status: 'loading' }
+  | { settlementId: number; status: 'success'; preview: SettlementArchivePreview }
+  | { settlementId: number; status: 'error'; message: string };
+
 export default function SettlementArchivePreviewPage() {
   const navigate = useNavigate();
   const { settlementId } = useParams<{ settlementId: string }>();
   const numericSettlementId = settlementId !== undefined ? Number(settlementId) : NaN;
+  const hasValidSettlementId = settlementId !== undefined && !Number.isNaN(numericSettlementId);
 
-  const [preview, setPreview] = useState<SettlementArchivePreview | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [previewRequest, setPreviewRequest] = useState<PreviewRequestState>(() => ({
+    settlementId: numericSettlementId,
+    status: 'loading',
+  }));
   const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
-    if (!settlementId) return;
-
-    if (Number.isNaN(numericSettlementId)) {
-      setError('잘못된 정산 번호입니다.');
-      setIsLoading(false);
-      return;
-    }
+    if (!hasValidSettlementId) return;
 
     let cancelled = false;
 
     getSettlementArchivePreview(numericSettlementId)
       .then((data) => {
         if (cancelled) return;
-        setPreview(data);
+        setPreviewRequest({ settlementId: numericSettlementId, status: 'success', preview: data });
       })
       .catch(() => {
         if (cancelled) return;
-        setError('정산 내역을 불러올 수 없습니다.');
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
+        setPreviewRequest({
+          settlementId: numericSettlementId,
+          status: 'error',
+          message: '정산 내역을 불러올 수 없습니다.',
+        });
       });
 
     return () => {
       cancelled = true;
     };
-  }, [settlementId]);
+  }, [hasValidSettlementId, numericSettlementId]);
+
+  const requestMatchesRoute = Object.is(previewRequest.settlementId, numericSettlementId);
+  const preview = requestMatchesRoute && previewRequest.status === 'success' ? previewRequest.preview : null;
+  const isLoading = hasValidSettlementId && (!requestMatchesRoute || previewRequest.status === 'loading');
+  const error = !hasValidSettlementId
+    ? '잘못된 정산 번호입니다.'
+    : requestMatchesRoute && previewRequest.status === 'error'
+      ? previewRequest.message
+      : null;
 
   async function handleDownloadClick() {
     if (Number.isNaN(numericSettlementId) || isDownloading) return;
