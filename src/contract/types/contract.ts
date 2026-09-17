@@ -94,3 +94,28 @@ export const DEBTOR_APPROVAL_DRAFT_KEY = 'debtorApprovalDraft';
 export interface DebtorApprovalDraft {
   debtorAddress: string;
 }
+
+export interface LoanContractResponse {
+  contractId: number;
+  previousContractId: number | null;
+  creditorName: string;
+  creditorBirthDate: string;
+  creditorAddress: string | null;
+  creditorSignature: string | null;
+  debtorName: string | null;
+  debtorBirthDate: string | null;
+  debtorAddress: string | null;
+  debtorSignature: string | null;
+  relationType: ContractRelationType;
+  principalAmount: number;
+  interestRate: number;
+  repaymentType: RepaymentMethod;
+  startDate: string;
+  maturityDate: string;
+  repaymentDay: number;
+  contractAlias: string;
+  terms: string | null;
+  status: ContractStatus;
+  createdAt: string;
+  updatedAt: string;
+}

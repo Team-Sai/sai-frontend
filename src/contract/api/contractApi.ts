@@ -1,6 +1,6 @@
 import { authFetch } from '../../auth/authFetch';
 import type { LinkedBankAccount } from '../../accounts/types/account';
-import type { ContractDetail, LoanContractDraft } from '../types/contract';
+import type { ContractDetail, LoanContractDraft, LoanContractResponse } from '../types/contract';
 
 function isLinkedBankAccount(value: unknown): value is LinkedBankAccount {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -136,6 +136,19 @@ export async function getContractDetail(contractId: number): Promise<ContractDet
 export async function getContractSummary(contractId: number): Promise<ContractSummary> {
   const data = await getContractDetail(contractId);
   return { previousContractId: data.previousContractId };
+}
+
+export async function getLoanContract(contractId: number): Promise<LoanContractResponse> {
+  const response = await authFetch(`/api/contracts/${contractId}`, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`차용증 정보를 불러오지 못했습니다. (HTTP ${response.status})`);
+  }
+
+  return response.json();
 }
 
 export async function linkAsDebtor(contractId: number): Promise<void> {
