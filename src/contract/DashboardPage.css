@@ -1,5 +1,5 @@
-.contract-scope--dashboard .dashboard-search,
-.contract-scope--dashboard select {
+.dashboard-search,
+select {
   padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
@@ -7,21 +7,21 @@
   background: var(--surface);
 }
 
-.contract-scope--dashboard .dashboard-search {
+.dashboard-search {
   width: 100%;
 }
 
-.contract-scope--dashboard select {
+select {
   margin-right: 8px;
 }
 
-.contract-scope--dashboard .dashboard-summary {
+.dashboard-summary {
   display: flex;
   gap: 12px;
   margin-bottom: 24px;
 }
 
-.contract-scope--dashboard .summary-card {
+.summary-card {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -32,26 +32,25 @@
   border-radius: var(--radius-md);
 }
 
-.contract-scope--dashboard .summary-card__label {
+.summary-card__label {
   font-size: 13px;
   color: var(--muted);
 }
 
-.contract-scope--dashboard .summary-card__value {
+.summary-card__value {
   font-size: 20px;
   font-weight: 600;
 }
 
-.contract-scope--dashboard .contract-table {
+.contract-table {
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
   background: var(--surface);
 }
 
-.contract-scope--dashboard .contract-table__head,
-.contract-scope--dashboard .contract-table__row {
+.contract-table__head,
+.contract-table__row {
   display: grid;
   grid-template-columns: 2.1fr 0.75fr 1.25fr 1.15fr 1fr 0.9fr 1fr;
   align-items: center;
@@ -59,20 +58,7 @@
   padding: 14px 20px;
 }
 
-.contract-scope--dashboard .contract-table__head > *,
-.contract-scope--dashboard .contract-table__row > * {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 760px) {
-  .contract-scope--dashboard .contract-table__head,
-  .contract-scope--dashboard .contract-table__row {
-    min-width: 760px;
-  }
-}
-
-.contract-scope--dashboard .contract-table__head {
+.contract-table__head {
   background: #f9fafc;
   color: var(--muted);
   font-size: 13px;
@@ -80,21 +66,21 @@
   border-bottom: 1px solid var(--line);
 }
 
-.contract-scope--dashboard .contract-table__row {
+.contract-table__row {
   font-size: 14px;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
 }
 
-.contract-scope--dashboard .contract-table__row:last-child {
+.contract-table__row:last-child {
   border-bottom: none;
 }
 
-.contract-scope--dashboard .contract-table__alias {
+.contract-table__alias {
   font-weight: 600;
 }
 
-.contract-scope--dashboard .badge {
+.badge {
   width: max-content;
   padding: 4px 8px;
   border-radius: 4px;
@@ -102,33 +88,33 @@
   font-weight: 700;
 }
 
-.contract-scope--dashboard .badge--role {
+.badge--role {
   color: #0f8a5f;
   background: #e9f7f0;
 }
 
-.contract-scope--dashboard .badge--debtor {
+.badge--debtor {
   color: #1478d4;
   background: #edf6ff;
 }
 
-.contract-scope--dashboard .badge--progress {
+.badge--progress {
   color: #1478d4;
   background: #edf6ff;
 }
 
-.contract-scope--dashboard .badge--completed {
+.badge--completed {
   color: var(--muted);
   background: #edf1f4;
 }
 
-.contract-scope--dashboard .dashboard-empty {
+.dashboard-empty {
   padding: 48px 0;
   text-align: center;
   color: var(--muted);
 }
 
-.contract-scope--dashboard .dashboard-pagination {
+.dashboard-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -136,7 +122,7 @@
   margin-top: 16px;
 }
 
-.contract-scope--dashboard .dashboard-pagination button {
+.dashboard-pagination button {
   padding: 6px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
@@ -144,19 +130,19 @@
   cursor: pointer;
 }
 
-.contract-scope--dashboard .dashboard-pagination button:disabled {
+.dashboard-pagination button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.contract-scope--dashboard .disclaimer {
+.disclaimer {
   font-size: 11px;
   color: #999;
   margin-top: 20px;
   line-height: 1.5;
 }
 
-.contract-scope--dashboard .detail-link {
+.detail-link {
   width: 34px;
   height: 34px;
   display: grid;
@@ -166,10 +152,10 @@
   color: var(--text);
 }
 
-.contract-scope--dashboard .detail-link:hover {
+.detail-link:hover {
   background: #f5f7f9;
 }
 
-.contract-scope--dashboard .contract-table__row:hover {
+.contract-table__row:hover {
   background: #f9fafc;
 }

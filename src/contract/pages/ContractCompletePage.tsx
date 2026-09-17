@@ -26,7 +26,7 @@ export default function ContractCompletePage() {
   }, [contractId]);
 
   return (
-    <div className="contract-scope contract-scope--complete">
+    <div className="page">
       <Stepper currentStep={4} />
 
       <div className="success-container">
