@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import '../shared.css';
-import Stepper from '../components/Stepper';
-import SignatureAndSubmit from '../components/SignatureAndSubmit';
-import { submitDebtorApproval } from '../api/contractApi';
-import { DEBTOR_APPROVAL_DRAFT_KEY, type DebtorApprovalDraft } from '../types/contract';
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import "../shared.css";
+import Stepper from "../components/Stepper";
+import SignatureAndSubmit from "../components/SignatureAndSubmit";
+import { submitDebtorApproval } from "../api/contractApi";
+import {
+  DEBTOR_APPROVAL_DRAFT_KEY,
+  type DebtorApprovalDraft,
+} from "../types/contract";
 
 export default function DebtorSignaturePage() {
   const navigate = useNavigate();
@@ -26,7 +29,7 @@ export default function DebtorSignaturePage() {
       return;
     }
 
-    if (!sessionStorage.getItem('identityVerificationId')) {
+    if (!sessionStorage.getItem("identityVerificationId")) {
       navigate(
         `/identity-test?returnTo=${encodeURIComponent(`/contracts/${contractId}/approve/signature`)}`,
         { replace: true },
@@ -37,7 +40,9 @@ export default function DebtorSignaturePage() {
   async function handleSubmit(signature: Blob) {
     if (!contractId || !draft) return;
 
-    const identityVerificationId = sessionStorage.getItem('identityVerificationId');
+    const identityVerificationId = sessionStorage.getItem(
+      "identityVerificationId",
+    );
     if (!identityVerificationId) {
       navigate(
         `/identity-test?returnTo=${encodeURIComponent(`/contracts/${contractId}/approve/signature`)}`,
@@ -48,16 +53,25 @@ export default function DebtorSignaturePage() {
 
     setIsSubmitting(true);
     setIsError(false);
-    setStatusMessage('서명을 제출하는 중입니다...');
+    setStatusMessage("서명을 제출하는 중입니다...");
 
     try {
-      await submitDebtorApproval(Number(contractId), draft.debtorAddress, signature, identityVerificationId);
-
+      await submitDebtorApproval(
+        Number(contractId),
+        draft.debtorAddress,
+        signature,
+        identityVerificationId,
+      );
+      sessionStorage.removeItem("identityVerificationId");
       sessionStorage.removeItem(DEBTOR_APPROVAL_DRAFT_KEY);
       navigate(`/contracts/complete?contractId=${contractId}`);
     } catch (error) {
       setIsError(true);
-      setStatusMessage(error instanceof Error ? error.message : '서명 제출에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : "서명 제출에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+      );
     } finally {
       setIsSubmitting(false);
     }

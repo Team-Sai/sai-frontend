@@ -78,7 +78,8 @@ export default function ContractFormPage() {
 
   useEffect(() => {
     if (!sessionStorage.getItem('identityVerificationId')) {
-      navigate(`/identity-test?returnTo=${encodeURIComponent('/contracts/new')}`, { replace: true });
+      const returnTo = window.location.pathname + window.location.search;
+      navigate(`/identity-test?returnTo=${encodeURIComponent(returnTo)}`, { replace: true });
     }
   }, [navigate]);
 
