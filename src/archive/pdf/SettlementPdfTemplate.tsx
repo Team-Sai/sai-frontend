@@ -328,7 +328,7 @@ export default function SettlementPdfTemplate({ preview }: SettlementPdfTemplate
           )}
         </View>
 
-        <View style={styles.article} wrap={false}>
+        <View style={styles.article}>
           <Text style={styles.clause}>참여자별 납부 현황</Text>
           <View style={styles.dataTable}>
             <DataTableHeader columns={obligationColumns} />
