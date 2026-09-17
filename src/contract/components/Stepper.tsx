@@ -1,6 +1,6 @@
 import './Stepper.css';
 
-const STEPS = ['차용증 작성', '본인인증 · 서명날인', '상대확인', '저장'];
+const STEPS = ['본인인증', '차용증 작성', '상대확인 · 전자서명', '완료'];
 
 interface StepperProps {
   currentStep: 1 | 2 | 3 | 4;

@@ -77,6 +77,13 @@ export default function ContractFormPage() {
   const [previousAmount, setPreviousAmount] = useState(0);
 
   useEffect(() => {
+    if (!sessionStorage.getItem('identityVerificationId')) {
+      const returnTo = window.location.pathname + window.location.search;
+      navigate(`/identity-test?returnTo=${encodeURIComponent(returnTo)}`, { replace: true });
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     async function loadCreditorInfo() {
       const res = await authFetch('/api/users/me', {
         headers: { Accept: 'application/json' },
@@ -95,7 +102,7 @@ export default function ContractFormPage() {
 
   function proceedToSignature() {
     sessionStorage.setItem(LOAN_CONTRACT_DRAFT_KEY, JSON.stringify(toDraft(formData)));
-    navigate(`/identity-test?returnTo=${encodeURIComponent('/contracts/signature')}`);
+    navigate('/contracts/signature');
   }
 
   async function handleNext() {
@@ -134,16 +141,16 @@ export default function ContractFormPage() {
 
   return (
     <div className="page">
-      <Stepper currentStep={1} />
+      <Stepper currentStep={2} />
 
-      <ContractDocument
-        formData={formData}
-        onFieldChange={handleFieldChange}
-        creditorInfo={creditorInfo}
-        disabled={isChecking}
-      />
+      <div className="doc">
+        <ContractDocument
+          formData={formData}
+          onFieldChange={handleFieldChange}
+          creditorInfo={creditorInfo}
+          disabled={isChecking}
+        />
 
-      <div className="doc" style={{ marginTop: 20 }}>
         <PartiesInfo
           creditorInfo={creditorInfo}
           creditorAddress={formData.creditorAddress}
