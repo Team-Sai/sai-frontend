@@ -3,10 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import '../../contract/shared.css';
 import './SettlementArchivePreviewPage.css';
-import { getLoanContract, getContractSignatures } from '../../contract/api/contractApi';
+import { getLoanContract, getContractSignatures, type ContractSignatures } from '../../contract/api/contractApi';
 import { downloadContractPdf } from '../pdf/downloadContractPdf';
 import ContractPdfTemplate from '../pdf/ContractPdfTemplate';
 import type { LoanContractResponse } from '../../contract/types/contract';
+
+const EMPTY_SIGNATURES: ContractSignatures = {
+  creditorSignatureDataUri: null,
+  debtorSignatureDataUri: null,
+};
 
 export default function ContractArchivePreviewPage() {
   const navigate = useNavigate();
@@ -26,7 +31,13 @@ export default function ContractArchivePreviewPage() {
 
     let cancelled = false;
 
-    Promise.all([getLoanContract(numericContractId), getContractSignatures(numericContractId)])
+    Promise.all([
+      getLoanContract(numericContractId),
+      getContractSignatures(numericContractId).catch((error) => {
+        console.error('[ContractArchivePreviewPage] 서명 이미지 조회 실패, 서명 없이 진행합니다', error);
+        return EMPTY_SIGNATURES;
+      }),
+    ])
       .then(([contractData, signatures]) => {
         if (cancelled) return;
         setContract(contractData);

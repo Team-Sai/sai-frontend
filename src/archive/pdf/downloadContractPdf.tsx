@@ -1,6 +1,17 @@
 import { pdf } from '@react-pdf/renderer';
-import { getLoanContract, getContractSignatures, getSavedContractPdf, saveContractPdf } from '../../contract/api/contractApi';
+import {
+  getLoanContract,
+  getContractSignatures,
+  getSavedContractPdf,
+  saveContractPdf,
+  type ContractSignatures,
+} from '../../contract/api/contractApi';
 import ContractPdfTemplate from './ContractPdfTemplate';
+
+const EMPTY_SIGNATURES: ContractSignatures = {
+  creditorSignatureDataUri: null,
+  debtorSignatureDataUri: null,
+};
 
 function triggerBlobDownload(blob: Blob, filename: string): void {
   const objectUrl = window.URL.createObjectURL(blob);
@@ -26,7 +37,10 @@ export async function downloadContractPdf(contractId: number): Promise<void> {
 
   const [contract, signatures] = await Promise.all([
     getLoanContract(contractId),
-    getContractSignatures(contractId),
+    getContractSignatures(contractId).catch((error) => {
+      console.error('[downloadContractPdf] 서명 이미지 조회 실패, 서명 없이 진행합니다', error);
+      return EMPTY_SIGNATURES;
+    }),
   ]);
 
   const blob = await pdf(
