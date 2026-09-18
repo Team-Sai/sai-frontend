@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import "../shared.css";
-import "./DashboardPage.css";
-import { getDashboard } from "../api/dashboardApi";
-import type { DashboardResponse } from "../types/dashboard";
 import { useNavigate } from "react-router-dom";
+import { getDashboard } from "../api/dashboardApi";
+import "../shared.css";
+import type { DashboardResponse } from "../types/dashboard";
 import {
   CONTRACT_ROLE_LABELS,
   CONTRACT_STATUS_LABELS,
 } from "../types/dashboard";
+import "../styles/DashboardPage.css";
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardResponse | null>(null);

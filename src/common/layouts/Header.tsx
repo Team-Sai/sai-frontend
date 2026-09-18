@@ -4,11 +4,11 @@ import BrandLink from './BrandLink';
 const NAV_ITEMS = [
   { key: 'dashboard', label: '대시보드', to: '/integration/dashboard', activeOn: ['/integration/dashboard'] },
   { key: 'settlement', label: '정산', to: '/settlements', activeOn: ['/settlements'] },
-  { key: 'contract', label: '금전소비대차', to: '/contract', activeOn: ['/contract', '/contracts'] },
+  { key: 'contract', label: '금전소비대차', to: '/contracts/dashboard', activeOn: ['/contract', '/contracts'] },
   { key: 'calendar', label: '캘린더', to: '/calendar', activeOn: ['/calendar'] },
 ];
 
-const IMPLEMENTED_PATHS = new Set(['/integration/dashboard', '/settlements']);
+const IMPLEMENTED_PATHS = new Set(['/integration/dashboard', '/settlements', '/contracts/dashboard']);
 
 export default function Header() {
   const { pathname } = useLocation();

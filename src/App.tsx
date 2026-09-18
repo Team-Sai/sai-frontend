@@ -18,6 +18,7 @@ import ContractFormPage from "./contract/pages/ContractFormPage";
 import ContractSignaturePage from "./contract/pages/ContractSignaturePage";
 import ContractCompletePage from "./contract/pages/ContractCompletePage";
 import SchedulePage from "./contract/pages/SchedulePage";
+import ContractChangeFormPage from "./contract/pages/ContractChangeFormPage";
 import DebtorContractFormPage from "./contract/pages/DebtorContractFormPage";
 import DebtorSignaturePage from "./contract/pages/DebtorSignaturePage";
 
@@ -130,6 +131,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ContractDocumentPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/contracts/:contractId/change-request"
+              element={
+                <ProtectedRoute>
+                  <ContractChangeFormPage />
                 </ProtectedRoute>
               }
             />

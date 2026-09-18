@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../shared.css";
-import "./ContractDocumentPage.css";
+import "../styles/ContractDocumentPage.css";
 import { getContractDocument } from "../api/contractDocumentApi";
 import type { ContractDocumentDetail } from "../types/contractDocument";
 import { REPAYMENT_METHOD_LABELS } from "../types/schedule";
