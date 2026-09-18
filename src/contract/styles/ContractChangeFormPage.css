@@ -1,0 +1,152 @@
+.contract-scope--change-form .page-title {
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+.contract-scope--change-form .page-description {
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+
+.contract-scope--change-form .change-form-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.contract-scope--change-form .change-form {
+  flex: 2;
+  background: var(--surface);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.contract-scope--change-form .change-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.contract-scope--change-form .change-form input,
+.contract-scope--change-form .change-form textarea,
+.contract-scope--change-form .change-form select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: inherit;
+  background: var(--surface);
+}
+
+.contract-scope--change-form #changeReason {
+  grid-column: 1 / -1;
+  height: 90px;
+  resize: none;
+}
+
+.contract-scope--change-form .change-form__actions {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.contract-scope--change-form .change-form__actions button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.contract-scope--change-form .change-form__actions button[type="button"] {
+  background: var(--page);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.contract-scope--change-form .change-form__actions button[type="submit"] {
+  background: var(--primary);
+  color: white;
+}
+
+.contract-scope--change-form .change-form__actions button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.contract-scope--change-form .form-error {
+  grid-column: 1 / -1;
+  color: var(--error);
+  font-size: 13px;
+  margin: 0;
+}
+
+.contract-scope--change-form .current-contract {
+  flex: 1;
+  background: var(--primary);
+  color: white;
+  padding: 24px;
+  border-radius: 12px;
+}
+
+.contract-scope--change-form .current-contract h2 {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.contract-scope--change-form .current-contract dl {
+  margin: 0;
+}
+
+.contract-scope--change-form .current-contract dt {
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.contract-scope--change-form .current-contract dt:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.contract-scope--change-form .current-contract dd {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 4px 0 0;
+}
+
+.contract-scope--change-form .disclaimer {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 20px;
+  line-height: 1.5;
+}
+
+.contract-scope--change-form .page-header {
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+
+.contract-scope--change-form .page-title {
+  margin: 0 0 8px;
+}
+
+.contract-scope--change-form .page-description {
+  margin: 0;
+}

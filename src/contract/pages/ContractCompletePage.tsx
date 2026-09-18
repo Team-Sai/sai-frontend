@@ -2,7 +2,7 @@ import { Button } from '../../common/components';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../shared.css';
-import './ContractCompletePage.css';
+import '../styles/ContractCompletePage.css';
 import Stepper from '../components/Stepper';
 import { getContractSummary } from '../api/contractApi';
 

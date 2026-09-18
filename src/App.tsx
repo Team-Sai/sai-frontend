@@ -1,35 +1,37 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './auth/AuthProvider';
-import { ProtectedRoute } from './auth/ProtectedRoute';
-import AppLayout from './common/layouts/AppLayout';
-import MinimalLayout from './common/layouts/MinimalLayout';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./auth/AuthProvider";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
+import AppLayout from "./common/layouts/AppLayout";
+import MinimalLayout from "./common/layouts/MinimalLayout";
 
-import LoginPage from './users/pages/LoginPage';
-import SignupPage from './users/pages/SignupPage';
-import MyPage from './users/pages/MyPage';
-import IdentityTestPage from './identity/pages/IdentityTestPage';
-import LinkCompletePage from './link/pages/LinkCompletePage';
+import LoginPage from "./users/pages/LoginPage";
+import SignupPage from "./users/pages/SignupPage";
+import MyPage from "./users/pages/MyPage";
+import IdentityTestPage from "./identity/pages/IdentityTestPage";
+import LinkCompletePage from "./link/pages/LinkCompletePage";
 
-import DashboardPage from './pages/DashboardPage';
+import DashboardPage from "./pages/DashboardPage";
 
-import ContractDashboardPage from './contract/DashboardPage';
-import ContractDocumentPage from './contract/pages/ContractDocumentPage';
-import ContractFormPage from './contract/pages/ContractFormPage';
-import ContractSignaturePage from './contract/pages/ContractSignaturePage';
-import ContractCompletePage from './contract/pages/ContractCompletePage';
-import SchedulePage from './contract/pages/SchedulePage';
-import DebtorContractFormPage from './contract/pages/DebtorContractFormPage';
-import DebtorSignaturePage from './contract/pages/DebtorSignaturePage';
+import ContractDashboardPage from "./contract/pages/DashboardPage";
+import ContractDocumentPage from "./contract/pages/ContractDocumentPage";
+import ContractFormPage from "./contract/pages/ContractFormPage";
+import ContractSignaturePage from "./contract/pages/ContractSignaturePage";
+import ContractCompletePage from "./contract/pages/ContractCompletePage";
+import SchedulePage from "./contract/pages/SchedulePage";
+import ContractChangeFormPage from "./contract/pages/ContractChangeFormPage";
+import ContractChangeRequestSentPage from "./contract/pages/ContractChangeRequestSentPage";
+import DebtorContractFormPage from "./contract/pages/DebtorContractFormPage";
+import DebtorSignaturePage from "./contract/pages/DebtorSignaturePage";
 
-import NotificationCenter from './notification/NotificationCenter';
+import NotificationCenter from "./notification/NotificationCenter";
 
-import ArchivePage from './archive/ArchivePage';
-import SettlementArchivePreviewPage from './archive/pages/SettlementArchivePreviewPage';
-import ContractArchivePreviewPage from './archive/pages/ContractArchivePreviewPage';
+import ArchivePage from "./archive/ArchivePage";
+import SettlementArchivePreviewPage from "./archive/pages/SettlementArchivePreviewPage";
+import ContractArchivePreviewPage from "./archive/pages/ContractArchivePreviewPage";
 
-import SettlementListPage from './settlement/pages/SettlementListPage';
-import SettlementCreatePage from './settlement/pages/SettlementCreatePage';
-import SettlementDetailPage from './settlement/pages/SettlementDetailPage';
+import SettlementListPage from "./settlement/pages/SettlementListPage";
+import SettlementCreatePage from "./settlement/pages/SettlementCreatePage";
+import SettlementDetailPage from "./settlement/pages/SettlementDetailPage";
 
 function App() {
   return (
@@ -127,6 +129,24 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/contracts/:contractId/change-request"
+              element={
+                <ProtectedRoute>
+                  <ContractChangeFormPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/contracts/:contractId/change-requests/sent"
+              element={
+                <ProtectedRoute>
+                  <ContractChangeRequestSentPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/contracts/:contractId/approve"
               element={

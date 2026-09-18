@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../shared.css";
-import "./SchedulePage.css";
+import "../styles/SchedulePage.css";
 import {
   getScheduleSummary,
   getContractDetailForSchedule,
