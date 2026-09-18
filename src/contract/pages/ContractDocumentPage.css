@@ -1,0 +1,107 @@
+.contract-scope--document .document-paper {
+  background: #fff;
+  border: 1px solid var(--border, #d9dee8);
+  border-radius: 4px;
+  padding: 36px 40px;
+  font-family: var(--font-ui);
+  margin-bottom: 20px;
+}
+
+.contract-scope--document .document-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 8px;
+  margin: 0 0 32px;
+  color: var(--text);
+}
+
+.contract-scope--document .document-article {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+  margin-bottom: 20px;
+}
+
+.contract-scope--document .document-article__heading {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+
+.contract-scope--document .document-article__body {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.contract-scope--document .document-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.contract-scope--document .document-table th {
+  text-align: left;
+  width: 100px;
+  padding: 6px 0;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.contract-scope--document .document-table td {
+  padding: 6px 0;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.contract-scope--document .document-signature {
+  display: flex;
+  justify-content: space-around;
+  border-top: 2px solid var(--line);
+  padding-top: 24px;
+  margin-top: 8px;
+}
+
+.contract-scope--document .document-signature__party {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.contract-scope--document .document-signature__label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.contract-scope--document .document-signature__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.contract-scope--document .btn-primary-small {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  color: #fff;
+}
+
+.contract-scope--document .document-notice {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.disclaimer {
+  font-size: 11px;
+  color: #999;
+  margin-top: 20px;
+  line-height: 1.5;
+}

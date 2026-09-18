@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { key: 'calendar', label: '캘린더', to: '/calendar', activeOn: ['/calendar'] },
 ];
 
-const IMPLEMENTED_PATHS = new Set(['/integration/dashboard']);
+const IMPLEMENTED_PATHS = new Set(['/integration/dashboard', '/settlements']);
 
 export default function Header() {
   const { pathname } = useLocation();
@@ -54,10 +54,14 @@ export default function Header() {
             <img src="/images/common/archive.svg" alt="" />
             <span className="sr-only">보관함 (준비 중)</span>
           </span>
-          <span className="app-header-actions__disabled" aria-disabled="true" title="알림: 준비 중입니다">
+          <Link
+            to="/notifications"
+            className="app-header-profile"
+            aria-label="알림"
+            aria-current={pathname === '/notifications' ? 'page' : undefined}
+          >
             <img src="/images/common/notification.svg" alt="" />
-            <span className="sr-only">알림 (준비 중)</span>
-          </span>
+          </Link>
           <Link to="/mypage" className="app-header-profile" aria-label="마이페이지">
             <img src="/images/common/profile.svg" alt="" />
           </Link>
