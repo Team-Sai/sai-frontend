@@ -76,3 +76,26 @@ export async function requestContractChange(
 
     return data;
 }
+
+export async function submitChangeRequestSignature(
+    contractId: number,
+    changeRequestId: number,
+    signature: Blob,
+    identityVerificationId: string,
+) : Promise<void> {
+    const form = new FormData();
+    form.append("signature", signature, "signature.png");
+    form.append("identityVerificationId", identityVerificationId);
+
+    const response = await authFetch(
+        `/api/contracts/${contractId}/change-requests/${changeRequestId}/signature`,
+        {
+            method: "PATCH",
+            body: form,
+        },
+    );
+
+    if (!response.ok) {
+        throw new Error(`서명 제출에 실패했습니다. (HTTP ${response.status})`);
+    }
+}

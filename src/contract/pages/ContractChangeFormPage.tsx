@@ -126,8 +126,8 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
       newRepaymentDate: newRepaymentDate ? Number(newRepaymentDate) : null,
       newTerms: newTerms.trim() || null,
     })
-      .then(() => {
-        navigate(`/contracts/${contractId}/change-requests/sent`);
+      .then((result) => {
+        navigate(`/contracts/${contractId}/change-requests/${result.changeRequestId}/signature`);
       })
       .catch((err: Error) => {
         setSubmitError(err.message);
