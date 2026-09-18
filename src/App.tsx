@@ -13,9 +13,11 @@ import LinkCompletePage from './link/pages/LinkCompletePage';
 import DashboardPage from './pages/DashboardPage';
 
 import ContractDashboardPage from './contract/DashboardPage';
+import ContractDocumentPage from './contract/pages/ContractDocumentPage';
 import ContractFormPage from './contract/pages/ContractFormPage';
 import ContractSignaturePage from './contract/pages/ContractSignaturePage';
 import ContractCompletePage from './contract/pages/ContractCompletePage';
+import SchedulePage from './contract/pages/SchedulePage';
 import DebtorContractFormPage from './contract/pages/DebtorContractFormPage';
 import DebtorSignaturePage from './contract/pages/DebtorSignaturePage';
 
@@ -106,6 +108,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ContractDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contracts/:contractId/contract-detail"
+              element={
+                <ProtectedRoute>
+                  <ContractDocumentPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contracts/:contractId/schedule"
+              element={
+                <ProtectedRoute>
+                  <SchedulePage />
                 </ProtectedRoute>
               }
             />
