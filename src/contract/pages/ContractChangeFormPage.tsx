@@ -93,7 +93,7 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
 
     if (newRepaymentDate !== "") {
       const day = Number(newRepaymentDate);
-      if (day < 1 || day > 31) {
+      if (!Number.isFinite(day) || !Number.isInteger(day) || day < 1 || day > 31) {
         return "상환일은 1일에서 31일 사이여야 합니다.";
       }
     }
