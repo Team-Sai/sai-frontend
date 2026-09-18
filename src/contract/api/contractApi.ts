@@ -1,6 +1,6 @@
 import { authFetch } from '../../auth/authFetch';
 import type { LinkedBankAccount } from '../../accounts/types/account';
-import type { ContractDetail, LoanContractDraft } from '../types/contract';
+import type { ContractDetail, LoanContractDraft, LoanContractResponse } from '../types/contract';
 
 function isLinkedBankAccount(value: unknown): value is LinkedBankAccount {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -138,6 +138,19 @@ export async function getContractSummary(contractId: number): Promise<ContractSu
   return { previousContractId: data.previousContractId };
 }
 
+export async function getLoanContract(contractId: number): Promise<LoanContractResponse> {
+  const response = await authFetch(`/api/contracts/${contractId}`, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`차용증 정보를 불러오지 못했습니다. (HTTP ${response.status})`);
+  }
+
+  return response.json();
+}
+
 export async function linkAsDebtor(contractId: number): Promise<void> {
   const response = await authFetch(`/api/contracts/${contractId}/debtor`, {
     method: 'PATCH',
@@ -166,5 +179,54 @@ export async function submitDebtorApproval(
 
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, `서명 제출에 실패했습니다. (HTTP ${response.status})`));
+  }
+}
+
+export interface ContractSignatures {
+  creditorSignatureDataUri: string | null;
+  debtorSignatureDataUri: string | null;
+}
+
+export async function getContractSignatures(contractId: number): Promise<ContractSignatures> {
+  const response = await authFetch(`/api/contracts/${contractId}/signatures`, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`서명 이미지를 불러오지 못했습니다. (HTTP ${response.status})`);
+  }
+
+  return response.json();
+}
+
+export async function getSavedContractPdf(contractId: number): Promise<Blob | null> {
+  const response = await authFetch(`/api/contracts/${contractId}/pdf`, {
+    method: 'GET',
+    headers: { Accept: 'application/pdf' },
+  });
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error(`저장된 차용증 PDF를 불러오지 못했습니다. (HTTP ${response.status})`);
+  }
+
+  return response.blob();
+}
+
+export async function saveContractPdf(contractId: number, pdf: Blob): Promise<void> {
+  const form = new FormData();
+  form.append('file', pdf, `차용증_${contractId}.pdf`);
+
+  const response = await authFetch(`/api/contracts/${contractId}/pdf`, {
+    method: 'POST',
+    body: form,
+  });
+
+  if (!response.ok) {
+    throw new Error(`차용증 PDF 저장에 실패했습니다. (HTTP ${response.status})`);
   }
 }

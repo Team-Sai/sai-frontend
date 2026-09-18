@@ -1,4 +1,4 @@
-.contract-scope .modal-overlay {
+.modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(17, 19, 23, 0.45);
@@ -9,7 +9,7 @@
   z-index: 1000;
 }
 
-.contract-scope .notice {
+.notice {
   width: 480px;
   max-width: 100%;
   max-height: calc(100vh - 48px);
@@ -19,7 +19,7 @@
   box-shadow: var(--shadow-card);
 }
 
-.contract-scope .notice__header {
+.notice__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -27,13 +27,13 @@
   border-bottom: 1px solid var(--line);
 }
 
-.contract-scope .notice__eyebrow {
+.notice__eyebrow {
   font-size: 18px;
   font-weight: 600;
   color: var(--primary);
 }
 
-.contract-scope .notice__close {
+.notice__close {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,25 +50,25 @@
   transition: background 0.15s ease;
 }
 
-.contract-scope .notice__close:hover {
+.notice__close:hover {
   background: rgba(0, 110, 42, 0.16);
 }
 
-.contract-scope .notice__close:active {
+.notice__close:active {
   transform: none;
 }
 
-.contract-scope .notice__body {
+.notice__body {
   padding: 16px;
 }
 
-.contract-scope .notice__intro {
+.notice__intro {
   padding-bottom: 20px;
   margin-bottom: 20px;
   border-bottom: 1px dashed var(--line);
 }
 
-.contract-scope .notice__question {
+.notice__question {
   margin: 0 0 8px;
   font-size: 19px;
   line-height: 1.35;
@@ -76,7 +76,7 @@
   color: var(--text);
 }
 
-.contract-scope .notice__desc {
+.notice__desc {
   margin: 0;
   font-size: 13px;
   line-height: 1.6;
@@ -84,12 +84,12 @@
   color: var(--muted);
 }
 
-.contract-scope .notice__footer {
+.notice__footer {
   padding: 16px 24px;
   border-top: 1px solid var(--line);
 }
 
-.contract-scope .summary-box {
+.summary-box {
   background: var(--page);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -98,35 +98,35 @@
   color: var(--text);
 }
 
-.contract-scope .summary-box p {
+.summary-box p {
   margin: 0 0 8px;
   display: flex;
   justify-content: space-between;
 }
 
-.contract-scope .summary-box p:last-child {
+.summary-box p:last-child {
   margin-bottom: 0;
 }
 
-.contract-scope .summary-title {
+.summary-title {
   font-weight: 700;
   color: var(--primary);
-  margin: 0 0 10px;
-  display: block;
+  margin-bottom: 10px !important;
+  display: block !important;
 }
 
-.contract-scope .summary-total {
+.summary-total {
   padding-top: 8px;
-  margin-top: 4px;
+  margin-top: 4px !important;
   border-top: 1px dashed var(--line);
   font-weight: 700;
 }
 
-.contract-scope .result-area {
+.result-area {
   margin-top: 8px;
 }
 
-.contract-scope .result-badge {
+.result-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -137,24 +137,24 @@
   margin: 0 0 8px;
 }
 
-.contract-scope .result-badge--safe {
+.result-badge--safe {
   background: rgba(0, 110, 42, 0.1);
   color: var(--primary);
 }
 
-.contract-scope .result-badge--danger {
+.result-badge--danger {
   background: rgba(186, 26, 26, 0.1);
   color: var(--error);
 }
 
-.contract-scope .result-desc {
+.result-desc {
   margin: 0;
   font-size: 13px;
   line-height: 1.6;
   color: var(--muted);
 }
 
-.contract-scope .result-safe-line {
+.result-safe-line {
   margin: 0 0 8px;
   font-size: 13px;
   font-weight: 600;

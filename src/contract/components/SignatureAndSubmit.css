@@ -1,15 +1,15 @@
-.contract-scope .sign {
+.sign {
   margin-bottom: 20px;
 }
 
-.contract-scope .sign__title {
+.sign__title {
   font-size: 14px;
   font-weight: 700;
   color: var(--primary);
   margin: 0 0 8px;
 }
 
-.contract-scope .sign__pad-wrap {
+.sign__pad-wrap {
   position: relative;
   width: 100%;
   border: 1px solid var(--line);
@@ -19,7 +19,7 @@
   overflow: hidden;
 }
 
-.contract-scope .sign__placeholder {
+.sign__placeholder {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -32,7 +32,7 @@
   user-select: none;
 }
 
-.contract-scope .sign__canvas {
+.sign__canvas {
   display: block;
   width: 100%;
   max-width: 100%;
@@ -41,7 +41,7 @@
   touch-action: none;
 }
 
-.contract-scope .sign__clear {
+.sign__clear {
   position: absolute;
   right: 10px;
   bottom: 10px;
@@ -56,23 +56,23 @@
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 
-.contract-scope .sign__clear:hover {
+.sign__clear:hover {
   border-color: var(--primary);
   color: var(--primary);
 }
 
-.contract-scope .sign__clear:active {
+.sign__clear:active {
   transform: none;
 }
 
-.contract-scope .agreement {
+.agreement {
   display: flex;
   align-items: flex-start;
   gap: 10px;
   margin: 20px 0 4px;
 }
 
-.contract-scope .agreement__checkbox {
+.agreement__checkbox {
   margin-top: 3px;
   width: 16px;
   height: 16px;
@@ -81,7 +81,7 @@
   flex-shrink: 0;
 }
 
-.contract-scope .agreement__label {
+.agreement__label {
   font-size: 13.5px;
   color: var(--text);
   line-height: 1.6;

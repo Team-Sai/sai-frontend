@@ -33,6 +33,17 @@ export default function DebtorContractFormPage() {
   useEffect(() => {
     if (!contractId) return;
 
+    if (!sessionStorage.getItem('identityVerificationId')) {
+      navigate(
+        `/identity-test?returnTo=${encodeURIComponent(`/contracts/${contractId}/approve`)}`,
+        { replace: true },
+      );
+    }
+  }, [contractId, navigate]);
+
+  useEffect(() => {
+    if (!contractId) return;
+
     let cancelled = false;
 
     async function loadContract() {
@@ -121,8 +132,7 @@ export default function DebtorContractFormPage() {
       return;
     }
 
-    const returnTo = `/contracts/${contractId}/approve/signature`;
-    navigate(`/identity-test?returnTo=${encodeURIComponent(returnTo)}`);
+    navigate(`/contracts/${contractId}/approve/signature`);
   }
 
   const locked = lockMessage !== null && lockMessage !== '';

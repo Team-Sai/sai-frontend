@@ -1,16 +1,16 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./auth/AuthProvider";
-import { ProtectedRoute } from "./auth/ProtectedRoute";
-import AppLayout from "./common/layouts/AppLayout";
-import MinimalLayout from "./common/layouts/MinimalLayout";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './auth/AuthProvider';
+import { ProtectedRoute } from './auth/ProtectedRoute';
+import AppLayout from './common/layouts/AppLayout';
+import MinimalLayout from './common/layouts/MinimalLayout';
 
-import LoginPage from "./users/pages/LoginPage";
-import SignupPage from "./users/pages/SignupPage";
-import MyPage from "./users/pages/MyPage";
-import IdentityTestPage from "./identity/pages/IdentityTestPage";
-import LinkCompletePage from "./link/pages/LinkCompletePage";
+import LoginPage from './users/pages/LoginPage';
+import SignupPage from './users/pages/SignupPage';
+import MyPage from './users/pages/MyPage';
+import IdentityTestPage from './identity/pages/IdentityTestPage';
+import LinkCompletePage from './link/pages/LinkCompletePage';
 
-import DashboardPage from "./pages/DashboardPage";
+import DashboardPage from './pages/DashboardPage';
 
 import ContractDashboardPage from "./contract/pages/DashboardPage";
 import ContractDocumentPage from "./contract/pages/ContractDocumentPage";
@@ -22,14 +22,16 @@ import ContractChangeFormPage from "./contract/pages/ContractChangeFormPage";
 import DebtorContractFormPage from "./contract/pages/DebtorContractFormPage";
 import DebtorSignaturePage from "./contract/pages/DebtorSignaturePage";
 
-import NotificationCenter from "./notification/NotificationCenter";
 
-import ArchivePage from "./archive/ArchivePage";
-import SettlementArchivePreviewPage from "./archive/pages/SettlementArchivePreviewPage";
+import NotificationCenter from './notification/NotificationCenter';
 
-import SettlementListPage from "./settlement/pages/SettlementListPage";
-import SettlementCreatePage from "./settlement/pages/SettlementCreatePage";
-import SettlementDetailPage from "./settlement/pages/SettlementDetailPage";
+import ArchivePage from './archive/ArchivePage';
+import SettlementArchivePreviewPage from './archive/pages/SettlementArchivePreviewPage';
+import ContractArchivePreviewPage from './archive/pages/ContractArchivePreviewPage';
+
+import SettlementListPage from './settlement/pages/SettlementListPage';
+import SettlementCreatePage from './settlement/pages/SettlementCreatePage';
+import SettlementDetailPage from './settlement/pages/SettlementDetailPage';
 
 function App() {
   return (
@@ -40,7 +42,6 @@ function App() {
 
           <Route element={<MinimalLayout />}>
             <Route path="/login" element={<LoginPage />} />
-
             <Route path="/signup" element={<SignupPage />} />
           </Route>
 
@@ -71,7 +72,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/identity-test"
               element={
@@ -89,7 +89,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/contracts/signature"
               element={
@@ -98,7 +97,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/contracts/complete"
               element={
@@ -107,7 +105,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/contracts/dashboard"
               element={
@@ -116,16 +113,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-            <Route
-              path="/contracts/:contractId/schedule"
-              element={
-                <ProtectedRoute>
-                  <SchedulePage />
-                </ProtectedRoute>
-              }
-            />
-
             <Route
               path="/contracts/:contractId/contract-detail"
               element={
@@ -134,7 +121,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              path="/contracts/:contractId/schedule"
+              element={
+                <ProtectedRoute>
+                  <SchedulePage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/contracts/:contractId/change-request"
               element={
@@ -152,7 +146,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/contracts/:contractId/approve/signature"
               element={
@@ -170,7 +163,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/settlements/new"
               element={
@@ -179,7 +171,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/settlements/:settlementId"
               element={
@@ -197,12 +188,19 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/archive/settlements/:settlementId"
               element={
                 <ProtectedRoute>
                   <SettlementArchivePreviewPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/archive/contracts/:contractId"
+              element={
+                <ProtectedRoute>
+                  <ContractArchivePreviewPage />
                 </ProtectedRoute>
               }
             />

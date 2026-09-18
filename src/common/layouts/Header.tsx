@@ -54,7 +54,12 @@ export default function Header() {
             <img src="/images/common/archive.svg" alt="" />
             <span className="sr-only">보관함 (준비 중)</span>
           </span>
-          <Link to="/notifications" className="app-header-profile" aria-label="알림" aria-current={pathname === '/notifications' ? 'page' : undefined}>
+          <Link
+            to="/notifications"
+            className="app-header-profile"
+            aria-label="알림"
+            aria-current={pathname === '/notifications' ? 'page' : undefined}
+          >
             <img src="/images/common/notification.svg" alt="" />
           </Link>
           <Link to="/mypage" className="app-header-profile" aria-label="마이페이지">

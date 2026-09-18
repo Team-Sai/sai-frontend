@@ -44,32 +44,34 @@ export async function getSettlementArchivePreview(settlementId: number): Promise
   return response.json();
 }
 
-async function downloadPdf(url: string, fileName: string): Promise<void> {
-  const response = await authFetch(url, {
+export async function getSavedSettlementPdf(settlementId: number): Promise<Blob | null> {
+  const response = await authFetch(`/api/settlements/${settlementId}/pdf`, {
+    method: 'GET',
     headers: { Accept: 'application/pdf' },
   });
 
-  if (!response.ok) {
-    throw new Error('PDF 생성에 실패했습니다.');
+  if (response.status === 404) {
+    return null;
   }
 
-  const blob = await response.blob();
-  const objectUrl = window.URL.createObjectURL(blob);
+  if (!response.ok) {
+    throw new Error(`저장된 정산 PDF를 불러오지 못했습니다. (HTTP ${response.status})`);
+  }
 
-  const a = document.createElement('a');
-  a.href = objectUrl;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  window.URL.revokeObjectURL(objectUrl);
+  return response.blob();
 }
 
-export function downloadContractPdf(contractId: number): Promise<void> {
-  return downloadPdf(`/api/contracts/${contractId}/pdf`, `차용증_${contractId}.pdf`);
+export async function saveSettlementPdf(settlementId: number, pdf: Blob): Promise<void> {
+  const form = new FormData();
+  form.append('file', pdf, `정산_${settlementId}.pdf`);
+
+  const response = await authFetch(`/api/settlements/${settlementId}/pdf`, {
+    method: 'POST',
+    body: form,
+  });
+
+  if (!response.ok) {
+    throw new Error(`정산 PDF 저장에 실패했습니다. (HTTP ${response.status})`);
+  }
 }
 
-export function downloadSettlementPdf(settlementId: number): Promise<void> {
-  return downloadPdf(`/api/settlements/${settlementId}/pdf`, `정산_${settlementId}.pdf`);
-}

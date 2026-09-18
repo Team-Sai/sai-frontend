@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../contract/shared.css';
 import './ArchivePage.css';
-import {
-  downloadContractPdf,
-  downloadSettlementPdf,
-  getArchiveContracts,
-  getArchiveSettlements,
-} from './api/archiveApi';
+import { getArchiveContracts, getArchiveSettlements } from './api/archiveApi';
+import { downloadContractPdf } from './pdf/downloadContractPdf';
+import { downloadSettlementPdf } from './pdf/downloadSettlementPdf';
 import {
   ARCHIVE_CONTRACT_STATUS_LABELS,
   ARCHIVE_ROLE_LABELS,
@@ -32,6 +29,8 @@ export default function ArchivePage() {
 
   useEffect(() => {
     let cancelled = false;
+    setIsLoading(true);
+    setError(null);
 
     if (activeTab === 'contract') {
       getArchiveContracts(page)
@@ -68,16 +67,8 @@ export default function ArchivePage() {
 
   function handleTabChange(tab: ArchiveTabType) {
     if (tab === activeTab) return;
-    setIsLoading(true);
-    setError(null);
     setActiveTab(tab);
     setPage(1);
-  }
-
-  function handlePageChange(nextPage: number) {
-    setIsLoading(true);
-    setError(null);
-    setPage(nextPage);
   }
 
   async function handleContractPdfClick(event: React.MouseEvent, contractId: number) {
@@ -146,7 +137,7 @@ export default function ArchivePage() {
                 <div
                   key={contract.contractId}
                   className="archive-card"
-                  onClick={() => navigate(`/contracts/${contract.contractId}/contract-detail`)}
+                  onClick={() => navigate(`/archive/contracts/${contract.contractId}`)}
                 >
                   <div className="archive-card-main">
                     <div className="archive-card-title">
@@ -179,7 +170,7 @@ export default function ArchivePage() {
 
           {contractData && contractData.totalPages > 1 && (
             <div className="pager">
-              <button type="button" disabled={page <= 1} onClick={() => handlePageChange(page - 1)}>
+              <button type="button" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
                 이전
               </button>
               <span className="pager-label">
@@ -188,7 +179,7 @@ export default function ArchivePage() {
               <button
                 type="button"
                 disabled={page >= contractData.totalPages}
-                onClick={() => handlePageChange(page + 1)}
+                onClick={() => setPage((p) => p + 1)}
               >
                 다음
               </button>
