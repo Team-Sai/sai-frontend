@@ -14,31 +14,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
 
-useEffect(() => {
-    const publicPaths = ['/login', '/signup'];
+  useEffect(() => {
+    const publicPaths = ['/', '/intro', '/login', '/signup'];
     async function initialize() {
-    if (publicPaths.includes(window.location.pathname)) {
+      const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+      if (publicPaths.includes(pathname)) {
         setIsInitializing(false);
         return;
-    }
+      }
 
-    try {
-    const res = await authFetch('/api/users/me');
-    if (res.ok) {
-        const userData: User = await res.json();
-        setUser(userData);
-    } else {
+      try {
+        const res = await authFetch('/api/users/me');
+        if (res.ok) {
+          const userData: User = await res.json();
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      } catch {
         setUser(null);
+      } finally {
+        setIsInitializing(false);
+      }
     }
-    } catch {
-    setUser(null);
-    } finally {
-    setIsInitializing(false);
-    }
-}
 
-initialize();
-}, []);
+    initialize();
+  }, []);
 
   function login(userData: User) {
     setUser(userData);
