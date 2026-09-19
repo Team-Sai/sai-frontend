@@ -78,7 +78,9 @@
   color: var(--color-nav-default);
   text-decoration: none;
   white-space: nowrap;
-  transition: color 0.18s ease, border-color 0.18s ease;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .app-nav__link[href]:hover {
@@ -221,8 +223,9 @@
 @media (max-width: 1023px) {
   .app-header__inner {
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px 20px;
-    padding-block: 12px 0;
+    grid-template-rows: 80px auto;
+    gap: 0 20px;
+    padding-block: 0;
   }
 
   .app-nav {
@@ -255,7 +258,7 @@
   }
 
   .app-header__inner {
-    gap: 4px 12px;
+    gap: 0 12px;
   }
 
   .app-brand {
@@ -333,5 +336,6 @@
 /* The logo-only header has no second menu row. */
 .app-header--minimal .app-header__inner {
   grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 80px;
   padding-block: 0;
 }

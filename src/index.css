@@ -1,23 +1,23 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @font-face {
-  font-family: "Pretendard";
-  src: url("/fonts/Pretendard-Regular-subset.woff2") format("woff2");
+  font-family: 'Pretendard';
+  src: url('/fonts/Pretendard-Regular-subset.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Pretendard";
-  src: url("/fonts/Pretendard-Bold-subset.woff2") format("woff2");
+  font-family: 'Pretendard';
+  src: url('/fonts/Pretendard-Bold-subset.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @theme {
-  --font-sans: "Pretendard", Arial, sans-serif;
+  --font-sans: 'Pretendard', Arial, sans-serif;
 
   --color-primary: #0f8a5f;
   --color-background: #f8f9fa;
@@ -41,6 +41,11 @@
 
   --text-tiny: 11px;
   --text-tiny--line-height: 1.5;
+}
+
+/* Keep centered shell content aligned on both short and scrollable pages. */
+html {
+  scrollbar-gutter: stable;
 }
 
 body {
