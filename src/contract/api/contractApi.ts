@@ -230,3 +230,26 @@ export async function saveContractPdf(contractId: number, pdf: Blob): Promise<vo
     throw new Error(`차용증 PDF 저장에 실패했습니다. (HTTP ${response.status})`);
   }
 }
+
+export async function getContractAccount(contractId: number): Promise<LinkedBankAccount | null> {
+  const response = await authFetch(`/api/contracts/${contractId}/account`, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (response.status === 403 || response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error(`수취 계좌 정보를 불러오지 못했습니다. (HTTP ${response.status})`);
+  }
+
+  const data: unknown = await response.json();
+
+  if (!isLinkedBankAccount(data)) {
+    throw new Error('계좌 정보 응답 형식이 올바르지 않습니다.');
+  }
+
+  return data;
+}

@@ -22,6 +22,9 @@ import ContractSignaturePage from './contract/pages/ContractSignaturePage';
 import ContractCompletePage from './contract/pages/ContractCompletePage';
 import SchedulePage from './contract/pages/SchedulePage';
 import ContractChangeFormPage from './contract/pages/ContractChangeFormPage';
+import ContractChangeRequestDetailPage from './contract/pages/ContractChangeRequestDetailPage';
+import ContractChangeApprovalFormPage from './contract/pages/ContractChangeApprovalFormPage';
+import ContractChangeApprovalSignaturePage from './contract/pages/ContractChangeApprovalSignaturePage';
 import ContractChangeRequestSentPage from './contract/pages/ContractChangeRequestSentPage';
 import ContractChangeSignaturePage from './contract/pages/ContractChangeSignaturePage';
 import DebtorContractFormPage from './contract/pages/DebtorContractFormPage';
@@ -161,6 +164,32 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ContractChangeSignaturePage />
+                </ProtectedRoute>
+              }
+            />
+
+                        <Route
+              path="/contracts/:contractId/change-requests/:changeRequestId"
+              element={
+                <ProtectedRoute>
+                  <ContractChangeRequestDetailPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/contracts/:contractId/change-approval"
+              element={
+                <ProtectedRoute>
+                  <ContractChangeApprovalFormPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contracts/:contractId/change-approval/signature"
+              element={
+                <ProtectedRoute>
+                  <ContractChangeApprovalSignaturePage />
                 </ProtectedRoute>
               }
             />

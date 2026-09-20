@@ -17,14 +17,14 @@ export function formatNotificationTime(dateString: string | null, now: number): 
 /** Centralize legacy URLs until their React destinations are implemented. */
 export function getNotificationDestination(n: NotificationResponse): NotificationDestination | null {
   if (!isNotificationId(n.notificationId)) return null;
-  const destination = (url: string, label: string): NotificationDestination => ({ url, label, available: false });
+  const destination = (url: string, label: string, available = false): NotificationDestination => ({ url, label, available });
   if (n.notificationType === 'CONTRACT_REQUESTED' && isNotificationId(n.referenceId)) {
     return destination(`/contracts/${n.referenceId}/approve`, '서명하러 가기');
   }
   if (n.notificationType === 'CONTRACT_CHANGE' && isNotificationId(n.referenceId)) {
     return isNotificationId(n.secondaryReferenceId)
-      ? destination(`/contracts/${n.referenceId}/change-requests/${n.secondaryReferenceId}`, '변경 요청 확인하기')
-      : destination(`/contracts/${n.referenceId}/contract-detail`, '계약서 보기');
+      ? destination(`/contracts/${n.referenceId}/change-requests/${n.secondaryReferenceId}`, '변경 요청 확인하기', true)
+      : destination(`/contracts/${n.referenceId}/contract-detail`, '계약서 보기', true);
   }
   const isDue = ['SETTLEMENT_DUE_REMINDER_D3', 'SETTLEMENT_DUE_REMINDER_D1', 'SETTLEMENT_DUE_REMINDER_DDAY'].includes(n.notificationType);
   if (isDue || n.notificationType === 'SETTLEMENT_PARTICIPANT_ADDED') {
