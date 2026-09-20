@@ -88,7 +88,7 @@ function ContractChangeRequestDetailContent({
     };
   }, [contractId, changeRequestId]);
 
-  const isPending = detail?.status === "승인 대기 중";
+  const isPending = typeof detail?.status === "string" && detail.status.includes("대기");
   const isRejectedView = Boolean(detail?.returnReason);
 
   function handleApproveClick() {
