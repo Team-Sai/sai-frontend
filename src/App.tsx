@@ -36,6 +36,7 @@ import ContractArchivePreviewPage from './archive/pages/ContractArchivePreviewPa
 import SettlementListPage from './settlement/pages/SettlementListPage';
 import SettlementCreatePage from './settlement/pages/SettlementCreatePage';
 import SettlementDetailPage from './settlement/pages/SettlementDetailPage';
+import CalendarPage from './calendar/pages/CalendarPage';
 
 function App() {
   return (
@@ -205,6 +206,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="/calendar"
+              element={
+                <ProtectedRoute>
+                  <CalendarPage />
+                </ProtectedRoute>
+              }
+            />    
 
             <Route
               path="/archive"

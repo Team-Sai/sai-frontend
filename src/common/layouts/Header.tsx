@@ -22,6 +22,7 @@ const IMPLEMENTED_PATHS = new Set([
   '/integration/dashboard',
   '/settlements',
   '/contracts/dashboard',
+  '/calendar',
 ]);
 
 export default function Header() {
