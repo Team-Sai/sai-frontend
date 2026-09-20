@@ -32,8 +32,10 @@ function formatWon(amount: number): string {
   return `${Math.round(amount).toLocaleString("ko-KR")}원`;
 }
 
+const INBOUND_SUB_LABELS = new Set(["수취예정", "받을 돈"]);
+
 function isInboundItem(item: CalendarItem): boolean {
-  return item.subLabel.includes("수취") || item.subLabel.includes("받을");
+  return INBOUND_SUB_LABELS.has(item.subLabel);
 }
 
 export default function CalendarPage() {
@@ -129,12 +131,21 @@ export default function CalendarPage() {
     }
   }
 
-  function goToday() {
-    setIsLoadingMonth(true);
-    setIsLoadingDay(true);
-    setYear(today.getFullYear());
-    setMonth(today.getMonth() + 1);
-    setSelectedDate(toDateString(today));
+    function goToday() {
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth() + 1;
+    const todayDateStr = toDateString(today);
+
+    if (todayYear !== year || todayMonth !== month) {
+      setIsLoadingMonth(true);
+      setYear(todayYear);
+      setMonth(todayMonth);
+    }
+
+    if (todayDateStr !== selectedDate) {
+      setIsLoadingDay(true);
+      setSelectedDate(todayDateStr);
+    }
   }
 
   const todayStr = toDateString(today);
@@ -172,7 +183,6 @@ export default function CalendarPage() {
       </div>
 
       {monthError && <p className="calendar-error">{monthError}</p>}
-            {monthError && <p className="calendar-error">{monthError}</p>}
 
       <div className="calendar-layout">
         <div className="calendar-main">
@@ -211,8 +221,10 @@ export default function CalendarPage() {
                     dayOfWeek === 6 && "calendar-cell--sat",
                   ].filter(Boolean).join(" ")}
                   onClick={() => {
-                    setIsLoadingDay(true);
-                    setSelectedDate(dateStr);
+                    if (dateStr !== selectedDate) {
+                      setIsLoadingDay(true);
+                      setSelectedDate(dateStr);
+                    }
                   }}
                   disabled={isLoadingMonth}
                 >
