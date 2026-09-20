@@ -32,6 +32,10 @@ function formatWon(amount: number): string {
   return `${Math.round(amount).toLocaleString("ko-KR")}원`;
 }
 
+function isInboundItem(item: CalendarItem): boolean {
+  return item.subLabel.includes("수취") || item.subLabel.includes("받을");
+}
+
 export default function CalendarPage() {
   const navigate = useNavigate();
   const today = new Date();
@@ -54,6 +58,16 @@ export default function CalendarPage() {
   }, [markers]);
 
   const grid = useMemo(() => buildMonthGrid(year, month), [year, month]);
+
+  const monthCounts = useMemo(() => {
+    let inboundDays = 0;
+    let outboundDays = 0;
+    markers.forEach((m) => {
+      if (m.hasInbound) inboundDays += 1;
+      if (m.hasOutbound) outboundDays += 1;
+    });
+    return { inboundDays, outboundDays };
+  }, [markers]);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,7 +141,7 @@ export default function CalendarPage() {
 
   return (
     <div className="calendar-page">
-      <div className="calendar-header">
+        <div className="calendar-header">
         <h1>캘린더</h1>
         <div className="calendar-nav">
           <button type="button" onClick={goPrevMonth} aria-label="이전 달">‹</button>
@@ -137,82 +151,122 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      {monthError && <p className="calendar-error">{monthError}</p>}
-
-      <div className="calendar-grid">
-        {WEEKDAY_LABELS.map((label) => (
-          <div key={label} className="calendar-weekday">{label}</div>
-        ))}
-
-        {grid.map((date) => {
-          const dateStr = toDateString(date);
-          const inCurrentMonth = date.getMonth() + 1 === month;
-          const marker = markerByDate.get(dateStr);
-          const isSelected = dateStr === selectedDate;
-          const isToday = dateStr === todayStr;
-
-          return (
-            <button
-              key={dateStr}
-              type="button"
-              className={[
-                "calendar-cell",
-                !inCurrentMonth && "calendar-cell--muted",
-                isSelected && "calendar-cell--selected",
-                isToday && "calendar-cell--today",
-              ].filter(Boolean).join(" ")}
-              onClick={() => {
-                setIsLoadingDay(true);
-                setSelectedDate(dateStr);
-              }}
-              disabled={isLoadingMonth}
-            >
-              <span className="calendar-cell-date">{date.getDate()}</span>
-              <span className="calendar-cell-dots">
-                {marker?.hasInbound && <span className="calendar-dot calendar-dot--inbound" />}
-                {marker?.hasOutbound && <span className="calendar-dot calendar-dot--outbound" />}
-              </span>
-            </button>
-          );
-        })}
+      <div className="calendar-legend">
+        <span className="calendar-legend-item">
+          <span className="calendar-dot calendar-dot--inbound" /> 받을 돈
+        </span>
+        <span className="calendar-legend-item">
+          <span className="calendar-dot calendar-dot--outbound" /> 보낼 돈
+        </span>
       </div>
 
-      <div className="calendar-day-panel">
-        <h2>{selectedDate} 일정</h2>
+      <div className="calendar-summary">
+        <div className="calendar-summary-card calendar-summary-card--inbound">
+          <span className="calendar-summary-label">받을 일정이 있는 날</span>
+          <span className="calendar-summary-value">{monthCounts.inboundDays}일</span>
+        </div>
+        <div className="calendar-summary-card calendar-summary-card--outbound">
+          <span className="calendar-summary-label">보낼 일정이 있는 날</span>
+          <span className="calendar-summary-value">{monthCounts.outboundDays}일</span>
+        </div>
+      </div>
 
-        {isLoadingDay && <p className="calendar-day-status">불러오는 중이에요...</p>}
-        {!isLoadingDay && dayError && <p className="calendar-day-status calendar-day-status--error">{dayError}</p>}
-        {!isLoadingDay && !dayError && dayItems.length === 0 && (
-          <p className="calendar-day-status">이 날짜에 해당하는 일정이 없습니다.</p>
-        )}
+      {monthError && <p className="calendar-error">{monthError}</p>}
+            {monthError && <p className="calendar-error">{monthError}</p>}
 
-        {!isLoadingDay && !dayError && dayItems.length > 0 && (
-          <ul className="calendar-item-list">
-            {dayItems.map((item) => (
-              <li
-                key={`${item.type}-${item.targetId}`}
-                className={`calendar-item ${item.overdue ? "calendar-item--overdue" : ""}`}
-                onClick={() => navigate(item.detailUrl)}
+      <div className="calendar-layout">
+        <div className="calendar-main">
+          <div className="calendar-grid">
+                        {WEEKDAY_LABELS.map((label, index) => (
+              <div
+                key={label}
+                className={[
+                  "calendar-weekday",
+                  index === 0 && "calendar-weekday--sun",
+                  index === 6 && "calendar-weekday--sat",
+                ].filter(Boolean).join(" ")}
               >
-                <div className="calendar-item-top">
-                  <span className={`calendar-item-type calendar-item-type--${item.type.toLowerCase()}`}>
-                    {item.type === "LOAN" ? "금전소비대차" : "정산"}
-                  </span>
-                  <span className="calendar-item-sublabel">{item.subLabel}</span>
-                  {item.overdue && <span className="calendar-item-overdue-badge">연체</span>}
-                </div>
-                <div className="calendar-item-title">{item.title}</div>
-                <div className="calendar-item-amount">{formatWon(item.amount)}</div>
-                <div className="calendar-item-meta">
-                  {item.counterpartyName && <span>{item.counterpartyName}</span>}
-                  {item.installmentInfo && <span>{item.installmentInfo}</span>}
-                  {item.categoryLabel && <span>{item.categoryLabel}</span>}
-                  {item.settlementTypeLabel && <span>{item.settlementTypeLabel}</span>}
-                </div>
-              </li>
+                {label}
+              </div>
             ))}
-          </ul>
-        )}
+
+            {grid.map((date) => {
+              const dateStr = toDateString(date);
+              const inCurrentMonth = date.getMonth() + 1 === month;
+              const marker = markerByDate.get(dateStr);
+              const isSelected = dateStr === selectedDate;
+              const isToday = dateStr === todayStr;
+              const dayOfWeek = date.getDay();
+
+              return (
+                <button
+                  key={dateStr}
+                  type="button"
+                  className={[
+                    "calendar-cell",
+                    !inCurrentMonth && "calendar-cell--muted",
+                    isSelected && "calendar-cell--selected",
+                    isToday && "calendar-cell--today",
+                    dayOfWeek === 0 && "calendar-cell--sun",
+                    dayOfWeek === 6 && "calendar-cell--sat",
+                  ].filter(Boolean).join(" ")}
+                  onClick={() => {
+                    setIsLoadingDay(true);
+                    setSelectedDate(dateStr);
+                  }}
+                  disabled={isLoadingMonth}
+                >
+                  <span className="calendar-cell-date">{date.getDate()}</span>
+                  <span className="calendar-cell-dots">
+                    {marker?.hasInbound && <span className="calendar-dot calendar-dot--inbound" />}
+                    {marker?.hasOutbound && <span className="calendar-dot calendar-dot--outbound" />}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="calendar-day-panel">
+            <h2>{selectedDate} 일정 ({dayItems.length}건){selectedDate === todayStr && <span className="calendar-today-tag">오늘</span>}</h2>
+
+          {isLoadingDay && <p className="calendar-day-status">불러오는 중이에요...</p>}
+          {!isLoadingDay && dayError && <p className="calendar-day-status calendar-day-status--error">{dayError}</p>}
+          {!isLoadingDay && !dayError && dayItems.length === 0 && (
+            <div className="calendar-empty">
+              <div className="calendar-empty-icon">📅</div>
+              <p>이 날짜에 해당하는 일정이 없습니다.</p>
+            </div>
+          )}
+
+          {!isLoadingDay && !dayError && dayItems.length > 0 && (
+            <ul className="calendar-item-list">
+              {dayItems.map((item) => (
+                <li
+                  key={`${item.type}-${item.targetId}`}
+                  className={`calendar-item ${isInboundItem(item) ? "calendar-item--inbound" : "calendar-item--outbound"} ${item.overdue ? "calendar-item--overdue" : ""}`}
+                  onClick={() => navigate(item.detailUrl)}
+                >
+                  <div className="calendar-item-top">
+                    <span className={`calendar-item-type calendar-item-type--${item.type.toLowerCase()}`}>
+                      {item.type === "LOAN" ? "금전소비대차" : "정산"}
+                    </span>
+                    <span className="calendar-item-sublabel">{item.subLabel}</span>
+                    {item.overdue && <span className="calendar-item-overdue-badge">연체</span>}
+                  </div>
+                  <div className="calendar-item-title">{item.title}</div>
+                  <div className="calendar-item-amount">{formatWon(item.amount)}</div>
+                  <div className="calendar-item-meta">
+                    {item.counterpartyName && <span>{item.counterpartyName}</span>}
+                    {item.installmentInfo && <span>{item.installmentInfo}</span>}
+                    {item.categoryLabel && <span>{item.categoryLabel}</span>}
+                    {item.settlementTypeLabel && <span>{item.settlementTypeLabel}</span>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );
