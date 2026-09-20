@@ -102,6 +102,16 @@
   gap: 12px;
 }
 
+.contract-scope--change-detail .processed-note {
+  padding: 14px 16px;
+  background: #f4f6f5;
+  border: 1px solid #e2e6e4;
+  border-radius: 8px;
+  color: #667085;
+  font-size: 13px;
+  text-align: center;
+}
+
 .crd .btn-approve {
   flex: 1;
   padding: 14px;
