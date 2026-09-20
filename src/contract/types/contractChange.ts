@@ -21,3 +21,25 @@ export interface ContractChangeRequestInput {
 export interface ContractChangeResult {
     changeRequestId: number;
 }
+
+export interface ChangeRequestDetail {
+    changeRequestId: number;
+    newContractId: number | null;
+    requesterName: string;
+    rejectorName: string;
+    requestedAt: string;
+    status: string;
+    currentMaturityDate: string;
+    currentInterestRate: number;
+    currentRepaymentType: string;
+    currentTerms: string | null;
+    currentMonthlyPayment: number;
+    newMaturityDate: string;
+    newInterestRate: number;
+    newRepaymentType: string;
+    newTerms: string | null;
+    newMonthlyPayment: number;
+    changeReason: string;
+    extendedMonths: number;
+    returnReason: string | null;
+}
