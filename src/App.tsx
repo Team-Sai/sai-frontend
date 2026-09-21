@@ -13,7 +13,7 @@ import MyPage from './users/pages/MyPage';
 import IdentityTestPage from './identity/pages/IdentityTestPage';
 import LinkCompletePage from './link/pages/LinkCompletePage';
 
-import DashboardPage from './pages/DashboardPage';
+import DashboardPage from './integration/pages/DashboardPage';
 
 import ContractDashboardPage from './contract/pages/DashboardPage';
 import ContractDocumentPage from './contract/pages/ContractDocumentPage';
