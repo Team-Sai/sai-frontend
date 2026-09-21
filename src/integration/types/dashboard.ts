@@ -9,14 +9,9 @@ export interface DashboardAmountSummary {
   payable?: DashboardAmountDetail;
 }
 
-export type AttentionType =
-  | 'LOAN_DUE_SOON'
-  | 'SETTLEMENT_DUE_SOON'
-  | string;
-
 export interface DashboardAttentionItem {
   id?: number | string;
-  type: AttentionType;
+  type: string;
   remainingDays?: number;
   actionUrl?: string;
 }
@@ -28,20 +23,15 @@ export interface DashboardMonthlySummary {
   transactionCompletionRate?: number;
 }
 
-export type TransactionType =
+export type DashboardTransactionType =
   | 'LOAN'
   | 'SETTLEMENT';
-
-export type TransactionStatus =
-  | 'COMPLETED'
-  | 'IN_PROGRESS'
-  | string;
 
 export interface DashboardTransaction {
   id?: number | string;
   title: string;
-  status: TransactionStatus;
-  type: TransactionType;
+  status: string;
+  type: DashboardTransactionType;
   amount: number;
   detailUrl?: string;
 }

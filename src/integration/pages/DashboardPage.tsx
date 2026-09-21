@@ -1,11 +1,10 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
-
 import type { CSSProperties } from 'react';
-
 import { useNavigate } from 'react-router-dom';
 
 import { dashboardApi } from '../api/dashboardApi';
@@ -25,9 +24,12 @@ const transactionStatusLabels: Record<string, string> = {
   IN_PROGRESS: '진행 중',
 };
 
-const currencyFormatter = new Intl.NumberFormat('ko-KR');
+const currencyFormatter =
+  new Intl.NumberFormat('ko-KR');
 
-function toAmount(value: unknown): number {
+function toAmount(
+  value: unknown,
+): number {
   const amount = Number(value);
 
   return Number.isFinite(amount)
@@ -35,13 +37,17 @@ function toAmount(value: unknown): number {
     : 0;
 }
 
-function formatWon(amount: number): string {
+function formatWon(
+  amount: number,
+): string {
   return `${currencyFormatter.format(
     toAmount(amount),
   )}원`;
 }
 
-function toDateKey(date: Date): string {
+function toDateKey(
+  date: Date,
+): string {
   const year = date.getFullYear();
 
   const month = String(
@@ -55,7 +61,9 @@ function toDateKey(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function toYearMonth(date: Date): string {
+function toYearMonth(
+  date: Date,
+): string {
   const year = date.getFullYear();
 
   const month = String(
@@ -84,12 +92,16 @@ function getCalendarDates(
   );
 
   return Array.from(
-    { length: 42 },
+    {
+      length: 42,
+    },
     (_, index) => {
-      const date = new Date(startDate);
+      const date =
+        new Date(startDate);
 
       date.setDate(
-        startDate.getDate() + index,
+        startDate.getDate() +
+          index,
       );
 
       return date;
@@ -100,8 +112,12 @@ function getCalendarDates(
 function getAttentionMessage(
   item: DashboardAttentionItem,
 ): string {
-  if (item.type === 'LOAN_DUE_SOON') {
-    return item.remainingDays === 0
+  if (
+    item.type ===
+    'LOAN_DUE_SOON'
+  ) {
+    return item.remainingDays ===
+      0
       ? '차용증 상환일이 오늘이에요'
       : `차용증 상환일이 ${
           item.remainingDays ?? 0
@@ -112,7 +128,8 @@ function getAttentionMessage(
     item.type ===
     'SETTLEMENT_DUE_SOON'
   ) {
-    return item.remainingDays === 0
+    return item.remainingDays ===
+      0
       ? '정산 마감일이 오늘이에요'
       : `정산 마감일이 ${
           item.remainingDays ?? 0
@@ -235,7 +252,9 @@ export default function DashboardPage() {
     setTransactionFilter,
   ] =
     useState<
-      'ALL' | 'LOAN' | 'SETTLEMENT'
+      | 'ALL'
+      | 'LOAN'
+      | 'SETTLEMENT'
     >('ALL');
 
   const [
@@ -253,80 +272,110 @@ export default function DashboardPage() {
     setLoadError,
   ] = useState(false);
 
-  async function loadDashboard(
-    cursor: Date,
-    calendarOnly = false,
-  ): Promise<void> {
-    if (!calendarOnly) {
-      setLoading(true);
-      setLoadError(false);
-    }
+  const [
+    calendarError,
+    setCalendarError,
+  ] = useState(false);
 
-    try {
-      const data =
-        await dashboardApi.getDashboard(
-          toYearMonth(cursor),
-        );
+  const calendarRequestIdRef =
+    useRef(0);
 
-      setCalendarDays(
-        data.calendarDays ?? [],
-      );
+  const initialYearMonthRef =
+    useRef(
+      toYearMonth(
+        calendarCursor,
+      ),
+    );
 
-      if (calendarOnly) {
-        return;
-      }
-
-      setMonthlySummary(
-        data.monthlySummary ?? null,
-      );
-
-      setAmountSummary(
-        data.amountSummary ?? null,
-      );
-
-      setAttentionItems(
-        data.attentionItems ?? [],
-      );
-
-      setRecentTransactions(
-        data.recentTransactions ?? [],
-      );
-    } catch (error) {
-      console.error(error);
-
-      if (!calendarOnly) {
-        setLoadError(true);
-
-        setCalendarDays([]);
-        setMonthlySummary(null);
-        setAmountSummary(null);
-        setAttentionItems([]);
-        setRecentTransactions([]);
-      }
-    } finally {
-      if (!calendarOnly) {
-        setLoading(false);
-      }
-    }
-  }
+  const currentCalendarMonthRef =
+    useRef(
+      toYearMonth(
+        calendarCursor,
+      ),
+    );
 
   useEffect(() => {
     document.body.classList.add(
       'integration-page',
     );
 
-    void loadDashboard(
-      calendarCursor,
-    );
+    let cancelled = false;
+
+    const loadInitialDashboard =
+      async (): Promise<void> => {
+        try {
+          const data =
+            await dashboardApi.getDashboard(
+              initialYearMonthRef.current,
+            );
+
+          if (cancelled) {
+            return;
+          }
+
+          if (
+            initialYearMonthRef.current ===
+            currentCalendarMonthRef.current
+          ) {
+            setCalendarDays(
+              data.calendarDays ??
+                [],
+            );
+          }
+
+          setMonthlySummary(
+            data.monthlySummary ??
+              null,
+          );
+
+          setAmountSummary(
+            data.amountSummary ??
+              null,
+          );
+
+          setAttentionItems(
+            data.attentionItems ??
+              [],
+          );
+
+          setRecentTransactions(
+            data.recentTransactions ??
+              [],
+          );
+
+          setLoadError(false);
+        } catch (error) {
+          if (cancelled) {
+            return;
+          }
+
+          console.error(
+            '통합 대시보드 조회 실패:',
+            error,
+          );
+
+          setLoadError(true);
+          setCalendarDays([]);
+          setMonthlySummary(null);
+          setAmountSummary(null);
+          setAttentionItems([]);
+          setRecentTransactions([]);
+        } finally {
+          if (!cancelled) {
+            setLoading(false);
+          }
+        }
+      };
+
+    void loadInitialDashboard();
 
     return () => {
+      cancelled = true;
+
       document.body.classList.remove(
         'integration-page',
       );
     };
-
-    // 최초 로딩만
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -334,10 +383,8 @@ export default function DashboardPage() {
       !amountSummary ||
       loadError
     ) {
-      return;
+      return undefined;
     }
-
-    setSummaryIndex(0);
 
     const timer =
       window.setInterval(
@@ -351,7 +398,9 @@ export default function DashboardPage() {
       );
 
     return () => {
-      window.clearInterval(timer);
+      window.clearInterval(
+        timer,
+      );
     };
   }, [
     amountSummary,
@@ -396,7 +445,9 @@ export default function DashboardPage() {
         'ALL'
           ? recentTransactions
           : recentTransactions.filter(
-              (transaction) =>
+              (
+                transaction,
+              ) =>
                 transaction.type ===
                 transactionFilter,
             );
@@ -423,10 +474,12 @@ export default function DashboardPage() {
     );
 
   const receivable =
-    amountSummary?.receivable ?? {};
+    amountSummary?.receivable ??
+    {};
 
   const payable =
-    amountSummary?.payable ?? {};
+    amountSummary?.payable ??
+    {};
 
   async function changeMonth(
     offset: number,
@@ -439,14 +492,74 @@ export default function DashboardPage() {
         1,
       );
 
+    const requestedYearMonth =
+      toYearMonth(
+        nextCursor,
+      );
+
+    const requestId =
+      ++calendarRequestIdRef.current;
+
+    currentCalendarMonthRef.current =
+      requestedYearMonth;
+
     setCalendarCursor(
       nextCursor,
     );
 
-    await loadDashboard(
-      nextCursor,
-      true,
-    );
+    setCalendarDays([]);
+    setCalendarError(false);
+
+    try {
+      const data =
+        await dashboardApi.getDashboard(
+          requestedYearMonth,
+        );
+
+      const isLatestRequest =
+        requestId ===
+        calendarRequestIdRef.current;
+
+      const isCurrentMonth =
+        requestedYearMonth ===
+        currentCalendarMonthRef.current;
+
+      if (
+        !isLatestRequest ||
+        !isCurrentMonth
+      ) {
+        return;
+      }
+
+      setCalendarDays(
+        data.calendarDays ?? [],
+      );
+
+      setCalendarError(false);
+    } catch (error) {
+      const isLatestRequest =
+        requestId ===
+        calendarRequestIdRef.current;
+
+      const isCurrentMonth =
+        requestedYearMonth ===
+        currentCalendarMonthRef.current;
+
+      if (
+        !isLatestRequest ||
+        !isCurrentMonth
+      ) {
+        return;
+      }
+
+      console.error(
+        '월별 대시보드 조회 실패:',
+        error,
+      );
+
+      setCalendarDays([]);
+      setCalendarError(true);
+    }
   }
 
   function renderSummary() {
@@ -458,7 +571,9 @@ export default function DashboardPage() {
       return '금액을 불러오지 못했습니다.';
     }
 
-    if (summaryIndex === 0) {
+    if (
+      summaryIndex === 0
+    ) {
       return (
         <>
           현재 받을 금액은{' '}
@@ -480,7 +595,9 @@ export default function DashboardPage() {
       );
     }
 
-    if (summaryIndex === 1) {
+    if (
+      summaryIndex === 1
+    ) {
       return (
         <>
           정산 받을 금액은{' '}
@@ -558,7 +675,9 @@ export default function DashboardPage() {
       >
         <article className="panel calendar-panel">
           <div className="panel-header">
-            <h2>월별 현황</h2>
+            <h2>
+              월별 현황
+            </h2>
 
             <button
               className="text-button"
@@ -672,7 +791,9 @@ export default function DashboardPage() {
 
                   return (
                     <button
-                      key={dateKey}
+                      key={
+                        dateKey
+                      }
                       type="button"
                       className={
                         classNames
@@ -688,7 +809,9 @@ export default function DashboardPage() {
                       }
                     >
                       <span className="calendar-day__number">
-                        {date.getDate()}
+                        {
+                          date.getDate()
+                        }
                       </span>
 
                       <span
@@ -723,6 +846,15 @@ export default function DashboardPage() {
                 출금
               </span>
             </div>
+
+            {calendarError && (
+              <div
+                className="calendar-error"
+                role="status"
+              >
+                월별 내역을 불러오지 못했습니다.
+              </div>
+            )}
           </div>
         </article>
 
@@ -735,19 +867,16 @@ export default function DashboardPage() {
             <div className="attention-list">
               {loading ? (
                 <div className="empty-state">
-                  내역을 불러오는
-                  중입니다.
+                  내역을 불러오는 중입니다.
                 </div>
               ) : loadError ? (
                 <div className="empty-state">
-                  내역을 불러오지
-                  못했습니다.
+                  내역을 불러오지 못했습니다.
                 </div>
               ) : attentionItems.length ===
                 0 ? (
                 <div className="empty-state">
-                  확인이 필요한 내역이
-                  없습니다.
+                  확인이 필요한 내역이 없습니다.
                 </div>
               ) : (
                 attentionItems.map(
@@ -771,6 +900,9 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         className="status-badge badge-progress attention-confirm-button"
+                        disabled={
+                          !item.actionUrl
+                        }
                         onClick={() => {
                           if (
                             item.actionUrl
@@ -791,7 +923,9 @@ export default function DashboardPage() {
           </article>
 
           <article className="panel month-panel">
-            <h2>이번달 요약</h2>
+            <h2>
+              이번달 요약
+            </h2>
 
             <div className="month-stats">
               <div>
@@ -805,7 +939,9 @@ export default function DashboardPage() {
                     0}
                 </strong>
 
-                <em>건</em>
+                <em>
+                  건
+                </em>
               </div>
 
               <div>
@@ -819,7 +955,9 @@ export default function DashboardPage() {
                     0}
                 </strong>
 
-                <em>건</em>
+                <em>
+                  건
+                </em>
               </div>
 
               <div>
@@ -833,7 +971,9 @@ export default function DashboardPage() {
                     0}
                 </strong>
 
-                <em>건</em>
+                <em>
+                  건
+                </em>
               </div>
             </div>
 
@@ -843,7 +983,10 @@ export default function DashboardPage() {
               </span>
 
               <strong>
-                {completionRate}%
+                {
+                  completionRate
+                }
+                %
               </strong>
             </div>
 
@@ -940,12 +1083,15 @@ export default function DashboardPage() {
             <span role="columnheader">
               제목
             </span>
+
             <span role="columnheader">
               상태
             </span>
+
             <span role="columnheader">
               금액
             </span>
+
             <span role="columnheader">
               상세보기
             </span>
@@ -954,19 +1100,16 @@ export default function DashboardPage() {
           <div>
             {loading ? (
               <div className="empty-state">
-                거래를 불러오는
-                중입니다.
+                거래를 불러오는 중입니다.
               </div>
             ) : loadError ? (
               <div className="empty-state">
-                거래를 불러오지
-                못했습니다.
+                거래를 불러오지 못했습니다.
               </div>
             ) : filteredTransactions.length ===
               0 ? (
               <div className="empty-state">
-                표시할 거래 내역이
-                없습니다.
+                표시할 거래 내역이 없습니다.
               </div>
             ) : (
               filteredTransactions.map(
@@ -976,8 +1119,7 @@ export default function DashboardPage() {
                 ) => {
                   const statusLabel =
                     transactionStatusLabels[
-                      transaction
-                        .status
+                      transaction.status
                     ] ??
                     transaction.status ??
                     '-';
@@ -1026,6 +1168,9 @@ export default function DashboardPage() {
                           type="button"
                           className="detail-arrow"
                           aria-label={`${transaction.title} 상세보기`}
+                          disabled={
+                            !transaction.detailUrl
+                          }
                           onClick={() => {
                             if (
                               transaction.detailUrl
