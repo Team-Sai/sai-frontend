@@ -68,14 +68,23 @@ export default function Header() {
       actionsLabel="사용자 메뉴"
       actions={
         <>
-          <span
-            className="app-header-actions__disabled"
-            aria-disabled="true"
-            title="보관함: 준비 중입니다"
+          <Link
+            to="/archive"
+            className="app-header-profile"
+            aria-label="보관함"
+            aria-current={
+              pathname === '/archive' ||
+              pathname.startsWith('/archive/')
+                ? 'page'
+                : undefined
+            }
+            title="보관함"
           >
-            <img src="/images/common/archive.svg" alt="" />
-            <span className="sr-only">보관함 (준비 중)</span>
-          </span>
+            <img
+              src="/images/common/archive.svg"
+              alt=""
+            />
+          </Link>
           <Link
             to="/notifications"
             className="app-header-profile"
