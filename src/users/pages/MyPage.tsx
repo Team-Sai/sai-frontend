@@ -8,6 +8,7 @@ import { useAccountLink } from '../../link/hooks/useAccountLink';
 import { Button } from '../../common/components';
 
 interface UserData {
+  userToken?: string;
   name?: string;
   email?: string;
   birthDate?: string;
@@ -381,6 +382,12 @@ export default function MyPage() {
                     </div>
 
                     <div className="mt-5">
+                      <div className="flex min-h-13 items-center justify-between gap-3 border-b border-outline py-3">
+                        <span className="shrink-0 text-xs text-muted">회원 토큰</span>
+                        <strong className="min-w-0 break-all text-right text-[11px] select-all">
+                          {user?.userToken?.trim() || '회원 토큰을 확인할 수 없습니다.'}
+                        </strong>
+                      </div>
                       <div className="flex h-13 items-center justify-between border-b border-outline">
                         <span className="text-xs text-muted">
                           이메일
@@ -412,6 +419,12 @@ export default function MyPage() {
                         연결된 계좌
                       </h2>
 
+                      <div className="flex items-center gap-2">
+                      <Button
+                          variant="secondary"
+                          onClick={() => navigate('/mypage/transactions')}
+                          className="h-9 rounded-lg px-3.5 py-0 text-xs font-semibold"
+                      >내역</Button>
                       <Button
                           onClick={() => setIsLinkModalOpen(true)}
                           disabled={isConnecting}
@@ -445,6 +458,7 @@ export default function MyPage() {
                             ? '연결 중'
                             : '계좌 추가'}
                       </Button>
+                      </div>
                     </div>
 
                     <div className="mt-2 max-h-65 overflow-y-auto">

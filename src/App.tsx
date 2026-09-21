@@ -10,6 +10,7 @@ import MinimalLayout from './common/layouts/MinimalLayout';
 import LoginPage from './users/pages/LoginPage';
 import SignupPage from './users/pages/SignupPage';
 import MyPage from './users/pages/MyPage';
+import IntegratedTransactionPage from './transaction/pages/IntegratedTransactionPage';
 import IdentityTestPage from './identity/pages/IdentityTestPage';
 import LinkCompletePage from './link/pages/LinkCompletePage';
 
@@ -81,6 +82,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MyPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mypage/transactions"
+              element={
+                <ProtectedRoute>
+                  <IntegratedTransactionPage />
                 </ProtectedRoute>
               }
             />
