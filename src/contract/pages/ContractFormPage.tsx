@@ -76,12 +76,13 @@ export default function ContractFormPage() {
   const [isRiskModalOpen, setIsRiskModalOpen] = useState(false);
   const [previousAmount, setPreviousAmount] = useState(0);
 
+  const [entryPath] = useState(() => window.location.pathname + window.location.search);
+
   useEffect(() => {
     if (!sessionStorage.getItem('identityVerificationId')) {
-      const returnTo = window.location.pathname + window.location.search;
-      navigate(`/identity-test?returnTo=${encodeURIComponent(returnTo)}`, { replace: true });
+      navigate(`/identity-test?returnTo=${encodeURIComponent(entryPath)}`, { replace: true });
     }
-  }, [navigate]);
+  }, [navigate, entryPath]);
 
   useEffect(() => {
     async function loadCreditorInfo() {

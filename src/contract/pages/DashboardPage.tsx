@@ -9,6 +9,8 @@ import {
   CONTRACT_ROLE_LABELS,
   CONTRACT_STATUS_LABELS,
 } from "../types/dashboard";
+import RelationModal from "../components/RelationModal";
+import type { ContractRelationType } from "../types/contract";
 
 const money = (v: number) =>
   v.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
@@ -21,7 +23,13 @@ export default function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [sortType, setSortType] = useState("");
   const [page, setPage] = useState(1);
+  const [isRelationModalOpen, setIsRelationModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  function handleRelationConfirm(relation: ContractRelationType) {
+    setIsRelationModalOpen(false);
+    navigate(`/contracts/new?relation=${relation}`);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -69,9 +77,13 @@ export default function DashboardPage() {
           <h1 className="unified-page-title">금전소비대차 대시보드</h1>
         </div>
         <div className="heading-actions">
-          <Link className="button button-primary" to="/contracts/new">
+          <button
+            type="button"
+            className="button button-primary"
+            onClick={() => setIsRelationModalOpen(true)}
+          >
             + 새 계약 작성
-          </Link>
+          </button>
         </div>
       </section>
 
@@ -224,9 +236,13 @@ export default function DashboardPage() {
             <div className="empty-icon">₩</div>
             <h2>아직 등록된 계약이 없습니다.</h2>
             <p>금전소비대차 계약을 작성하면 이 화면에서 조회할 수 있습니다.</p>
-            <Link className="button button-primary" to="/contracts/new">
+            <button
+              type="button"
+              className="button button-primary"
+              onClick={() => setIsRelationModalOpen(true)}
+            >
               첫 계약 작성하기
-            </Link>
+            </button>
           </div>
         )}
       </section>
@@ -259,6 +275,13 @@ export default function DashboardPage() {
         기준으로 합니다. 금액은 원 단위 미만을 반올림하여 표시되며, 실제 정산
         금액과 소수점 이하 차이가 있을 수 있습니다.
       </p>
+
+      {isRelationModalOpen && (
+        <RelationModal
+          onClose={() => setIsRelationModalOpen(false)}
+          onConfirm={handleRelationConfirm}
+        />
+      )}
     </main>
   );
 }
