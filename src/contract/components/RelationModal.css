@@ -1,4 +1,4 @@
-.modal-overlay {
+.relation-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(17, 19, 23, 0.45);
@@ -9,7 +9,7 @@
   z-index: 1000;
 }
 
-.notice {
+.relation-modal {
   width: 480px;
   max-width: 100%;
   max-height: calc(100vh - 48px);
@@ -19,7 +19,7 @@
   box-shadow: var(--shadow-card, 0 20px 25px rgba(0, 0, 0, 0.08));
 }
 
-.notice__header {
+.relation-modal__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -27,13 +27,13 @@
   border-bottom: 1px solid var(--line, #d9dee8);
 }
 
-.notice__eyebrow {
+.relation-modal__eyebrow {
   font-size: 18px;
   font-weight: 600;
   color: var(--primary, #0f8a5f);
 }
 
-.notice__close {
+.relation-modal__close {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,26 +50,26 @@
   transition: background 0.15s ease;
 }
 
-.notice__close:hover {
+.relation-modal__close:hover {
   background: rgba(0, 110, 42, 0.16);
 }
 
-.notice__close:active {
+.relation-modal__close:active {
   transform: none;
 }
 
-.notice__body {
+.relation-modal__body {
   padding: 24px;
 }
 
-.notice__intro {
+.relation-modal__intro {
   text-align: center;
   padding-bottom: 16px;
   margin-bottom: 16px;
   border-bottom: 1px dashed var(--line, #d9dee8);
 }
 
-.notice__question {
+.relation-modal__question {
   margin: 0 0 8px;
   font-size: 22px;
   line-height: 1.35;
@@ -77,7 +77,7 @@
   color: var(--text, #17191d);
 }
 
-.notice__desc {
+.relation-modal__desc {
   margin: 0;
   font-size: 13px;
   line-height: 1.6;
@@ -85,7 +85,7 @@
   color: var(--muted, #697080);
 }
 
-.notice__footer {
+.relation-modal__footer {
   padding: 16px 24px;
   border-top: 1px solid var(--line, #d9dee8);
 }
@@ -139,12 +139,12 @@
 }
 
 @media (max-width: 520px) {
-  .notice {
+  .relation-modal {
     width: 100%;
     border-radius: var(--radius-md, 8px);
   }
 
-  .notice__question {
+  .relation-modal__question {
     font-size: 19px;
   }
 }

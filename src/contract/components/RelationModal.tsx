@@ -17,19 +17,19 @@ export default function RelationModal({ onClose, onConfirm }: RelationModalProps
   }
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="relationNoticeTitle">
-      <div className="notice">
-        <header className="notice__header">
-          <span className="notice__eyebrow" id="relationNoticeTitle">안내문</span>
-          <Button type="button" variant="text" className="notice__close" onClick={onClose} aria-label="닫기">
+    <div className="relation-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="relationNoticeTitle">
+      <div className="relation-modal">
+        <header className="relation-modal__header">
+          <span className="relation-modal__eyebrow" id="relationNoticeTitle">안내문</span>
+          <Button type="button" variant="text" className="relation-modal__close" onClick={onClose} aria-label="닫기">
             ×
           </Button>
         </header>
 
-        <div className="notice__body">
-          <div className="notice__intro">
-            <h2 className="notice__question">거래 상대방과의 관계를 선택해 주세요</h2>
-            <p className="notice__desc">선택한 관계에 따라 계약 작성 절차가 달라질 수 있어요.</p>
+        <div className="relation-modal__body">
+          <div className="relation-modal__intro">
+            <h2 className="relation-modal__question">거래 상대방과의 관계를 선택해 주세요</h2>
+            <p className="relation-modal__desc">선택한 관계에 따라 계약 작성 절차가 달라질 수 있어요.</p>
           </div>
 
           <div className="relation-options" role="radiogroup" aria-label="거래 당사자와의 관계">
@@ -56,7 +56,7 @@ export default function RelationModal({ onClose, onConfirm }: RelationModalProps
           </div>
         </div>
 
-        <footer className="notice__footer">
+        <footer className="relation-modal__footer">
           <Button type="button" fullWidth disabled={!selected} onClick={handleConfirm}>
             확인
           </Button>
