@@ -8,6 +8,8 @@ import { authFetch } from '../../auth/authFetch';
 import { Button, Select } from '../../common/components';
 import Stepper from '../../contract/components/Stepper';
 
+const DEFAULT_RETURN_TO = '/contracts/new';
+
 type IdentityPurpose =
     | 'LOAN_CONTRACT'
     | 'SETTLEMENT';
@@ -404,21 +406,19 @@ export default function IdentityTestPage() {
             const returnTo =
                 getSafeReturnTo(
                     searchParams.get('returnTo'),
-                );
+                ) ?? DEFAULT_RETURN_TO;
 
-            if (returnTo) {
-                sessionStorage.setItem(
-                    'identityVerificationId',
-                    prepare.identityVerificationId,
-                );
+            sessionStorage.setItem(
+                'identityVerificationId',
+                prepare.identityVerificationId,
+            );
 
-                setIsRedirecting(true);
+            setIsRedirecting(true);
 
-                redirectTimerRef.current =
-                    window.setTimeout(() => {
-                        window.location.href = returnTo;
-                    }, 1000);
-            }
+            redirectTimerRef.current =
+                window.setTimeout(() => {
+                    window.location.href = returnTo;
+                }, 1000);
         } catch (error) {
             console.error(error);
 
