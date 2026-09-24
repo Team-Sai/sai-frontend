@@ -15,6 +15,10 @@ const splitText=(v?:string)=>({EQUAL:'균등',CUSTOM:'직접 설정'} as Record<
 const paymentText=(o:PaymentObligation)=>o.obligationStatus==='WRITTEN_OFF'?'상각 처리':o.overdueSince&&o.paymentStatus!=='PAID'?'연체':({PAID:'입금 완료',PARTIALLY_PAID:'일부 입금',UNPAID:'미입금'} as Record<string,string>)[o.paymentStatus]||'-';
 const paymentClass=(o:PaymentObligation)=>o.obligationStatus==='WRITTEN_OFF'?'status-written-off':o.overdueSince&&o.paymentStatus!=='PAID'?'status-overdue':o.paymentStatus==='PAID'?'status-paid':o.paymentStatus==='PARTIALLY_PAID'?'status-partial':'status-unpaid';
 
+async function fetchSettlementDetail(id:number){
+  return Promise.all([settlementApi.detail(id),settlementApi.paymentStatus(id),settlementApi.account(id)]);
+}
+
 export default function SettlementDetailPage(){
   const { settlementId }=useParams(); const id=Number(settlementId);
   const [detail,setDetail]=useState<SettlementDetail|null>(null);
@@ -31,12 +35,22 @@ export default function SettlementDetailPage(){
     if(!Number.isFinite(id)) return;
     try{
       setBusy(true);
-      const [d,s,a]=await Promise.all([settlementApi.detail(id),settlementApi.paymentStatus(id),settlementApi.account(id)]);
+      const [d,s,a]=await fetchSettlementDetail(id);
       setDetail(d);setStatus(s);setAccount(a);setSyncTime(dt(new Date().toISOString()));
     }catch(e){showToast(e instanceof Error?e.message:'정산 상세 정보를 불러오지 못했습니다.',true)}finally{setBusy(false)}
   },[id]);
 
-  useEffect(()=>{void load()},[load]);
+  useEffect(()=>{
+    if(!Number.isFinite(id))return;
+    let cancelled=false;
+    fetchSettlementDetail(id).then(([d,s,a])=>{
+      if(cancelled)return;
+      setDetail(d);setStatus(s);setAccount(a);setSyncTime(dt(new Date().toISOString()));
+    }).catch(e=>{
+      if(!cancelled)showToast(e instanceof Error?e.message:'정산 상세 정보를 불러오지 못했습니다.',true);
+    });
+    return()=>{cancelled=true};
+  },[id]);
   const obligations=status.obligations||[];
   const paidCount=obligations.filter(o=>o.paymentStatus==='PAID').length;
   const attentionCount=obligations.filter(o=>o.obligationStatus==='WRITTEN_OFF'||(o.overdueSince&&o.paymentStatus!=='PAID')).length;
@@ -60,13 +74,13 @@ export default function SettlementDetailPage(){
 
       <section className="meta-card">{recurring?<><div className="meta-item"><span>시작일</span><strong>{date(detail?.startDate)}</strong></div><div className="meta-divider"/><div className="meta-item"><span>종료일</span><strong>{detail?.endDate?date(detail.endDate):'종료일 없음'}</strong></div></>:<div className="meta-item"><span>마감일</span><strong>{date(detail?.dueDate)}</strong></div>}<div className="meta-divider"/><div className="meta-item meta-grow"><span>정산 목적</span><strong>{detail?.settlementCategory||'-'}</strong></div><div className="meta-divider"/><div className="meta-item"><span>참여 인원</span><strong>{obligations.length}명</strong></div></section>
 
-      <div className="detail-grid"><aside className="side-column"><section className="panel"><div className="panel-header"><h2>정산 요청 정보</h2><button className="text-button" type="button" disabled>요청 계좌 변경</button></div><div className="account-card"><div className="account-icon">₩</div><div><span>{account?.bankName||'수취 계좌'}</span><strong>{account?.maskedAccountNumber||'계좌 정보 없음'}</strong><small>{account?.accountHolderName||'-'}</small></div></div><dl className="info-list"><div><dt>분배 방식</dt><dd>{splitText(detail?.splitType)}</dd></div><div><dt>생성일</dt><dd>{dt(detail?.createdAt)}</dd></div><div><dt>최근 동기화</dt><dd>{syncTime}</dd></div><div><dt>확인 필요</dt><dd className="text-danger">{attentionCount}명</dd></div></dl></section>
+      <div className="detail-grid"><aside className="side-column"><section className="panel"><div className="panel-header"><h2>정산 요청 정보</h2></div><div className="account-card"><div className="account-icon">₩</div><div><span>{account?.bankName||'수취 계좌'}</span><strong>{account?.maskedAccountNumber||'계좌 정보 없음'}</strong><small>{account?.accountHolderName||'-'}</small></div></div><dl className="info-list"><div><dt>분배 방식</dt><dd>{splitText(detail?.splitType)}</dd></div><div><dt>생성일</dt><dd>{dt(detail?.createdAt)}</dd></div><div><dt>최근 동기화</dt><dd>{syncTime}</dd></div><div><dt>확인 필요</dt><dd className="text-danger">{attentionCount}명</dd></div></dl></section>
         <section className="panel"><div className="panel-header"><h2>참여자 정산 현황</h2><span className="panel-side-text">{participantProgress}%</span></div><div className="participant-avatar-list">{obligations.length?obligations.slice(0,6).map(o=><div key={o.paymentObligationId || o.participantId} className="participant-avatar"><div className="avatar-circle" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div><strong>{o.participantName||`참여자 #${o.participantId}`}</strong><small>{paymentText(o)}</small></div>):<div className="participant-avatar"><small>참여자가 없습니다.</small></div>}</div></section></aside>
-        <section className="panel participant-panel"><div className="panel-header participant-panel-header"><div><h2>참여자별 입금 현황</h2><p>정산 생성 시 만들어진 납부의무와 실제 입금 반영 결과입니다.</p></div><button className="button button-secondary button-small" type="button" onClick={()=>void load()} disabled={busy}>↻ 새로고침</button></div><div className="table-scroll"><table className="payment-table"><thead><tr><th>참여자</th><th>분담 금액</th><th>입금 금액</th><th>잔여 금액</th><th>최근 입금일</th><th>입금 상태</th><th>관리</th></tr></thead><tbody>{obligations.map(o=><tr key={o.paymentObligationId || o.participantId}><td className="name-cell">{o.participantName||`참여자 #${o.participantId}`}</td><td>{money(o.expectedAmount)}원</td><td>{money(o.paidAmount)}원</td><td>{money(o.remainingAmount)}원</td><td>{dt(o.latestPaymentAt)}</td><td><span className={`status-chip ${paymentClass(o)}`}>● {paymentText(o)}</span></td><td><button className="manage-button" type="button" disabled>-</button></td></tr>)}</tbody></table></div>{obligations.length===0&&<div className="empty-state">등록된 납부 대상이 없습니다.</div>}</section>
+        <section className="panel participant-panel"><div className="panel-header participant-panel-header"><div><h2>참여자별 입금 현황</h2><p>정산 생성 시 만들어진 납부의무와 실제 입금 반영 결과입니다.</p></div><button className="button button-secondary button-small" type="button" onClick={()=>void load()} disabled={busy}>↻ 새로고침</button></div><div className="table-scroll"><table className="payment-table"><thead><tr><th>참여자</th><th>분담 금액</th><th>입금 금액</th><th>잔여 금액</th><th>최근 입금일</th><th>입금 상태</th></tr></thead><tbody>{obligations.map(o=><tr key={o.paymentObligationId || o.participantId}><td className="name-cell">{o.participantName||`참여자 #${o.participantId}`}</td><td>{money(o.expectedAmount)}원</td><td>{money(o.paidAmount)}원</td><td>{money(o.remainingAmount)}원</td><td>{dt(o.latestPaymentAt)}</td><td><span className={`status-chip ${paymentClass(o)}`}>● {paymentText(o)}</span></td></tr>)}</tbody></table></div>{obligations.length===0&&<div className="empty-state">등록된 납부 대상이 없습니다.</div>}</section>
       </div>
     </main>
     {closeModal&&<div className="close-confirm-modal"><div className="close-confirm-card" role="dialog" aria-modal="true"><h2>정산을 마감할까요?</h2><p>마감 후에는 정산 상태가 완료로 변경됩니다.</p><div className="close-confirm-actions"><button type="button" className="button button-secondary" onClick={()=>setCloseModal(false)}>취소</button><button type="button" className="button button-primary" onClick={()=>void closeSettlement()}>완료</button></div></div></div>}
     {toast&&<div className={`toast visible${toast.error?' error':''}`}>{toast.text}</div>}
-    <MatchingReviewModal open={reviewOpen} onClose={(changed)=>{setReviewOpen(false);if(changed)void load()}} options={{reviewChannel:'TRANSACTION_HISTORY',targetType:'SETTLEMENT',aggregateId:id}}/>
+    {reviewOpen&&<MatchingReviewModal key={`settlement-review-${id}`} open onClose={(changed)=>{setReviewOpen(false);if(changed)void load()}} options={{reviewChannel:'TRANSACTION_HISTORY',targetType:'SETTLEMENT',aggregateId:id}}/>}
   </>
 }

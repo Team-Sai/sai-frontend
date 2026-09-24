@@ -11,8 +11,7 @@ import Stepper from '../../contract/components/Stepper';
 const DEFAULT_RETURN_TO = '/contracts/new';
 
 type IdentityPurpose =
-    | 'LOAN_CONTRACT'
-    | 'SETTLEMENT';
+    | 'LOAN_CONTRACT';
 
 interface PrepareIdentityResponse {
     identityVerificationId: string;
@@ -490,9 +489,6 @@ export default function IdentityTestPage() {
                                 금전소비대차 계약
                             </option>
 
-                            <option value="SETTLEMENT">
-                                정산
-                            </option>
                         </Select>
                     </div>
 

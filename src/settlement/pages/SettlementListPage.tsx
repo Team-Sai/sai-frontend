@@ -10,6 +10,10 @@ const money = (v?: number) => Number(v ?? 0).toLocaleString('ko-KR');
 const date = (v?: string | null) => v ? v.split('T')[0].split('-').join('.') : '-';
 const period = (s?: string | null, e?: string | null) => !s ? '-' : `${date(s)} ~ ${e ? date(e) : '계속'}`;
 
+function fetchSettlementListData(){
+  return Promise.allSettled([settlementApi.list(),settlementApi.summary()]);
+}
+
 export default function SettlementListPage() {
   const [items, setItems] = useState<SettlementListItem[]>([]);
   const [summary, setSummary] = useState<SettlementSummary>({});
@@ -18,7 +22,9 @@ export default function SettlementListPage() {
   const [status, setStatus] = useState('ALL');
   const [sort, setSort] = useState('LATEST');
   const [syncing, setSyncing] = useState(false);
-  const [syncTime, setSyncTime] = useState('-');
+  const [syncTime, setSyncTime] = useState(() =>
+    new Intl.DateTimeFormat('ko-KR', { hour: '2-digit', minute: '2-digit' }).format(new Date()),
+  );
   const [toast, setToast] = useState<{text:string; error?:boolean}|null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,7 +35,7 @@ export default function SettlementListPage() {
   };
 
   const load = useCallback(async () => {
-    const [listResult, summaryResult] = await Promise.allSettled([settlementApi.list(), settlementApi.summary()]);
+    const [listResult, summaryResult] = await fetchSettlementListData();
     if (listResult.status === 'fulfilled') setItems(listResult.value);
     else { setItems([]); showToast('정산 목록을 불러오지 못했습니다.', true); }
     if (summaryResult.status === 'fulfilled') setSummary(summaryResult.value);
@@ -37,18 +43,29 @@ export default function SettlementListPage() {
   }, []);
 
   useEffect(() => {
-    setSyncTime(new Intl.DateTimeFormat('ko-KR', { hour: '2-digit', minute: '2-digit' }).format(new Date()));
-    void load();
-  }, [load]);
+    let cancelled=false;
+    fetchSettlementListData().then(([listResult,summaryResult])=>{
+      if(cancelled)return;
+      if(listResult.status==='fulfilled')setItems(listResult.value);
+      else{setItems([]);showToast('정산 목록을 불러오지 못했습니다.',true)}
+      if(summaryResult.status==='fulfilled')setSummary(summaryResult.value);
+      else{setSummary({});showToast('정산 요약을 불러오지 못했습니다.',true)}
+    });
+    return()=>{cancelled=true};
+  }, []);
 
   useEffect(() => {
     const created = searchParams.get('created');
     if (!created) return;
-    showToast(`정산 #${created}이 생성되었습니다.`);
-    const nextParams = new URLSearchParams(searchParams);
-    nextParams.delete('created');
-    setSearchParams(nextParams, { replace: true });
+    const timeout=window.setTimeout(()=>{
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete('created');
+      setSearchParams(nextParams, { replace: true });
+    },3000);
+    return()=>window.clearTimeout(timeout);
   }, [searchParams, setSearchParams]);
+
+  const createdNotice=searchParams.get('created');
 
   const filtered = useMemo(() => {
     const copy = items.filter((s) => {
@@ -126,7 +143,7 @@ export default function SettlementListPage() {
         </article>)}</div> : <div className="empty-state"><div className="empty-icon">₩</div><h2>아직 생성된 정산이 없습니다.</h2><p>공동정산이나 정기정산을 생성하면 이 화면에서 조회할 수 있습니다.</p><Link className="button button-primary" to="/settlements/new">첫 정산 만들기</Link></div>}
       </section>
     </main>
-    {toast && <div className={`toast visible${toast.error ? ' error' : ''}`} role="status">{toast.text}</div>}
-    <MatchingReviewModal open={reviewOpen} onClose={(changed) => { setReviewOpen(false); if (changed) void load(); }} options={{ reviewChannel:'TRANSACTION_HISTORY', targetType:'SETTLEMENT' }} />
+    {(toast || createdNotice) && <div className={`toast visible${toast?.error ? ' error' : ''}`} role="status">{toast?.text || `정산 #${createdNotice}이 생성되었습니다.`}</div>}
+    {reviewOpen && <MatchingReviewModal key="settlement-list-review" open onClose={(changed) => { setReviewOpen(false); if (changed) void load(); }} options={{ reviewChannel:'TRANSACTION_HISTORY', targetType:'SETTLEMENT' }} />}
   </>;
 }

@@ -344,41 +344,6 @@ export default function MyPage() {
                         상세 정보
                       </h2>
 
-                      <span
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-[#414756]"
-                          aria-label="상세 정보"
-                      >
-                        <svg
-                            viewBox="0 0 24 24"
-                            className="h-4.5 w-4.5"
-                            aria-hidden="true"
-                        >
-                          <circle
-                              cx="12"
-                              cy="12"
-                              r="9"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.9"
-                          />
-
-                          <path
-                              d="M12 11v5"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.9"
-                              strokeLinecap="round"
-                          />
-
-                          <path
-                              d="M12 8h.01"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                          />
-                        </svg>
-                      </span>
                     </div>
 
                     <div className="mt-5">
@@ -431,29 +396,6 @@ export default function MyPage() {
                           isLoading={isConnecting}
                           className="flex h-9 rounded-lg border-0 px-3.5 py-0 text-xs font-semibold transition hover:bg-[#0b754f] enabled:hover:opacity-100 disabled:cursor-default active:transform-none"
                       >
-                        <svg
-                            viewBox="0 0 24 24"
-                            className="h-4 w-4"
-                            aria-hidden="true"
-                        >
-                          <circle
-                              cx="12"
-                              cy="12"
-                              r="9"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.9"
-                          />
-
-                          <path
-                              d="M12 8v8M8 12h8"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.9"
-                              strokeLinecap="round"
-                          />
-                        </svg>
-
                         {isConnecting
                             ? '연결 중'
                             : '계좌 추가'}
@@ -488,29 +430,6 @@ export default function MyPage() {
                                 isLoading={isConnecting}
                                 className="mt-1.5 h-9 rounded-lg border-0 px-4.5 py-0 text-xs hover:bg-[#0b754f] enabled:hover:opacity-100 active:transform-none"
                             >
-                              <svg
-                                  viewBox="0 0 24 24"
-                                  className="h-4 w-4"
-                                  aria-hidden="true"
-                              >
-                                <circle
-                                    cx="12"
-                                    cy="12"
-                                    r="9"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="1.9"
-                                />
-
-                                <path
-                                    d="M12 8v8M8 12h8"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="1.9"
-                                    strokeLinecap="round"
-                                />
-                              </svg>
-
                               지금 바로 연결하기
                             </Button>
                           </div>

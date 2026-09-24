@@ -119,8 +119,6 @@ export default function SettlementCreatePage(){
     })();
   },[]);
 
-  useEffect(()=>{setCategory('');setErrors({});},[type]);
-
   async function addParticipant(){
     if(lookupInFlightRef.current)return;
 
@@ -199,7 +197,7 @@ export default function SettlementCreatePage(){
     <main className="create-shell settlement-create-page">
       <div className="breadcrumb"><Link to="/settlements">정산 서비스</Link><span>/</span><strong>정산 생성</strong></div>
       <div className="create-heading unified-page-header"><h1 className="unified-page-title">새로운 정산 만들기</h1><p>{type==='SHARED'?'총 금액과 참여자를 선택하면 참여자별 납부 예정 금액을 균등하게 계산합니다.':'구독료, 회비, 공과금, 간병비처럼 반복되는 공동 비용을 정기적으로 관리합니다.'}</p></div>
-      <div className="settlement-type-tabs" role="tablist"><button className={`type-tab${type==='SHARED'?' active':''}`} type="button" onClick={()=>setType('SHARED')}>공동정산</button><button className={`type-tab${type==='RECURRING'?' active':''}`} type="button" onClick={()=>setType('RECURRING')}>정기정산</button></div>
+      <div className="settlement-type-tabs" role="tablist"><button className={`type-tab${type==='SHARED'?' active':''}`} type="button" onClick={()=>{setType('SHARED');setCategory('');setErrors({})}}>공동정산</button><button className={`type-tab${type==='RECURRING'?' active':''}`} type="button" onClick={()=>{setType('RECURRING');setCategory('');setErrors({})}}>정기정산</button></div>
       <div className="create-layout">
         <form id="shared-settlement-form" className="form-column" onSubmit={submit} noValidate>
           <section className="form-card"><div className="card-title"><span className="card-icon">▤</span><h2>정산 기본 정보</h2></div><div className="field-grid two-column">

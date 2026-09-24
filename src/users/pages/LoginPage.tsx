@@ -181,7 +181,7 @@ export default function LoginPage() {
                   required value={passwordValue} onChange={handlePasswordChange} />
               </FormField>
 
-              <div className="mt-4.5 flex items-center justify-between gap-3.5 text-xs font-semibold">
+              <div className="mt-4.5 flex items-center justify-start gap-3.5 text-xs font-semibold">
                 <label className="flex cursor-pointer items-center gap-1.5">
                   <input
                     type="checkbox"
@@ -191,10 +191,6 @@ export default function LoginPage() {
                   />
                   <span>이메일 저장</span>
                 </label>
-
-                <a href="/find-password" className="text-primary">
-                  비밀번호 찾기
-                </a>
               </div>
 
               {loginError && (
