@@ -17,7 +17,17 @@ import type {
 
 type ApiEnvelope<T> = T | { data: T };
 
-async function readBody(response: Response): Promise<any> {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function getErrorMessage(body: unknown): string | undefined {
+  return isRecord(body) && typeof body.message === 'string'
+    ? body.message
+    : undefined;
+}
+
+async function readBody(response: Response): Promise<unknown> {
   const text = await response.text();
 
   if (!text) {
@@ -40,7 +50,7 @@ async function requestJson<T>(
 
   if (!response.ok) {
     throw new Error(
-      body?.message || `요청 처리에 실패했습니다. (HTTP ${response.status})`,
+      getErrorMessage(body) || `요청 처리에 실패했습니다. (HTTP ${response.status})`,
     );
   }
 
@@ -61,7 +71,7 @@ async function requestOptionalJson<T>(
 
   if (!response.ok) {
     throw new Error(
-      body?.message || `요청 처리에 실패했습니다. (HTTP ${response.status})`,
+      getErrorMessage(body) || `요청 처리에 실패했습니다. (HTTP ${response.status})`,
     );
   }
 

@@ -319,7 +319,7 @@ overflow-x:auto
 }
 
 .settlement-detail-page .payment-table {
-width:100%;min-width:820px;border-collapse:collapse
+width:100%;min-width:720px;border-collapse:collapse;table-layout:fixed
 }
 
 .settlement-detail-page .payment-table th {
@@ -360,14 +360,6 @@ background:var(--green-soft);color:#0f8a5f
 
 .settlement-detail-page .status-review {
 background:var(--red-soft);color:var(--red)
-}
-
-.settlement-detail-page .manage-button {
-border:0;border-radius:5px;padding:6px 9px;background:var(--blue);color:#fff;font-size:11px;font-weight:700
-}
-
-.settlement-detail-page .manage-button[disabled] {
-background:#e5e7eb;color:#7b8490
 }
 
 .settlement-detail-page .empty-state {

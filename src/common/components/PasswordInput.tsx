@@ -14,7 +14,7 @@ export function PasswordInput({ className = '', ...props }: PasswordInputProps) 
       disabled={props.disabled} onClick={password.toggle}>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        {password.isVisible ? <>
+        {!password.isVisible ? <>
           <path d="m2 2 20 20" />
           <path d="M6.71 6.71C4.93 7.9 3.57 9.62 2.81 11.65a1 1 0 0 0 0 .7C4.32 16.12 7.89 18.5 12 18.5c1.18 0 2.29-.2 3.31-.56" />
           <path d="M10.73 10.73a2 2 0 0 0 2.54 2.54" />

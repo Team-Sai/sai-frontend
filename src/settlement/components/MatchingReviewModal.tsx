@@ -7,17 +7,28 @@ type Props = { open: boolean; onClose: (changed: boolean) => void; options: Opti
 
 type Candidate = { matchCandidateId:number; targetType:string; targetName?:string; aggregateId?:number; participantName?:string; expectedRemainingAmount?:number; amountMatchType?:string };
 type Review = { transaction:{ bankTransactionId:number; linkedAccountId:number; amount?:number; counterpartyName?:string; transactionAt?:string; memo?:string }; candidates:Candidate[] };
+type ReviewPage = { content?: Review[]; totalCount?: number; page?: number };
+
+async function fetchReviewPage(options: Options, page: number): Promise<ReviewPage> {
+  const q=new URLSearchParams({reviewChannel:options.reviewChannel,page:String(page),size:'20'});
+  if(options.targetType) q.set('targetType',options.targetType);
+  if(options.aggregateId!=null) q.set('aggregateId',String(options.aggregateId));
+  const r=await authFetch(`/api/matching-reviews?${q}`); const b=await r.json().catch(()=>null);
+  if(!r.ok) throw new Error(b?.message||'확인 필요 거래를 불러오지 못했습니다.');
+  return b as ReviewPage;
+}
 
 const money=(v?:number)=>`${Number(v??0).toLocaleString('ko-KR')}원`;
 const dt=(v?:string)=>v?new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(v)):'거래일시 미상';
 
 export default function MatchingReviewModal({ open, onClose, options }: Props) {
+  const { reviewChannel, targetType, aggregateId } = options;
   const [reviews,setReviews]=useState<Review[]>([]);
   const [total,setTotal]=useState(0);
   const [page,setPage]=useState(0);
   const [selected,setSelected]=useState<Record<number,number>>({});
   const [results,setResults]=useState<Record<number,{type:string;message:string}>>({});
-  const [loading,setLoading]=useState(false);
+  const [loading,setLoading]=useState(true);
   const [message,setMessage]=useState('');
   const [changed,setChanged]=useState(false);
   const [rejectId,setRejectId]=useState<number|null>(null);
@@ -25,16 +36,22 @@ export default function MatchingReviewModal({ open, onClose, options }: Props) {
   async function load(append=false){
     setLoading(true); setMessage('');
     try{
-      const q=new URLSearchParams({reviewChannel:options.reviewChannel,page:String(append?page:0),size:'20'});
-      if(options.targetType) q.set('targetType',options.targetType);
-      if(options.aggregateId!=null) q.set('aggregateId',String(options.aggregateId));
-      const r=await authFetch(`/api/matching-reviews?${q}`); const b=await r.json().catch(()=>null);
-      if(!r.ok) throw new Error(b?.message||'확인 필요 거래를 불러오지 못했습니다.');
-      setReviews(prev=>append?[...prev,...(b?.content||[])]:b?.content||[]); setTotal(Number(b?.totalCount||0)); setPage(Number(b?.page||0)+1);
+      const b=await fetchReviewPage(options,append?page:0);
+      setReviews(prev=>append?[...prev,...(b.content||[])]:b.content||[]); setTotal(Number(b.totalCount||0)); setPage(Number(b.page||0)+1);
     }catch(e){setMessage(e instanceof Error?e.message:'조회 실패');}finally{setLoading(false)}
   }
 
-  useEffect(()=>{ if(open){ setReviews([]);setResults({});setSelected({});setChanged(false);setPage(0); void load(false);} },[open, options.reviewChannel, options.targetType, options.aggregateId]);
+  useEffect(()=>{
+    if(!open) return;
+    let cancelled=false;
+    fetchReviewPage({reviewChannel,targetType,aggregateId},0).then(b=>{
+      if(cancelled)return;
+      setReviews(b.content||[]);setTotal(Number(b.totalCount||0));setPage(Number(b.page||0)+1);
+    }).catch(e=>{
+      if(!cancelled)setMessage(e instanceof Error?e.message:'조회 실패');
+    }).finally(()=>{if(!cancelled)setLoading(false)});
+    return()=>{cancelled=true};
+  },[open, reviewChannel, targetType, aggregateId]);
   if(!open) return null;
 
   async function apply(review:Review){

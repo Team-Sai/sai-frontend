@@ -23,15 +23,15 @@ export default function ArchivePage() {
 
   const [contractData, setContractData] = useState<ArchiveContractListResponse | null>(null);
   const [settlements, setSettlements] = useState<ArchiveSettlementRow[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  const [error, setError] = useState<{ key: string; message: string } | null>(null);
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const requestKey = `${activeTab}:${page}`;
+  const isLoading = loadedKey !== requestKey;
+  const visibleError = error?.key === requestKey ? error.message : null;
 
   useEffect(() => {
     let cancelled = false;
-    setIsLoading(true);
-    setError(null);
-
     if (activeTab === 'contract') {
       getArchiveContracts(page)
         .then((data) => {
@@ -40,10 +40,10 @@ export default function ArchivePage() {
         })
         .catch(() => {
           if (cancelled) return;
-          setError('보관함을 불러올 수 없습니다.');
+          setError({ key: requestKey, message: '보관함을 불러올 수 없습니다.' });
         })
         .finally(() => {
-          if (!cancelled) setIsLoading(false);
+          if (!cancelled) setLoadedKey(requestKey);
         });
     } else {
       getArchiveSettlements()
@@ -53,17 +53,17 @@ export default function ArchivePage() {
         })
         .catch(() => {
           if (cancelled) return;
-          setError('보관함을 불러올 수 없습니다.');
+          setError({ key: requestKey, message: '보관함을 불러올 수 없습니다.' });
         })
         .finally(() => {
-          if (!cancelled) setIsLoading(false);
+          if (!cancelled) setLoadedKey(requestKey);
         });
     }
 
     return () => {
       cancelled = true;
     };
-  }, [activeTab, page]);
+  }, [activeTab, page, requestKey]);
 
   function handleTabChange(tab: ArchiveTabType) {
     if (tab === activeTab) return;
@@ -125,8 +125,8 @@ export default function ArchivePage() {
 
       {isLoading ? (
         <div className="empty-state">불러오는 중이에요...</div>
-      ) : error ? (
-        <div className="error-state">{error}</div>
+      ) : visibleError ? (
+        <div className="error-state">{visibleError}</div>
       ) : activeTab === 'contract' ? (
         <>
           <div className="archive-list">

@@ -208,9 +208,14 @@
   font-weight: 700;
 }
 
-.app-footer__nav span {
-  cursor: default;
+.app-footer__nav a {
+  color: inherit;
   opacity: 0.78;
+  text-decoration: none;
+}
+
+.app-footer__nav a:hover {
+  opacity: 1;
 }
 
 @media (max-width: 1179px) {
