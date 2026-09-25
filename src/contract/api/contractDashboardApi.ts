@@ -2,7 +2,7 @@ import { authFetch } from "../../auth/authFetch";
 import type {
   DashboardResponse,
   DashboardContractRow,
-} from "../types/dashboard";
+} from "../types/contractDashboard";
 
 function isDashboardContractRow(value: unknown): value is DashboardContractRow {
   if (typeof value !== "object" || value === null) {
@@ -65,7 +65,7 @@ export async function getDashboard(
   const queryString = params.toString();
 
   const response = await authFetch(
-    `/api/dashboard${queryString ? `?${queryString}` : ""}`,
+    `/api/contracts/dashboard${queryString ? `?${queryString}` : ""}`,
     {
       method: "GET",
       headers: { Accept: "application/json" },

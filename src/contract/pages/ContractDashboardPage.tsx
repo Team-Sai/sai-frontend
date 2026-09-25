@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getDashboard } from "../api/dashboardApi";
+import { getDashboard } from "../api/contractDashboardApi";
 import "../../settlement/styles/settlement-common.css";
 import "../../settlement/styles/settlement-list.css";
-import "../styles/DashboardPage.css";
-import type { DashboardResponse } from "../types/dashboard";
+import "../styles/ContractDashboardPage.css";
+import type { DashboardResponse } from "../types/contractDashboard";
 import {
   CONTRACT_ROLE_LABELS,
   CONTRACT_STATUS_LABELS,
-} from "../types/dashboard";
+} from "../types/contractDashboard";
 import RelationModal from "../components/RelationModal";
 import type { ContractRelationType } from "../types/contract";
 
 const money = (v: number) =>
   v.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
 
-export default function DashboardPage() {
+export default function ContractDashboardPage() {
   const [data, setData] = useState<DashboardResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
