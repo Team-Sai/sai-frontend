@@ -16,7 +16,7 @@ import LinkCompletePage from './link/pages/LinkCompletePage';
 
 import DashboardPage from './integration/pages/DashboardPage';
 
-import ContractDashboardPage from './contract/pages/DashboardPage';
+import ContractDashboardPage from './contract/pages/ContractDashboardPage';
 import ContractDocumentPage from './contract/pages/ContractDocumentPage';
 import ContractFormPage from './contract/pages/ContractFormPage';
 import ContractSignaturePage from './contract/pages/ContractSignaturePage';

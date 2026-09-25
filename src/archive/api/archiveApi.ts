@@ -6,7 +6,7 @@ import type {
 } from '../types/archive';
 
 export async function getArchiveContracts(page: number): Promise<ArchiveContractListResponse> {
-  const response = await authFetch(`/api/dashboard?roleFilter=ALL&page=${page}`, {
+  const response = await authFetch(`/api/contracts/dashboard?roleFilter=ALL&page=${page}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
