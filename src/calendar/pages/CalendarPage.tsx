@@ -133,7 +133,8 @@ export default function CalendarPage() {
     setMonthError(null);
     setYear(nextYear);
     setMonth(nextMonth);
-    const nextSelected = getMatchingDayInMonth(nextYear, nextMonth, today.getDate());
+    const selectedDay = Number(selectedDate.slice(-2));
+    const nextSelected = getMatchingDayInMonth(nextYear, nextMonth, selectedDay);
     setIsLoadingDay(true);
     setDayError(null);
     setDayItems([]);
