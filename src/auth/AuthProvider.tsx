@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { authFetch } from './authFetch';
+import { authFetch, clearStoredAuth } from './authFetch';
+import { clearTransactionSync } from '../transaction/syncTimestamp';
 import { AuthContext } from './AuthContext';
 import type { User } from './AuthContext';
-
-const ACCESS_TOKEN_KEY = 'accessToken';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -42,11 +41,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   function login(userData: User) {
+    clearTransactionSync();
     setUser(userData);
   }
 
   function logout() {
-    sessionStorage.removeItem(ACCESS_TOKEN_KEY);
+    clearStoredAuth();
     setUser(null);
     window.location.href = '/login';
   }

@@ -9,8 +9,7 @@ export const transactionStatusLabels: Readonly<Record<TransactionStatus, string>
 };
 
 const moneyFormatter = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 20 });
-const dateFormatter = new Intl.DateTimeFormat('ko-KR', {
-  year: 'numeric', month: '2-digit', day: '2-digit',
+const timeFormatter = new Intl.DateTimeFormat('ko-KR', {
   hour: '2-digit', minute: '2-digit',
 });
 
@@ -20,5 +19,7 @@ export function formatMoney(amount: number): string {
 
 export function formatTransactionDate(value: string): string {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? '거래일시 미상' : dateFormatter.format(date);
+  if (Number.isNaN(date.getTime())) return '거래일시 미상';
+  const dateLabel = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  return `${dateLabel} ${timeFormatter.format(date)}`;
 }

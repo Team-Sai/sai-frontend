@@ -152,7 +152,7 @@ body.integration-page button {
   overflow: hidden;
 }
 
-.calendar-panel {
+.dashboard-calendar-panel {
   min-height: 573px;
   height: 100%;
   padding: 32px 31px;
@@ -179,7 +179,7 @@ body.integration-page button {
   font-weight: 800;
 }
 
-.calendar-card {
+.dashboard-calendar-card {
   margin-top: 18px;
   padding: 25px;
   border: 1px solid var(--line);
@@ -187,23 +187,23 @@ body.integration-page button {
   background: var(--surface);
 }
 
-.calendar-toolbar {
+.dashboard-calendar-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
 
-.calendar-toolbar strong {
+.dashboard-calendar-toolbar strong {
   font-size: 20px;
 }
 
-.calendar-actions {
+.dashboard-calendar-actions {
   display: flex;
   gap: 16px;
 }
 
-.calendar-button {
+.dashboard-calendar-button {
   width: 32px;
   height: 32px;
   border: 0;
@@ -215,13 +215,13 @@ body.integration-page button {
   line-height: 1;
 }
 
-.calendar-weekdays,
-.calendar-grid {
+.dashboard-calendar-weekdays,
+.dashboard-calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
-.calendar-weekdays {
+.dashboard-calendar-weekdays {
   margin-bottom: 12px;
   color: var(--muted);
   font-size: 13px;
@@ -229,22 +229,23 @@ body.integration-page button {
   text-align: center;
 }
 
-.calendar-weekdays span:first-child,
-.calendar-day.is-sunday .calendar-day__number {
+.dashboard-calendar-weekdays span:first-child,
+.dashboard-calendar-day.is-sunday .dashboard-calendar-day__number {
   color: var(--red);
 }
 
-.calendar-weekdays span:last-child,
-.calendar-day.is-saturday .calendar-day__number {
+.dashboard-calendar-weekdays span:last-child,
+.dashboard-calendar-day.is-saturday .dashboard-calendar-day__number {
   color: var(--blue);
 }
 
-.calendar-grid {
+.dashboard-calendar-grid {
+  grid-template-rows: repeat(6, 44px);
   row-gap: 8px;
   column-gap: 8px;
 }
 
-.calendar-day {
+.dashboard-calendar-day {
   position: relative;
   height: 44px;
   border: 0;
@@ -254,25 +255,25 @@ body.integration-page button {
   cursor: pointer;
 }
 
-.calendar-day:hover {
+.dashboard-calendar-day:hover {
   background: var(--surface-soft);
 }
 
-.calendar-day.is-today {
+.dashboard-calendar-day.is-today {
   background: var(--blue-soft);
   font-weight: 900;
 }
 
-.calendar-day.is-outside {
+.dashboard-calendar-day.is-outside {
   opacity: 0.34;
 }
 
-.calendar-day__number {
+.dashboard-calendar-day__number {
   display: block;
   line-height: 20px;
 }
 
-.calendar-day__dots {
+.dashboard-calendar-day__dots {
   position: absolute;
   left: 50%;
   bottom: 5px;
@@ -296,17 +297,17 @@ body.integration-page button {
   background: var(--red);
 }
 
-.calendar-legend {
+.dashboard-calendar-legend {
   display: flex;
   justify-content: flex-end;
   gap: 16px;
-  margin-top: 18px;
+  margin-top: 10px;
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
 }
 
-.calendar-legend span {
+.dashboard-calendar-legend span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -551,7 +552,7 @@ body.integration-page button {
     align-items: start;
   }
 
-  .calendar-panel {
+  .dashboard-calendar-panel {
     height: auto;
   }
 
@@ -567,6 +568,10 @@ body.integration-page button {
     margin-top: 24px;
   }
 
+  .page-title {
+    font-size: 30px;
+  }
+
   .hero-summary {
     grid-template-columns: 1fr;
     padding: 28px 22px;
@@ -576,21 +581,22 @@ body.integration-page button {
     font-size: 24px;
   }
 
-  .calendar-panel,
+  .dashboard-calendar-panel,
   .attention-panel,
   .month-panel {
     padding: 22px 18px;
   }
 
-  .calendar-card {
+  .dashboard-calendar-card {
     padding: 18px 12px;
   }
 
-  .calendar-grid {
+  .dashboard-calendar-grid {
+    grid-template-rows: repeat(6, 42px);
     column-gap: 3px;
   }
 
-  .calendar-day {
+  .dashboard-calendar-day {
     height: 42px;
   }
 

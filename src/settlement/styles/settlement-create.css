@@ -4,19 +4,19 @@
  */
 
 .settlement-create-page {
---settlement-page-bg: #f6f8fb;
+--settlement-page-bg: #f5f7fb;
     --settlement-card-bg: #ffffff;
-    --settlement-border: #e5e7eb;
-    --settlement-border-strong: #d1d5db;
-    --settlement-text: #111827;
-    --settlement-muted: #6b7280;
-    --settlement-primary: #2563eb;
-    --settlement-primary-soft: #eff6ff;
-    --settlement-danger: #dc2626;
-    --settlement-success: #047857;
-    --settlement-radius-large: 18px;
-    --settlement-radius-medium: 12px;
-    --settlement-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    --settlement-border: #d9dee8;
+    --settlement-border-strong: #d9dee8;
+    --settlement-text: #151922;
+    --settlement-muted: #667085;
+    --settlement-primary: #0f8a5f;
+    --settlement-primary-soft: #e9f7f0;
+    --settlement-danger: #d94c4c;
+    --settlement-success: #0f8a5f;
+    --settlement-radius-large: 8px;
+    --settlement-radius-medium: 8px;
+    --settlement-shadow: 0 10px 30px rgba(28, 39, 60, 0.08);
 }
 
 .settlement-create-page, .settlement-create-page * {
@@ -40,7 +40,7 @@ font: inherit;
 ───────────────────────────────────────────── */
 
 .settlement-create-page {
-width: min(1180px, calc(100% - 40px));
+width: min(1344px, calc(100% - 96px));
     margin: 0 auto;
     padding: 36px 0 80px;
 }
@@ -97,7 +97,7 @@ display: inline-flex;
     padding: 6px;
     margin-bottom: 24px;
     border: 1px solid var(--settlement-border);
-    border-radius: 14px;
+    border-radius: 8px;
     background: #ffffff;
 }
 
@@ -108,7 +108,7 @@ display: inline-flex;
     min-height: 42px;
     padding: 0 18px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: transparent;
     color: var(--settlement-muted);
     font-weight: 700;
@@ -193,7 +193,7 @@ display: inline-flex;
     flex: 0 0 auto;
     width: 34px;
     height: 34px;
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--settlement-primary-soft);
     color: var(--settlement-primary);
     font-weight: 700;
@@ -249,7 +249,7 @@ width: 100%;
     height: 46px;
     padding: 0 14px;
     border: 1px solid var(--settlement-border-strong);
-    border-radius: 10px;
+    border-radius: 8px;
     outline: none;
     background: #ffffff;
     color: var(--settlement-text);
@@ -266,7 +266,7 @@ color: #9ca3af;
 .settlement-create-page .form-field input:focus,
 .settlement-create-page .form-field select:focus {
 border-color: var(--settlement-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 0 0 3px rgba(15, 138, 95, 0.12);
 }
 
 .settlement-create-page .form-field input:disabled,
@@ -321,13 +321,13 @@ position: relative;
 
 .settlement-create-page .choice-card:hover:not(.disabled) {
 transform: translateY(-1px);
-    border-color: #93c5fd;
+    border-color: var(--settlement-primary);
 }
 
 .settlement-create-page .choice-card.selected {
 border-color: var(--settlement-primary);
     background: var(--settlement-primary-soft);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 0 0 3px rgba(15, 138, 95, 0.10);
 }
 
 .settlement-create-page .choice-card input {
@@ -393,17 +393,17 @@ display: inline-flex;
     align-items: center;
     min-height: 34px;
     padding: 7px 11px;
-    border: 1px solid #dbeafe;
+    border: 1px solid #b9e5d0;
     border-radius: 999px;
-    background: #f8fbff;
-    color: #1e3a8a;
+    background: #f0faf5;
+    color: #0f8a5f;
     font-size: 13px;
 }
 
 .settlement-create-page .participant-chip.owner {
-border-color: #bfdbfe;
+border-color: #0f8a5f;
     background: var(--settlement-primary-soft);
-    color: #1d4ed8;
+    color: #0f8a5f;
     font-weight: 700;
 }
 
@@ -477,7 +477,7 @@ display: flex;
     padding: 16px;
     border: 1px dashed var(--settlement-border-strong);
     border-radius: var(--settlement-radius-medium);
-    background: #f9fafb;
+    background: #f9fafc;
 }
 
 .settlement-create-page .account-icon {
@@ -487,9 +487,9 @@ display: inline-flex;
     flex: 0 0 auto;
     width: 36px;
     height: 36px;
-    border-radius: 10px;
-    background: #e5e7eb;
-    color: #4b5563;
+    border-radius: 8px;
+    background: #f3f4f6;
+    color: #34404d;
 }
 
 .settlement-create-page .disabled-account strong {
@@ -522,7 +522,7 @@ position: sticky;
 .settlement-create-page .summary-header {
 padding: 18px 20px;
     border-bottom: 1px solid var(--settlement-border);
-    background: #111827;
+    background: #151922;
     color: #ffffff;
     font-size: 16px;
     font-weight: 700;
@@ -575,8 +575,8 @@ display: grid;
     gap: 5px;
     padding: 14px;
     margin-bottom: 18px;
-    border-radius: 10px;
-    background: #f9fafb;
+    border-radius: 8px;
+    background: #f9fafc;
 }
 
 .settlement-create-page .account-summary span {
@@ -592,7 +592,7 @@ font-size: 14px;
 width: 100%;
     min-height: 48px;
     margin-top: 22px;
-    border-radius: 11px;
+    border-radius: 8px;
     font-weight: 700;
 }
 
@@ -615,10 +615,10 @@ position: fixed;
     z-index: 1000;
     max-width: min(420px, calc(100vw - 48px));
     padding: 13px 16px;
-    border-radius: 10px;
-    background: #111827;
+    border-radius: 8px;
+    background: #151922;
     color: #ffffff;
-    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.22);
+    box-shadow: 0 14px 40px rgba(28, 39, 60, 0.12);
     font-size: 14px;
     line-height: 1.5;
     opacity: 0;
@@ -635,7 +635,7 @@ opacity: 1;
 }
 
 .settlement-create-page .toast.error {
-background: #991b1b;
+background: #d94c4c;
 }
 
 /* ─────────────────────────────────────────────
@@ -654,7 +654,7 @@ position: static;
 
 @media (max-width: 720px) {
 .settlement-create-page {
-width: min(100% - 24px, 1180px);
+width: min(100% - 28px, 680px);
         padding-top: 24px;
 }
 
@@ -704,14 +704,6 @@ right: 12px;
 
 /* 통합 대시보드·목록 화면 공통 시각 체계 */
 
-.settlement-create-page body.app-shell-page {
-
-}
-
-.settlement-create-page {
-width: min(1180px, calc(100% - 40px));
-}
-
 .settlement-create-page .breadcrumb {
 display: none;
 }
@@ -760,7 +752,7 @@ border-color: #0f8a5f;
 
 .settlement-create-page .form-field input,
 .settlement-create-page .form-field select {
-border-color: #0f8a5f;
+border-color: var(--settlement-border-strong);
     border-radius: 8px;
 }
 
@@ -787,7 +779,7 @@ border-color: #b9e5d0;
     color: #0f8a5f;
 }
 
-/* 카드 외곽선은 기존 중립색을 유지하고, 입력 요소만 초록 테두리를 사용 */
+/* 기본 테두리는 중립색으로 두고 선택·포커스 상태에 초록색을 사용 */
 
 .settlement-create-page .form-card,
 .settlement-create-page .choice-card,
@@ -797,15 +789,15 @@ border-color: var(--settlement-border);
 }
 
 .settlement-create-page .participant-chip {
-border-color: #dbeafe;
-    background: #f8fbff;
-    color: #1e3a8a;
+border-color: #b9e5d0;
+    background: #f0faf5;
+    color: #0f8a5f;
 }
 
 .settlement-create-page .participant-chip.owner {
-border-color: #bfdbfe;
+border-color: #0f8a5f;
     background: var(--settlement-primary-soft);
-    color: #1d4ed8;
+    color: #0f8a5f;
 }
 
 .settlement-create-page .summary-header {
@@ -885,10 +877,6 @@ border-color: #0f8a5f;
 
 /* 생성 화면은 입력 영역을 하나의 패널로 묶고 항목 사이만 구분한다. */
 
-.settlement-create-page {
-width: min(1344px, calc(100% - 96px));
-}
-
 .settlement-create-page .form-column {
 gap: 0;
     padding: 24px;
@@ -921,9 +909,9 @@ accent-color: #0f8a5f;
 }
 
 .settlement-create-page .submit-button {
-background: #edf1f4;
-    color: #34404d;
-    border: 1px solid #dbe1e7;
+background: var(--settlement-primary);
+    color: #ffffff;
+    border: 1px solid var(--settlement-primary);
 }
 
 .settlement-create-page .submit-button:hover,
@@ -934,11 +922,7 @@ background: #0f8a5f;
 }
 
 @media (max-width: 720px) {
-.settlement-create-page {
-width: calc(100% - 24px);
-}
-
-.settlement-create-page .form-column {
-padding: 16px;
-}
+    .settlement-create-page .form-column {
+        padding: 16px;
+    }
 }

@@ -6,6 +6,7 @@ import {
 } from 'react';
 import type { CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
+import LoadingSkeleton from '../../common/components/LoadingSkeleton';
 
 import { dashboardApi } from '../api/dashboardApi';
 
@@ -564,7 +565,7 @@ export default function DashboardPage() {
 
   function renderSummary() {
     if (loading) {
-      return '불러오는 중';
+      return <LoadingSkeleton className="loading-skeleton--compact" rows={2} />;
     }
 
     if (loadError) {
@@ -673,7 +674,7 @@ export default function DashboardPage() {
         className="dashboard-grid"
         aria-label="월별 현황과 확인 필요 내역"
       >
-        <article className="panel calendar-panel">
+        <article className="panel dashboard-calendar-panel">
           <div className="panel-header">
             <h2>
               월별 현황
@@ -694,8 +695,8 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="calendar-card">
-            <div className="calendar-toolbar">
+          <div className="dashboard-calendar-card">
+            <div className="dashboard-calendar-toolbar">
               <strong>
                 {calendarCursor.getFullYear()}
                 년{' '}
@@ -704,9 +705,9 @@ export default function DashboardPage() {
                 월
               </strong>
 
-              <div className="calendar-actions">
+              <div className="dashboard-calendar-actions">
                 <button
-                  className="calendar-button"
+                  className="dashboard-calendar-button"
                   type="button"
                   aria-label="이전 달"
                   onClick={() =>
@@ -719,7 +720,7 @@ export default function DashboardPage() {
                 </button>
 
                 <button
-                  className="calendar-button"
+                  className="dashboard-calendar-button"
                   type="button"
                   aria-label="다음 달"
                   onClick={() =>
@@ -734,7 +735,7 @@ export default function DashboardPage() {
             </div>
 
             <div
-              className="calendar-weekdays"
+              className="dashboard-calendar-weekdays"
               aria-hidden="true"
             >
               <span>일</span>
@@ -747,7 +748,7 @@ export default function DashboardPage() {
             </div>
 
             <div
-              className="calendar-grid"
+              className="dashboard-calendar-grid"
               aria-label="월별 일정 달력"
             >
               {calendarDates.map(
@@ -762,7 +763,7 @@ export default function DashboardPage() {
 
                   const classNames =
                     [
-                      'calendar-day',
+                      'dashboard-calendar-day',
 
                       date.getMonth() !==
                       calendarCursor.getMonth()
@@ -808,14 +809,14 @@ export default function DashboardPage() {
                         )
                       }
                     >
-                      <span className="calendar-day__number">
+                      <span className="dashboard-calendar-day__number">
                         {
                           date.getDate()
                         }
                       </span>
 
                       <span
-                        className="calendar-day__dots"
+                        className="dashboard-calendar-day__dots"
                         aria-hidden="true"
                       >
                         {calendarDay?.hasInbound && (
@@ -833,7 +834,7 @@ export default function DashboardPage() {
             </div>
 
             <div
-              className="calendar-legend"
+              className="dashboard-calendar-legend"
               aria-label="입출금 범례"
             >
               <span>
@@ -849,7 +850,7 @@ export default function DashboardPage() {
 
             {calendarError && (
               <div
-                className="calendar-error"
+                className="dashboard-calendar-error"
                 role="status"
               >
                 월별 내역을 불러오지 못했습니다.
@@ -866,9 +867,7 @@ export default function DashboardPage() {
 
             <div className="attention-list">
               {loading ? (
-                <div className="empty-state">
-                  내역을 불러오는 중입니다.
-                </div>
+                <LoadingSkeleton className="loading-skeleton--compact" rows={3} />
               ) : loadError ? (
                 <div className="empty-state">
                   내역을 불러오지 못했습니다.
@@ -1099,9 +1098,7 @@ export default function DashboardPage() {
 
           <div>
             {loading ? (
-              <div className="empty-state">
-                거래를 불러오는 중입니다.
-              </div>
+              <LoadingSkeleton className="loading-skeleton--compact" rows={4} />
             ) : loadError ? (
               <div className="empty-state">
                 거래를 불러오지 못했습니다.

@@ -5,13 +5,13 @@ export type DashboardContractStatus = "ONGOING" | "COMPLETED";
 export type DashboardPaymentStatus = "ONGOING" | "PAID";
 
 export const CONTRACT_ROLE_LABELS: Record<ContractRole, string> = {
-  CREDITOR: "대여",
-  DEBTOR: "차용",
+  CREDITOR: "대여자",
+  DEBTOR: "차입자",
 };
 
 export const CONTRACT_STATUS_LABELS: Record<DashboardContractStatus, string> = {
-  ONGOING: "진행중",
-  COMPLETED: "완료",
+  ONGOING: "상환 중",
+  COMPLETED: "상환 완료",
 };
 
 export const PAYMENT_STATUS_LABELS: Record<DashboardPaymentStatus, string> = {

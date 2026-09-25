@@ -6,6 +6,7 @@ import type { LinkedBankAccount } from '../../accounts/types/account';
 import AccountLinkModal from '../../link/components/AccountLinkModal';
 import { useAccountLink } from '../../link/hooks/useAccountLink';
 import { Button } from '../../common/components';
+import LoadingSkeleton from '../../common/components/LoadingSkeleton';
 
 interface UserData {
   userToken?: string;
@@ -77,11 +78,7 @@ function formatDateTime(value?: string): string {
     return value;
   }
 
-  return new Intl.DateTimeFormat('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(date);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
 export default function MyPage() {
@@ -247,10 +244,6 @@ export default function MyPage() {
             <h1 className="m-0 text-[36px] leading-none font-extrabold">
               내 정보
             </h1>
-
-            <p className="mt-3 text-base text-muted">
-              회원 정보와 연결 계좌를 관리할 수 있습니다.
-            </p>
           </section>
 
           {error && (
@@ -263,8 +256,8 @@ export default function MyPage() {
           )}
 
           {isLoading ? (
-              <section className="rounded-lg border border-outline bg-surface p-8 text-center text-sm text-muted">
-                내 정보를 불러오는 중입니다.
+              <section className="rounded-lg border border-outline bg-surface">
+                <LoadingSkeleton rows={5} />
               </section>
           ) : (
               <>
@@ -311,7 +304,7 @@ export default function MyPage() {
                       </strong>
 
                       {user?.verificationStatus && (
-                          <span className="inline-flex items-center rounded-xl bg-[#ffdad6] px-3 py-1 text-[11px] font-semibold tracking-[0.05em] whitespace-nowrap text-[#93000a]">
+                          <span className="inline-flex items-center rounded-xl bg-[#ffdad6] px-3 py-1 text-[11px] font-semibold tracking-wider whitespace-nowrap text-[#93000a]">
                             {user.verificationStatus}
                           </span>
                       )}

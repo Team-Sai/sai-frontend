@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import LoadingSkeleton from "../../common/components/LoadingSkeleton";
 import "../shared.css";
 import "../styles/ContractChangeRequestDetailPage.css";
 import {
@@ -149,7 +150,7 @@ function ContractChangeRequestDetailContent({
   if (isLoading) {
     return (
       <div className="contract-scope contract-scope--change-detail">
-        불러오는 중이에요...
+        <LoadingSkeleton className="loading-skeleton--page" rows={6} />
       </div>
     );
   }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import LoadingSkeleton from '../../common/components/LoadingSkeleton';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PDFViewer } from '@react-pdf/renderer';
 import '../../contract/shared.css';
@@ -61,7 +62,7 @@ export default function SettlementArchivePreviewPage() {
           목록으로
         </button>
         <button type="button" className="btn btn--primary" onClick={handleDownloadClick} disabled={isDownloading || !preview}>
-          {isDownloading ? '다운로드 중...' : 'PDF 다운로드'}
+          <>{isDownloading && <span className="button-spinner" aria-hidden="true" />}PDF 다운로드</>
         </button>
       </div>
 
@@ -71,7 +72,7 @@ export default function SettlementArchivePreviewPage() {
         </div>
       ) : isLoading ? (
         <div className="preview-status">
-          <p>불러오는 중이에요...</p>
+          <LoadingSkeleton className="loading-skeleton--page" rows={8} />
         </div>
       ) : error || !preview ? (
         <div className="preview-status">

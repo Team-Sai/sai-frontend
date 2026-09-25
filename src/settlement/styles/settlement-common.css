@@ -11,7 +11,7 @@
     --gray-800: #34404d;
     --gray-650: #65717f;
     --gray-500: #8e99a5;
-    --gray-350: #c8d0d8;
+    --gray-350: #d9dee8;
     --gray-250: #dbe1e7;
     --gray-150: #edf1f4;
     --gray-100: #f5f7f9;
@@ -184,6 +184,21 @@ a {
 
 .button-secondary:hover {
     background: var(--gray-100);
+}
+
+.settlement-sync-button {
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 700;
+}
+
+.settlement-list-page .heading-actions > .button,
+.settlement-detail-page .heading-actions > .button {
+    font-size: 16px;
+    font-family: inherit;
+    font-weight: 700;
 }
 
 .button-small {

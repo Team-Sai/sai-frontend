@@ -23,3 +23,7 @@
 .contract-dashboard-page .settlement-name {
   cursor: pointer;
 }
+
+.contract-dashboard-page .heading-actions > .button-primary {
+  min-width: 118px;
+}
