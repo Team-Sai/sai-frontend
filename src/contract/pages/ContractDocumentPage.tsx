@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import LoadingSkeleton from "../../common/components/LoadingSkeleton";
 import { useEffect, useState } from "react";
 import "../shared.css";
 import "../styles/ContractDocumentPage.css";
@@ -45,7 +46,7 @@ function ContractDocumentContent({contractId} : {contractId: string}) {
     }, [contractId]);
 
     if (isLoading) {
-        return <div className="contract-scope contract-scope--document">불러오는 중이에요...</div>;
+        return <div className="contract-scope contract-scope--document"><LoadingSkeleton className="loading-skeleton--page" rows={8} /></div>;
     }
 
     if (error || !data) {

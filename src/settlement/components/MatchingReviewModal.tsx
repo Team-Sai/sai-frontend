@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import LoadingSkeleton from '../../common/components/LoadingSkeleton';
 import { authFetch } from '../../auth/authFetch';
 import './matching-review-modal.css';
 
@@ -19,7 +20,7 @@ async function fetchReviewPage(options: Options, page: number): Promise<ReviewPa
 }
 
 const money=(v?:number)=>`${Number(v??0).toLocaleString('ko-KR')}원`;
-const dt=(v?:string)=>v?new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(v)):'거래일시 미상';
+const dt=(v?:string)=>{if(!v)return '거래일시 미상';const date=new Date(v);if(Number.isNaN(date.getTime()))return '거래일시 미상';const dateLabel=`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;const timeLabel=new Intl.DateTimeFormat('ko-KR',{hour:'2-digit',minute:'2-digit'}).format(date);return `${dateLabel} ${timeLabel}`};
 
 export default function MatchingReviewModal({ open, onClose, options }: Props) {
   const { reviewChannel, targetType, aggregateId } = options;
@@ -76,7 +77,7 @@ export default function MatchingReviewModal({ open, onClose, options }: Props) {
         <header className="matching-review-modal__header"><div><h2>{`확인이 필요한 거래 ${total}건`}</h2><p>{completed}건 처리 · {Math.max(total-completed,0)}건 남음</p></div><button className="matching-review-icon-button" onClick={()=>onClose(changed)}>×</button></header>
         {message && <div className="matching-review-message is-error">{message}</div>}
         <div className="matching-review-modal__body">
-          {loading && reviews.length===0 && <div className="matching-review-loading">확인 필요 거래를 불러오는 중입니다.</div>}
+          {loading && reviews.length===0 && <LoadingSkeleton className="loading-skeleton--compact" rows={4} />}
           {!loading && reviews.length===0 && !message && <div className="matching-review-empty">현재 화면에서 확인할 거래가 없습니다.</div>}
           {reviews.map(review=>{
             const t=review.transaction; const result=results[t.bankTransactionId];

@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
+import LoadingSkeleton from "../../common/components/LoadingSkeleton";
 import { useParams, useNavigate } from "react-router-dom";
+import MatchingReviewModal from "../../settlement/components/MatchingReviewModal";
+import { settlementApi } from "../../settlement/api/settlementApi";
+import { formatTransactionSyncTime, getLastTransactionSyncAt, recordTransactionSync } from "../../transaction/syncTimestamp";
 import "../../settlement/styles/settlement-common.css";
 import "../../settlement/styles/settlement-detail.css";
 import "../styles/SchedulePage.css";
@@ -33,7 +37,7 @@ function formatDateTimeKorean(dateString: string): string {
   const day = date.getDate();
   const hours = date.getHours();
   const minutes = date.getMinutes();
-  return `${year}. ${String(month).padStart(2, "0")}. ${String(day).padStart(2, "0")} ${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")} ${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
 function rowStatusClass(status: RepaymentScheduleRow["status"]): string {
@@ -67,6 +71,11 @@ function ScheduleContent({ contractId }: { contractId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [account, setAccount] = useState<LinkedBankAccount | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [syncTime, setSyncTime] = useState(() => formatTransactionSyncTime(getLastTransactionSyncAt()));
+  const [toast, setToast] = useState<{ text: string; error?: boolean } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -91,7 +100,7 @@ function ScheduleContent({ contractId }: { contractId: string }) {
     return () => {
       cancelled = true;
     };
-  }, [contractId]);
+  }, [contractId, reloadKey]);
 
   // 수취 계좌 조회는 채권자에게만 허용되므로, 채무자면 패널 자체를 숨긴다.
   useEffect(() => {
@@ -112,7 +121,7 @@ function ScheduleContent({ contractId }: { contractId: string }) {
   if (isLoading) {
     return (
       <main className="page-shell settlement-detail-page contract-schedule-page">
-        <p className="updated-text">불러오는 중이에요...</p>
+        <LoadingSkeleton className="loading-skeleton--page" rows={7} />
       </main>
     );
   }
@@ -138,7 +147,30 @@ function ScheduleContent({ contractId }: { contractId: string }) {
     page * PAGE_SIZE,
   );
 
+  function showToast(text: string, error = false) {
+    setToast({ text, error });
+    window.setTimeout(() => setToast(null), 3000);
+  }
+
+  async function syncTransactions() {
+    try {
+      setIsSyncing(true);
+      const result = await settlementApi.syncAll();
+      setSyncTime(formatTransactionSyncTime(recordTransactionSync()));
+      showToast(`동기화 완료: 자동반영 ${result.appliedCount ?? 0}건, 확인필요 ${result.needsCheckCount ?? 0}건, 미매칭 ${result.unmatchedCount ?? 0}건`);
+      setIsLoading(true);
+      setError(null);
+      setReloadKey((current) => current + 1);
+      setIsReviewOpen(true);
+    } catch (cause) {
+      showToast(cause instanceof Error ? cause.message : "거래내역 동기화에 실패했습니다.", true);
+    } finally {
+      setIsSyncing(false);
+    }
+  }
+
   return (
+    <>
     <main className="page-shell settlement-detail-page contract-schedule-page">
       <section className="detail-heading">
         <div>
@@ -153,6 +185,7 @@ function ScheduleContent({ contractId }: { contractId: string }) {
           <h1>{contract.contractAlias}</h1>
         </div>
         <div className="heading-actions">
+          {isCreditor && <p className="updated-text">최근 동기화 <span>{syncTime}</span></p>}
           <button
             type="button"
             className="button button-secondary"
@@ -164,8 +197,10 @@ function ScheduleContent({ contractId }: { contractId: string }) {
             <button
               type="button"
               className="button button-secondary"
-              disabled
+              onClick={() => void syncTransactions()}
+              disabled={isSyncing}
             >
+              {isSyncing && <span className="button-spinner" aria-hidden="true" />}
               ↻ 거래내역 동기화
             </button>
           )}
@@ -361,5 +396,22 @@ function ScheduleContent({ contractId }: { contractId: string }) {
         있습니다. 금액은 원 단위 미만을 반올림하여 표시됩니다.
       </p>
     </main>
+    {isReviewOpen && (
+      <MatchingReviewModal
+        key={`schedule-review-${contractId}`}
+        open
+        onClose={(changed) => {
+          setIsReviewOpen(false);
+          if (changed) {
+            setIsLoading(true);
+            setError(null);
+            setReloadKey((current) => current + 1);
+          }
+        }}
+        options={{ reviewChannel: "TRANSACTION_HISTORY", targetType: "LOAN" }}
+      />
+    )}
+    {toast && <div className={`toast visible${toast.error ? " error" : ""}`} role={toast.error ? "alert" : "status"}>{toast.text}</div>}
+    </>
   );
 }

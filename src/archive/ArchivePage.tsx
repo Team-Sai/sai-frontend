@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import LoadingSkeleton from '../common/components/LoadingSkeleton';
 import { useNavigate } from 'react-router-dom';
 import '../contract/shared.css';
 import './ArchivePage.css';
@@ -100,16 +101,17 @@ export default function ArchivePage() {
   }
 
   return (
-    <div className="page archive-container">
+    <main className="page archive-container">
       <div className="archive-heading">
         <h1 className="archive-title">보관함</h1>
-        <p className="archive-subtitle">저장된 차용증과 정산 기록을 눌러 상세 화면을 확인하세요.</p>
       </div>
 
-      <div className="archive-tabs">
+      <div className="archive-tabs" role="tablist" aria-label="보관함 항목 유형">
         <button
           type="button"
           className={`tab-btn ${activeTab === 'contract' ? 'active' : ''}`}
+          role="tab"
+          aria-selected={activeTab === 'contract'}
           onClick={() => handleTabChange('contract')}
         >
           차용증
@@ -117,6 +119,8 @@ export default function ArchivePage() {
         <button
           type="button"
           className={`tab-btn ${activeTab === 'settlement' ? 'active' : ''}`}
+          role="tab"
+          aria-selected={activeTab === 'settlement'}
           onClick={() => handleTabChange('settlement')}
         >
           정산
@@ -124,14 +128,20 @@ export default function ArchivePage() {
       </div>
 
       {isLoading ? (
-        <div className="empty-state">불러오는 중이에요...</div>
+        <LoadingSkeleton className="loading-skeleton--page" rows={7} />
       ) : visibleError ? (
-        <div className="error-state">{visibleError}</div>
+        <div className="error-state" role="alert">
+          <h2>보관함을 불러오지 못했습니다.</h2>
+          <p>{visibleError}</p>
+        </div>
       ) : activeTab === 'contract' ? (
         <>
           <div className="archive-list">
             {!contractData || contractData.contracts.length === 0 ? (
-              <div className="empty-state">보관된 차용증이 없습니다.</div>
+              <div className="empty-state">
+                <h2>보관된 차용증이 없습니다.</h2>
+                <p>완료한 차용증을 보관하면 이곳에서 다시 확인할 수 있습니다.</p>
+              </div>
             ) : (
               contractData.contracts.map((contract) => (
                 <div
@@ -140,8 +150,8 @@ export default function ArchivePage() {
                   onClick={() => navigate(`/archive/contracts/${contract.contractId}`)}
                 >
                   <div className="archive-card-main">
-                    <div className="archive-card-title">
-                      {contract.contractAlias}
+                  <div className="archive-card-title">
+                    <span className="archive-item-name">{contract.contractAlias}</span>
                       <span className={`role-badge ${contract.role === 'CREDITOR' ? 'creditor' : 'debtor'}`}>
                         {ARCHIVE_ROLE_LABELS[contract.role]}
                       </span>
@@ -160,7 +170,7 @@ export default function ArchivePage() {
                       disabled={downloadingId !== null}
                       onClick={(event) => handleContractPdfClick(event, contract.contractId)}
                     >
-                      {downloadingId === contract.contractId ? '다운로드 중...' : 'PDF 다운로드'}
+                      <>{downloadingId === contract.contractId && <span className="button-spinner" aria-hidden="true" />}PDF 다운로드</>
                     </button>
                   </div>
                 </div>
@@ -189,7 +199,10 @@ export default function ArchivePage() {
       ) : (
         <div className="archive-list">
           {!settlements || settlements.length === 0 ? (
-            <div className="empty-state">보관된 정산이 없습니다.</div>
+            <div className="empty-state">
+              <h2>보관된 정산이 없습니다.</h2>
+              <p>완료한 정산을 보관하면 이곳에서 다시 확인할 수 있습니다.</p>
+            </div>
           ) : (
             settlements.map((settlement) => (
               <div
@@ -199,7 +212,7 @@ export default function ArchivePage() {
               >
                 <div className="archive-card-main">
                   <div className="archive-card-title">
-                    {settlement.title}
+                    <span className="archive-item-name">{settlement.title}</span>
                     <span className={`role-badge ${settlement.settlementType === 'RECURRING' ? 'recurring' : 'shared'}`}>
                       {ARCHIVE_SETTLEMENT_TYPE_LABELS[settlement.settlementType]}
                     </span>
@@ -220,7 +233,7 @@ export default function ArchivePage() {
                     disabled={downloadingId !== null}
                     onClick={(event) => handleSettlementPdfClick(event, settlement.settlementId)}
                   >
-                    {downloadingId === settlement.settlementId ? '다운로드 중...' : 'PDF 다운로드'}
+                    <>{downloadingId === settlement.settlementId && <span className="button-spinner" aria-hidden="true" />}PDF 다운로드</>
                   </button>
                 </div>
               </div>
@@ -228,6 +241,6 @@ export default function ArchivePage() {
           )}
         </div>
       )}
-    </div>
+    </main>
   );
 }

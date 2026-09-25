@@ -1,3 +1,5 @@
+import { clearTransactionSync } from '../transaction/syncTimestamp';
+
 interface ReissueResponse {  accessToken: string;
 }
 
@@ -14,6 +16,7 @@ function setAccessToken(accessToken: string): void {
 }
 
 export function clearStoredAuth(): void {
+  clearTransactionSync();
   sessionStorage.removeItem(ACCESS_TOKEN_KEY);
 }
 

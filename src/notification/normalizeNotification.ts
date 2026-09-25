@@ -37,7 +37,8 @@ export function getNotificationDestination(n: NotificationResponse): Notificatio
 
 /** Pure: callers supply the clock, and React escapes the returned plain text. */
 export function normalizeNotification(n: NotificationResponse, now: number): NotificationView {
-  const isSign = n.notificationType === 'CONTRACT_REQUESTED' || n.notificationType === 'CONTRACT_CHANGE';
+  const isSign = ['CONTRACT_REQUESTED', 'CONTRACT_CHANGE', 'REPAYMENT_DUE_REMINDER_D3',
+    'REPAYMENT_DUE_REMINDER_D1', 'REPAYMENT_DUE_REMINDER_DDAY'].includes(n.notificationType);
   const isSettlement = ['SETTLEMENT_DUE_REMINDER_D3', 'SETTLEMENT_DUE_REMINDER_D1',
     'SETTLEMENT_DUE_REMINDER_DDAY', 'SETTLEMENT_PARTICIPANT_ADDED'].includes(n.notificationType);
   const category = isSign ? 'SIGN' : isSettlement ? 'SETTLEMENT' : 'SYSTEM';
@@ -52,7 +53,7 @@ export function normalizeNotification(n: NotificationResponse, now: number): Not
   return {
     id: n.notificationId,
     category,
-    categoryLabel: isSign ? '차용증' : !isSettlement ? '공지사항'
+    categoryLabel: isSign ? '차용증' : !isSettlement ? '시스템'
       : n.settlementType === 'RECURRING' ? '정기정산' : n.settlementType === 'SHARED' ? '공동정산' : '정산',
     title: n.referenceTitle || (participantAdded ? '새로운 정산에 참여자로 등록되었습니다.' : n.title || ''),
     description: participantAdded ? '참여자로 등록되었습니다.' : n.content || '',
@@ -64,6 +65,6 @@ export function normalizeNotification(n: NotificationResponse, now: number): Not
       ? { kind: 'transaction', bankTransactionId: n.referenceId, linkedAccountId: n.secondaryReferenceId }
       : null,
     statusLabel,
-    statusTone: statusLabel && status === 'FAILED' ? 'error' : statusLabel && status === 'APPLIED' ? 'success' : 'neutral',
+    statusTone: statusLabel && status === 'FAILED' ? 'failed' : statusLabel && status === 'APPLIED' ? 'success' : 'neutral',
   };
 }

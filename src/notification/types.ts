@@ -35,5 +35,5 @@ export interface NotificationView {
   destination: NotificationDestination | null;
   reviewSource: MatchingReviewSource | null;
   statusLabel: string | null;
-  statusTone: 'success' | 'neutral' | 'error';
+  statusTone: 'success' | 'neutral' | 'failed';
 }

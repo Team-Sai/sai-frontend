@@ -109,6 +109,14 @@ color:#0f8a5f;background:var(--green-soft)
 min-height:44px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:6px;background:#fff;color:#26313d;text-decoration:none;font-weight:700;cursor:pointer;transition:background-color .15s ease,border-color .15s ease,transform .15s ease
 }
 
+.settlement-detail-page .settlement-sync-button {
+border-color:var(--gray-350);border-radius:8px;background:#fff;color:var(--gray-800)
+}
+
+.settlement-detail-page .settlement-sync-button:hover {
+background:var(--gray-100)
+}
+
 .settlement-detail-page .button-primary {
 border-color:#0f8a5f;background:#0f8a5f;color:#fff
 }
@@ -330,6 +338,10 @@ padding:15px 18px;background:#f2f4f6;border-bottom:1px solid var(--line);font-si
 padding:19px 18px;border-bottom:1px solid #edf0f2;text-align:center;font-size:13px
 }
 
+.settlement-detail-page .payment-date-time {
+display:inline-flex;flex-direction:column;align-items:center;gap:2px;white-space:nowrap
+}
+
 .settlement-detail-page .name-cell {
 font-weight:700
 }
@@ -421,6 +433,10 @@ grid-template-columns:repeat(2,1fr)
 }
 
 @media (max-width:720px) {
+.settlement-detail-page {
+width:min(100% - 32px,680px);padding-top:24px
+}
+
 .settlement-detail-page .header-inner {
 padding:16px 20px;flex-wrap:wrap;height:auto
 }
@@ -434,11 +450,23 @@ order:3;width:100%;overflow:auto
 }
 
 .settlement-detail-page .detail-heading {
-flex-direction:column;align-items:flex-start
+flex-direction:column;align-items:stretch;gap:12px
+}
+
+.settlement-detail-page .detail-heading>div:first-child {
+flex-direction:column;align-items:flex-start;gap:10px;width:100%
+}
+
+.settlement-detail-page .detail-heading h1 {
+max-width:100%;font-size:30px;line-height:1.2;white-space:normal;overflow-wrap:anywhere
+}
+
+.settlement-detail-page .heading-badges {
+flex-wrap:wrap
 }
 
 .settlement-detail-page .heading-actions {
-position:static
+position:static;width:100%;display:grid;grid-template-columns:1fr
 }
 
 .settlement-detail-page .summary-card {

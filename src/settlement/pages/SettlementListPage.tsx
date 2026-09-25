@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { settlementApi } from '../api/settlementApi';
 import MatchingReviewModal from '../components/MatchingReviewModal';
+import LoadingSkeleton from '../../common/components/LoadingSkeleton';
+import { formatTransactionSyncTime, getLastTransactionSyncAt, recordTransactionSync } from '../../transaction/syncTimestamp';
 import type { SettlementListItem, SettlementSummary } from '../types/settlement';
 import '../styles/settlement-common.css';
 import '../styles/settlement-list.css';
 
 const money = (v?: number) => Number(v ?? 0).toLocaleString('ko-KR');
-const date = (v?: string | null) => v ? v.split('T')[0].split('-').join('.') : '-';
+const date = (v?: string | null) => v ? v.split('T')[0] : '-';
 const period = (s?: string | null, e?: string | null) => !s ? '-' : `${date(s)} ~ ${e ? date(e) : '계속'}`;
 
 function fetchSettlementListData(){
@@ -16,15 +18,15 @@ function fetchSettlementListData(){
 
 export default function SettlementListPage() {
   const [items, setItems] = useState<SettlementListItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [listLoadError, setListLoadError] = useState(false);
   const [summary, setSummary] = useState<SettlementSummary>({});
   const [keyword, setKeyword] = useState('');
   const [type, setType] = useState('ALL');
   const [status, setStatus] = useState('ALL');
   const [sort, setSort] = useState('LATEST');
   const [syncing, setSyncing] = useState(false);
-  const [syncTime, setSyncTime] = useState(() =>
-    new Intl.DateTimeFormat('ko-KR', { hour: '2-digit', minute: '2-digit' }).format(new Date()),
-  );
+  const [syncTime, setSyncTime] = useState(() => formatTransactionSyncTime(getLastTransactionSyncAt()));
   const [toast, setToast] = useState<{text:string; error?:boolean}|null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,8 +38,10 @@ export default function SettlementListPage() {
 
   const load = useCallback(async () => {
     const [listResult, summaryResult] = await fetchSettlementListData();
-    if (listResult.status === 'fulfilled') setItems(listResult.value);
-    else { setItems([]); showToast('정산 목록을 불러오지 못했습니다.', true); }
+    if (listResult.status === 'fulfilled') {
+      setItems(listResult.value);
+      setListLoadError(false);
+    } else { setItems([]); setListLoadError(true); showToast('정산 목록을 불러오지 못했습니다.', true); }
     if (summaryResult.status === 'fulfilled') setSummary(summaryResult.value);
     else { setSummary({}); showToast('정산 요약을 불러오지 못했습니다.', true); }
   }, []);
@@ -46,11 +50,11 @@ export default function SettlementListPage() {
     let cancelled=false;
     fetchSettlementListData().then(([listResult,summaryResult])=>{
       if(cancelled)return;
-      if(listResult.status==='fulfilled')setItems(listResult.value);
-      else{setItems([]);showToast('정산 목록을 불러오지 못했습니다.',true)}
+      if(listResult.status==='fulfilled'){setItems(listResult.value);setListLoadError(false)}
+      else{setItems([]);setListLoadError(true);showToast('정산 목록을 불러오지 못했습니다.',true)}
       if(summaryResult.status==='fulfilled')setSummary(summaryResult.value);
       else{setSummary({});showToast('정산 요약을 불러오지 못했습니다.',true)}
-    });
+    }).finally(()=>{if(!cancelled)setIsLoading(false)});
     return()=>{cancelled=true};
   }, []);
 
@@ -99,7 +103,7 @@ export default function SettlementListPage() {
       const result = await settlementApi.syncAll();
       showToast(`동기화 완료: 자동반영 ${result.appliedCount ?? 0}건, 확인필요 ${result.needsCheckCount ?? 0}건, 미매칭 ${result.unmatchedCount ?? 0}건`);
       await load();
-      setSyncTime(new Intl.DateTimeFormat('ko-KR', { hour: '2-digit', minute: '2-digit' }).format(new Date()));
+      setSyncTime(formatTransactionSyncTime(recordTransactionSync()));
       setReviewOpen(true);
     } catch (e) { showToast(e instanceof Error ? e.message : '거래내역 동기화에 실패했습니다.', true); }
     finally { setSyncing(false); }
@@ -108,18 +112,18 @@ export default function SettlementListPage() {
   return <>
     <main className="page-shell settlement-list-page">
       <section className="page-heading unified-page-header">
-        <div><h1 className="unified-page-title">내 정산</h1></div>
+        <div><h1 className="unified-page-title">정산 관리</h1></div>
         <div className="heading-actions">
           <p className="updated-text">최근 동기화 <span>{syncTime}</span></p>
-          <button className="button button-secondary" type="button" onClick={sync} disabled={syncing}>↻ {syncing ? '동기화 중...' : '거래내역 동기화'}</button>
-          <Link className="button button-primary" to="/settlements/new">정산 생성</Link>
+          <button className="button button-secondary settlement-sync-button" type="button" onClick={sync} disabled={syncing}>{syncing && <span className="button-spinner" aria-hidden="true" />}↻ 거래내역 동기화</button>
+          <Link className="button button-primary" to="/settlements/new">새 정산 등록</Link>
         </div>
       </section>
 
       <section className="summary-grid" aria-label="정산 요약">
-        <article className="summary-card"><div><p className="summary-label">전체 정산 수</p><p className="summary-value"><strong>{items.length}</strong><span>건</span></p></div><p className="summary-foot">전체 정산 내역</p></article>
-        <article className="summary-card"><div><p className="summary-label">받을 금액</p><p className="summary-value"><strong>{money(summary.receivableAmount)}</strong><span>원</span></p></div><span className="summary-arrow">↙</span><p className="summary-foot"><span>{summary.receivableCount ?? 0}건</span> 받아야하는 정산</p></article>
-        <article className="summary-card"><div><p className="summary-label">보낼 금액</p><p className="summary-value"><strong>{money(summary.payableAmount)}</strong><span>원</span></p></div><span className="summary-arrow positive">↗</span><p className="summary-foot"><span>{summary.payableCount ?? 0}건</span> 보내야하는 정산</p></article>
+        <article className="summary-card"><div><p className="summary-label">전체 정산 건수</p><p className="summary-value"><strong>{items.length}</strong><span>건</span></p></div><p className="summary-foot">전체 정산 내역</p></article>
+        <article className="summary-card"><div><p className="summary-label">받을 정산금</p><p className="summary-value"><strong>{money(summary.receivableAmount)}</strong><span>원</span></p></div><span className="summary-arrow">↙</span><p className="summary-foot"><span>{summary.receivableCount ?? 0}건</span> 수령 예정 정산</p></article>
+        <article className="summary-card"><div><p className="summary-label">지급 예정 정산금</p><p className="summary-value"><strong>{money(summary.payableAmount)}</strong><span>원</span></p></div><span className="summary-arrow positive">↗</span><p className="summary-foot"><span>{summary.payableCount ?? 0}건</span> 지급 예정 정산</p></article>
       </section>
 
       <section className="filter-panel">
@@ -130,11 +134,11 @@ export default function SettlementListPage() {
       </section>
 
       <section className="table-card" aria-label="정산 목록">
-        <div className="settlement-table settlement-table-head"><span>정산명</span><span>정산 유형</span><span>역할</span><span>구분</span><span>분배 방식</span><span>상태</span><span>일정</span><span>상세</span></div>
-        {filtered.length > 0 ? <div className="settlement-list">{filtered.map(s => <article key={s.settlementId} className="settlement-table settlement-row">
+        <div className="settlement-table settlement-table-head"><span>정산명</span><span>정산 방식</span><span>참여 구분</span><span>정산 항목</span><span>분담 방식</span><span>정산 상태</span><span>정산 기간·기한</span><span>상세</span></div>
+        {isLoading ? <LoadingSkeleton className="loading-skeleton--page" rows={6} /> : listLoadError ? <div className="empty-state" role="alert"><h2>정산 목록을 불러오지 못했습니다.</h2><button className="button button-secondary" type="button" onClick={()=>void load()}>다시 시도</button></div> : filtered.length > 0 ? <div className="settlement-list">{filtered.map(s => <article key={s.settlementId} className="settlement-table settlement-row">
           <div className="settlement-name"><span>{s.title || '이름 없는 정산'}</span></div>
           <span className={`type-badge ${s.settlementType === 'RECURRING' ? 'badge-recurring' : 'badge-role'}`}>{s.settlementType === 'RECURRING' ? '정기' : '공동'}</span>
-          <span className={`status-badge ${s.role === 'OWNER' ? 'badge-role' : 'badge-debtor'}`}>{s.role === 'OWNER' ? '정산자' : '참여자'}</span>
+          <span className={`status-badge ${s.role === 'OWNER' ? 'badge-role' : 'badge-debtor'}`}>{s.role === 'OWNER' ? '생성자' : '참여자'}</span>
           <span>{s.settlementCategory || '-'}</span>
           <span className={`split-badge ${s.splitType === 'CUSTOM' ? 'badge-custom' : 'badge-split'}`}>{s.splitType === 'CUSTOM' ? '직접 설정' : '균등'}</span>
           <span className={`status-badge ${s.settlementStatus === 'CLOSED' ? 'badge-completed' : 'badge-progress'}`}>{s.settlementStatus === 'CLOSED' ? '완료' : '진행 중'}</span>

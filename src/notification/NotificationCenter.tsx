@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MouseEvent, SyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../common/components/Button';
+import LoadingSkeleton from '../common/components/LoadingSkeleton';
 import MatchingReviewModal from '../matching/MatchingReviewModal';
 import type { MatchingReviewSource } from '../matching/types';
 import { fetchNotifications } from './notificationApi';
@@ -79,20 +80,16 @@ export default function NotificationCenter() {
     <section className={styles.page} aria-labelledby="notification-heading">
       <header>
         <h1 id="notification-heading" className={styles.heading}>알림센터</h1>
-        <p className={styles.subtitle}>계약과 정산 등 최근 발생한 중요 소식을 한눈에 확인하세요.</p>
       </header>
       <div className={styles.toolbar}>
-        <div className={styles.filters} role="group" aria-label="알림 분류">
+        <div className={styles.filters} role="tablist" aria-label="알림 분류">
           {categories.map(item => (
-            <Button key={item.value} variant="secondary" className={`${styles.filter} ${category === item.value ? styles.active : ''}`}
-              aria-pressed={category === item.value} onClick={() => setCategory(item.value)}>
+            <Button key={item.value} variant="secondary" role="tab" className={`${styles.filter} ${category === item.value ? styles.active : ''}`}
+              aria-selected={category === item.value} onClick={() => setCategory(item.value)}>
               {item.label}
             </Button>
           ))}
         </div>
-        <Button variant="secondary" isLoading={loading} onClick={() => void refresh()}>
-          새로고침
-        </Button>
       </div>
       <div role="status" aria-live="polite" className={notice ? styles.notice : undefined}>{notice}</div>
       {error && (
@@ -101,30 +98,34 @@ export default function NotificationCenter() {
           <Button variant="secondary" onClick={() => void refresh()}>다시 시도</Button>
         </div>
       )}
-      {notifications === null && loading && <p className={styles.empty} role="status">알림을 불러오는 중입니다.</p>}
+      {notifications === null && loading && <LoadingSkeleton className="loading-skeleton--page" rows={5} />}
       {notifications !== null && (
         <ul className={styles.list} aria-label="알림 목록" aria-busy={loading}>
           {filtered.length === 0 && <li className={styles.empty}>{notifications.length === 0 ? '아직 도착한 알림이 없습니다.' : '해당 알림이 없습니다.'}</li>}
           {filtered.map((item, index) => (
             <li key={item.id ?? `missing-${index}`} className={styles.card}>
-              <div className={styles.row}>
-                <span className={`${styles.badge} ${styles[item.category]}`}>{item.categoryLabel}</span>
-                <h2 className={styles.title}>
-                  {item.destination ? (
-                    <Link to={item.destination.url} className={styles.link} aria-label={`${item.title} — ${item.destination.label}${item.destination.available ? '' : ' (준비 중)'}`}
-                      onClick={item.destination.available ? undefined : showComingSoon}
-                      onAuxClick={item.destination.available ? undefined : preventAuxiliaryNavigation}
-                      onContextMenu={item.destination.available ? undefined : showComingSoon}
-                      onDragStart={item.destination.available ? undefined : showComingSoon} draggable={item.destination.available}>
-                      {item.title || item.destination.label}
-                    </Link>
-                  ) : item.title}
-                </h2>
+              <div className={styles.message}>
+                <div className={styles.titleRow}>
+                  <span className={`${styles.badge} ${styles[item.category]}`}>{item.categoryLabel}</span>
+                  <h2 className={styles.title}>
+                    {item.destination ? (
+                      <Link to={item.destination.url} className={styles.link} aria-label={`${item.title} — ${item.destination.label}${item.destination.available ? '' : ' (준비 중)'}`}
+                        onClick={item.destination.available ? undefined : showComingSoon}
+                        onAuxClick={item.destination.available ? undefined : preventAuxiliaryNavigation}
+                        onContextMenu={item.destination.available ? undefined : showComingSoon}
+                        onDragStart={item.destination.available ? undefined : showComingSoon} draggable={item.destination.available}>
+                        {item.title || item.destination.label}
+                      </Link>
+                    ) : item.title}
+                  </h2>
+                </div>
                 <p className={styles.description}>{item.description}</p>
-                {item.createdAt && <time className={styles.time} dateTime={item.createdAt}>{item.timeLabel}</time>}
               </div>
-              {item.reviewSource && <Button className={styles.review} onClick={() => setSource(item.reviewSource)}>매칭 확인하기</Button>}
-              {item.statusLabel && <span className={`${styles.status} ${styles[item.statusTone]}`}>{item.statusLabel}</span>}
+              <div className={styles.meta}>
+                {item.createdAt && <time className={styles.time} dateTime={item.createdAt}>{item.timeLabel}</time>}
+                {item.reviewSource && <Button className={styles.review} onClick={() => setSource(item.reviewSource)}>매칭 확인하기</Button>}
+                {item.statusLabel && <span className={`${styles.status} ${styles[item.statusTone]}`}>{item.statusLabel}</span>}
+              </div>
             </li>
           ))}
         </ul>

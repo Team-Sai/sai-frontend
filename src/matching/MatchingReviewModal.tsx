@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '../common/components';
+import LoadingSkeleton from '../common/components/LoadingSkeleton';
 import TransactionList from '../transaction/TransactionList';
 import { formatMoney } from '../transaction/format';
 import type { Transaction } from '../transaction/types';
@@ -113,7 +114,7 @@ function ReviewSession({ source, onClose, onStateChanged }: MatchingReviewModalP
           <p>{state.error}</p>
           <Button variant="secondary" controlSize="sm" disabled={state.busy || state.loading} onClick={controller.refresh}>목록 다시 불러오기</Button>
         </div>}
-        {state.loading && <p role="status" className={styles.empty}>거래 정보를 불러오는 중입니다.</p>}
+        {state.loading && <LoadingSkeleton className="loading-skeleton--compact" rows={4} />}
         {!state.loading && !state.error && !state.reviews.length && <p className={styles.empty}>현재 확인할 거래가 없습니다.</p>}
         {state.reviews.length > 0 && <TransactionList items={state.reviews.map(review => review.transaction)} renderContent={transaction => {
           const key = transactionKey(transaction);

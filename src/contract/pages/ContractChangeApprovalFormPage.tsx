@@ -202,6 +202,7 @@ export default function ContractChangeApprovalFormPage() {
         {!locked && (
           <div className="doc__actions">
             <button type="button" className="btn btn--primary" disabled={isLoading} onClick={handleNext}>
+              {isLoading && <span className="button-spinner" aria-hidden="true" />}
               확인
             </button>
           </div>

@@ -10,9 +10,11 @@ export type ButtonProps = ComponentPropsWithRef<'button'> & {
 
 export function Button({
   variant = 'primary', controlSize = 'md', fullWidth = false,
-  isLoading = false, disabled, type = 'button', className = '', ...props
+  isLoading = false, disabled, type = 'button', className = '', children, ...props
 }: ButtonProps) {
   return <button {...props} type={type} disabled={disabled || isLoading}
     aria-busy={isLoading || props['aria-busy']}
-    className={`${styles.button} ${styles[variant]} ${styles[controlSize]} ${fullWidth ? styles.fullWidth : ''} ${className}`} />;
+    className={`${styles.button} ${styles[variant]} ${styles[controlSize]} ${fullWidth ? styles.fullWidth : ''} ${className}`}>
+    {isLoading && <span className="button-spinner" aria-hidden="true" />}{children}
+  </button>;
 }
