@@ -115,10 +115,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  signatureImage: {
-    width: 14,
-    height: 14,
+  seal: {
+    position: 'relative',
     marginLeft: 4,
+  },
+  signatureImage: {
+    position: 'absolute',
+    top: -5,
+    left: -5,
+    width: 24,
+    height: 20,
+    objectFit: 'contain',
   },
   partiesValueBirth: {
     width: '14%',
@@ -234,8 +241,11 @@ export default function ContractPdfTemplate({
             <Text style={styles.partiesRole}>채권자</Text>
             <Text style={styles.partiesLabel}>성 명</Text>
             <View style={[styles.partiesValue, styles.partiesValueName]}>
-              <Text style={styles.readonly}>{contract.creditorName} (인)</Text>
-              {creditorSignatureDataUri && <Image src={creditorSignatureDataUri} style={styles.signatureImage} />}
+              <Text style={styles.readonly}>{contract.creditorName}</Text>
+              <View style={styles.seal}>
+                <Text style={styles.readonly}>(인)</Text>
+                {creditorSignatureDataUri && <Image src={creditorSignatureDataUri} style={styles.signatureImage} />}
+              </View>
             </View>
             <Text style={styles.partiesLabel}>생년월일</Text>
             <Text style={[styles.partiesValue, styles.partiesValueBirth, styles.readonly]}>
@@ -250,8 +260,11 @@ export default function ContractPdfTemplate({
             <Text style={styles.partiesRole}>채무자</Text>
             <Text style={styles.partiesLabel}>성 명</Text>
             <View style={[styles.partiesValue, styles.partiesValueName]}>
-              <Text style={styles.readonly}>{contract.debtorName ?? '-'} (인)</Text>
-              {debtorSignatureDataUri && <Image src={debtorSignatureDataUri} style={styles.signatureImage} />}
+              <Text style={styles.readonly}>{contract.debtorName ?? '-'}</Text>
+              <View style={styles.seal}>
+                <Text style={styles.readonly}>(인)</Text>
+                {debtorSignatureDataUri && <Image src={debtorSignatureDataUri} style={styles.signatureImage} />}
+              </View>
             </View>
             <Text style={styles.partiesLabel}>생년월일</Text>
             <Text style={[styles.partiesValue, styles.partiesValueBirth, styles.readonly]}>
