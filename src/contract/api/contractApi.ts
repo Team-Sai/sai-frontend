@@ -72,7 +72,7 @@ export async function createContract(
     draft: LoanContractDraft,
     identityVerificationId: string,
 ): Promise<number> {
-  const response = await authFetch('/api/contracts/', {
+  const response = await authFetch('/api/contracts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ...draft, identityVerificationId }),
@@ -117,7 +117,7 @@ export interface ContractSummary {
 }
 
 export async function getContractDetail(contractId: number): Promise<ContractDetail> {
-  const response = await authFetch(`/api/contracts/${contractId}/`, {
+  const response = await authFetch(`/api/contracts/${contractId}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
