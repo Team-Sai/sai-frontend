@@ -1,4 +1,4 @@
-.crd .banner {
+.contract-scope--change-detail .banner {
   background: #0b3d2e;
   color: white;
   padding: 20px 24px;
@@ -7,30 +7,30 @@
   font-size: 16px;
 }
 
-.crd .banner-title {
+.contract-scope--change-detail .banner-title {
   margin: 0;
 }
 
-.crd .banner-sub {
+.contract-scope--change-detail .banner-sub {
   font-size: 13px;
   color: #a8c3b8;
   margin-top: 6px;
 }
 
-.crd .banner-return-reason {
+.contract-scope--change-detail .banner-return-reason {
   margin: 10px 0 0;
   font-size: 14px;
   color: #d7e5dd;
 }
 
-.crd .content {
+.contract-scope--change-detail .content {
   display: flex;
   gap: 24px;
   align-items: flex-start;
   margin-bottom: 24px;
 }
 
-.crd .detail-card {
+.contract-scope--change-detail .detail-card {
   flex: 2;
   background: white;
   padding: 24px;
@@ -38,63 +38,63 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.crd .detail-card h2 {
+.contract-scope--change-detail .detail-card h2 {
   font-size: 16px;
   margin-top: 0;
 }
 
-.crd .row {
+.contract-scope--change-detail .row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   padding: 12px 0;
   border-bottom: 1px solid #eee;
 }
 
-.crd .row .label {
+.contract-scope--change-detail .row .label {
   color: #888;
   font-size: 13px;
 }
 
-.crd .side {
+.contract-scope--change-detail .side {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.crd .reason-card,
-.crd .period-card {
+.contract-scope--change-detail .reason-card,
+.contract-scope--change-detail .period-card {
   background: white;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.crd .reason-card h3,
-.crd .period-card h3 {
+.contract-scope--change-detail .reason-card h3,
+.contract-scope--change-detail .period-card h3 {
   font-size: 18px;
   margin-top: 0;
 }
 
-.crd .change-reason-text {
+.contract-scope--change-detail .change-reason-text {
   font-size: 16px;
   line-height: 1.5;
   color: #1a1a1a;
 }
 
-.crd .return-reason {
+.contract-scope--change-detail .return-reason {
   margin: 10px 0 0;
   font-size: 14px;
   color: #555;
 }
 
-.crd .disclaimer {
+.contract-scope--change-detail .disclaimer {
   font-size: 11px;
   color: #999;
   margin-top: 16px;
 }
 
-.crd .action-group {
+.contract-scope--change-detail .action-group {
   display: flex;
   flex-direction: row;
   align-items: stretch;
@@ -112,7 +112,7 @@
   text-align: center;
 }
 
-.crd .btn-approve {
+.contract-scope--change-detail .btn-approve {
   flex: 1;
   padding: 14px;
   border: none;
@@ -124,7 +124,7 @@
   cursor: pointer;
 }
 
-.crd .btn-reject {
+.contract-scope--change-detail .btn-reject {
   flex: 1;
   padding: 14px;
   border: 1.5px solid #c0392b;
@@ -136,11 +136,11 @@
   cursor: pointer;
 }
 
-.crd .btn-reject:hover {
+.contract-scope--change-detail .btn-reject:hover {
   background: #fdf1f0;
 }
 
-.crd .modal-overlay {
+.contract-scope--change-detail .modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
@@ -150,7 +150,7 @@
   z-index: 10;
 }
 
-.crd .modal-card {
+.contract-scope--change-detail .modal-card {
   background: white;
   border-radius: 12px;
   padding: 24px;
@@ -158,18 +158,18 @@
   max-width: 420px;
 }
 
-.crd .modal-card h3 {
+.contract-scope--change-detail .modal-card h3 {
   margin: 0 0 8px;
   font-size: 17px;
 }
 
-.crd .modal-sub {
+.contract-scope--change-detail .modal-sub {
   font-size: 13px;
   color: #888;
   margin: 0 0 16px;
 }
 
-.crd .modal-textarea {
+.contract-scope--change-detail .modal-textarea {
   width: 100%;
   box-sizing: border-box;
   padding: 10px 12px;
@@ -180,20 +180,20 @@
   resize: vertical;
 }
 
-.crd .modal-error {
+.contract-scope--change-detail .modal-error {
   color: #c0392b;
   font-size: 12.5px;
   margin: 8px 0 0;
 }
 
-.crd .modal-actions {
+.contract-scope--change-detail .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
   margin-top: 16px;
 }
 
-.crd .btn-ghost {
+.contract-scope--change-detail .btn-ghost {
   padding: 10px 16px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -202,7 +202,7 @@
   cursor: pointer;
 }
 
-.crd .btn-reject-confirm {
+.contract-scope--change-detail .btn-reject-confirm {
   padding: 10px 16px;
   border: none;
   border-radius: 8px;
@@ -212,14 +212,14 @@
   cursor: pointer;
 }
 
-.crd .banner-icon {
+.contract-scope--change-detail .banner-icon {
   display: inline-flex;
   margin-right: 8px;
   font-size: 18px;
   vertical-align: -2px;
 }
 
-.crd .status-badge {
+.contract-scope--change-detail .status-badge {
   display: inline-flex;
   align-items: center;
   padding: 2px 10px;
@@ -229,27 +229,27 @@
   margin-left: 6px;
 }
 
-.crd .status-badge.is-pending {
+.contract-scope--change-detail .status-badge.is-pending {
   background: #fef3c7;
   color: #92400e;
 }
 
-.crd .status-badge.is-approved {
+.contract-scope--change-detail .status-badge.is-approved {
   background: #d1fae5;
   color: #065f46;
 }
 
-.crd .status-badge.is-rejected {
+.contract-scope--change-detail .status-badge.is-rejected {
   background: #fde2e1;
   color: #b91c1c;
 }
 
-.crd .status-badge.is-cancelled {
+.contract-scope--change-detail .status-badge.is-cancelled {
   background: #e5e7eb;
   color: #4b5563;
 }
 
-.crd .value-changed {
+.contract-scope--change-detail .value-changed {
   color: #0b3d2e;
   font-weight: 700;
   background: #eafaf1;
@@ -257,7 +257,7 @@
   border-radius: 4px;
 }
 
-.crd .summary-card ul {
+.contract-scope--change-detail .summary-card ul {
   list-style: none;
   margin: 12px 0 0;
   padding: 0;
@@ -266,7 +266,7 @@
   gap: 8px;
 }
 
-.crd .summary-card li {
+.contract-scope--change-detail .summary-card li {
   font-size: 13px;
   color: #333;
   display: flex;
@@ -275,42 +275,42 @@
   flex-wrap: wrap;
 }
 
-.crd .summary-label {
+.contract-scope--change-detail .summary-label {
   color: #888;
   min-width: 64px;
 }
 
-.crd .summary-arrow {
+.contract-scope--change-detail .summary-arrow {
   color: #bbb;
 }
 
-.crd .summary-empty {
+.contract-scope--change-detail .summary-empty {
   font-size: 13px;
   color: #999;
   margin: 12px 0 0;
 }
 
-.crd .payment-delta {
+.contract-scope--change-detail .payment-delta {
   font-size: 22px;
   font-weight: 700;
   margin: 8px 0 0;
 }
 
-.crd .payment-delta.is-up {
+.contract-scope--change-detail .payment-delta.is-up {
   color: #c0392b;
 }
 
-.crd .payment-delta.is-down {
+.contract-scope--change-detail .payment-delta.is-down {
   color: #1d6fa5;
 }
 
-.crd .payment-delta.is-flat {
+.contract-scope--change-detail .payment-delta.is-flat {
   color: #888;
   font-size: 16px;
   font-weight: 600;
 }
 
-.crd .payment-delta-sub {
+.contract-scope--change-detail .payment-delta-sub {
   font-size: 12px;
   color: #999;
   margin-top: 4px;
