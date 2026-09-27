@@ -41,7 +41,7 @@ function isContractDocumentDetail(value: unknown): value is ContractDocumentDeta
 }
 
 export async function getContractDocument(contractId: number): Promise<ContractDocumentDetail> {
-    const response = await authFetch(`/api/contracts/${contractId}/contract-detail`, {
+    const response = await authFetch(`/api/contracts/${contractId}/document`, {
         method: 'GET',
         headers: {Accept: "application/json"},
     });

@@ -138,7 +138,7 @@ export async function getContractDetailForSchedule(
   contractId: number,
 ): Promise<ContractDetailForSchedule> {
   const response = await authFetch(
-    `/api/contracts/${contractId}/contract-detail`,
+    `/api/contracts/${contractId}/document`,
     {
       method: "GET",
       headers: { Accept: "application/json" },
