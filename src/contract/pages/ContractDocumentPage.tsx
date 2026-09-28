@@ -11,7 +11,7 @@ export default function ContractDocumentPage() {
     const {contractId} = useParams();
 
     if (!contractId) {
-        return <div className="contract-scope contract-scope--document">잘못된 접근입니다.</div>
+        return <div className="contract-scope contract-scope--document contract-document-page"><div className="contract-document-empty">잘못된 접근입니다.</div></div>
     }
 
     return <ContractDocumentContent key={contractId} contractId={contractId} />;
@@ -46,18 +46,32 @@ function ContractDocumentContent({contractId} : {contractId: string}) {
     }, [contractId]);
 
     if (isLoading) {
-        return <div className="contract-scope contract-scope--document"><LoadingSkeleton className="loading-skeleton--page" rows={8} /></div>;
+        return <div className="contract-scope contract-scope--document contract-document-page"><LoadingSkeleton className="loading-skeleton--page" rows={8} /></div>;
     }
 
     if (error || !data) {
-        return <div className="contract-scope contract-scope--document">{error ?? "데이터가 없습니다."}</div>;
+        return <div className="contract-scope contract-scope--document contract-document-page"><div className="contract-document-empty">{error ?? "데이터가 없습니다."}</div></div>;
     }
 
     const {contract, canRequestChange} = data;
 
     return (
-        <div className="contract-scope contract-scope--document">
-            <div className="document-paper">
+        <div className="contract-scope contract-scope--document contract-document-page">
+            <header className="contract-document-heading">
+                <h1>계약서 상세</h1>
+                {canRequestChange && (
+                    <button
+                        type="button"
+                        className="contract-document-action"
+                        onClick={() => navigate(`/contracts/${contractId}/change-request`)}
+                    >
+                        계약 변경 요청
+                    </button>
+                )}
+            </header>
+
+            <section className="document-panel" aria-label="계약서 내용">
+              <div className="document-paper">
                 <h1 className="document-title">금전소비대차계약서</h1>
 
                 <section className="document-article">
@@ -116,26 +130,17 @@ function ContractDocumentContent({contractId} : {contractId: string}) {
                         <span className="document-signature__name">{contract.debtorName}</span>
                     </div>
                 </div>
-            </div>
-
-            {canRequestChange && (
-                <button
-                type="button"
-                className="btn-primary-small"
-                onClick={() => navigate(`/contracts/${contractId}/change-request`)}
-                >
-                    계약 변경 요청
-                </button>
-            )}
+              </div>
 
             {!canRequestChange && (
-                <p className="document-notice">현재 진행 중인 요청이 있어, 새 변경 요청을 할 수 없습니다.</p>
+                <p className="document-notice" role="status">현재 진행 중인 요청이 있어, 새 변경 요청을 할 수 없습니다.</p>
             )}
             <p className="disclaimer">
              * 본 계약서는 당사자 간 입력 정보 및 전자적 기반으로 작성·보관되는 문서로,
              서명 및 본인확인 절차의 방식에 따라 그 법적 효력의 범위나 효력 발생 요건에 관한 해석이 달라질 수 있어
              구체적인 법적 효력 여부는 별도 확인이 필요할 수 있습니다.
             </p>
+            </section>
         </div>
     )
 }

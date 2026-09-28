@@ -31,6 +31,6 @@ export function formatTransactionSyncTime(value: string | null): string {
   if (!value) return '기록 없음';
   const date = new Date(value);
   return Number.isFinite(date.getTime())
-    ? new Intl.DateTimeFormat('ko-KR', { hour: '2-digit', minute: '2-digit' }).format(date)
+    ? new Intl.DateTimeFormat('ko-KR', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(date)
     : '기록 없음';
 }

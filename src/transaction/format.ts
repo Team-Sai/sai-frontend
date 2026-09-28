@@ -10,7 +10,7 @@ export const transactionStatusLabels: Readonly<Record<TransactionStatus, string>
 
 const moneyFormatter = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 20 });
 const timeFormatter = new Intl.DateTimeFormat('ko-KR', {
-  hour: '2-digit', minute: '2-digit',
+  hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
 });
 
 export function formatMoney(amount: number): string {

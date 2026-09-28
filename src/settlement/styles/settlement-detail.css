@@ -105,6 +105,14 @@ color:var(--blue);background:var(--blue-soft)
 color:#0f8a5f;background:var(--green-soft)
 }
 
+.settlement-detail-page .badge-shared {
+color:var(--green-600);background:var(--green-soft)
+}
+
+.settlement-detail-page .badge-recurring {
+color:var(--blue-600);background:#edf6ff
+}
+
 .settlement-detail-page .button {
 min-height:44px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:6px;background:#fff;color:#26313d;text-decoration:none;font-weight:700;cursor:pointer;transition:background-color .15s ease,border-color .15s ease,transform .15s ease
 }

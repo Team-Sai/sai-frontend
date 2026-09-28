@@ -14,23 +14,33 @@ export function formatNotificationTime(dateString: string | null, now: number): 
   return minutes > 0 ? `${minutes}분 전` : '방금 전';
 }
 
-/** Centralize legacy URLs until their React destinations are implemented. */
+/** Map notification references to implemented React destinations. */
 export function getNotificationDestination(n: NotificationResponse): NotificationDestination | null {
   if (!isNotificationId(n.notificationId)) return null;
-  const destination = (url: string, label: string, available = false): NotificationDestination => ({ url, label, available });
+  const destination = (url: string, label: string): NotificationDestination => ({ url, label, available: true });
   if (n.notificationType === 'CONTRACT_REQUESTED' && isNotificationId(n.referenceId)) {
     return destination(`/contracts/${n.referenceId}/approve`, '서명하러 가기');
   }
   if (n.notificationType === 'CONTRACT_CHANGE' && isNotificationId(n.referenceId)) {
     return isNotificationId(n.secondaryReferenceId)
-      ? destination(`/contracts/${n.referenceId}/change-requests/${n.secondaryReferenceId}`, '변경 요청 확인하기', true)
-      : destination(`/contracts/${n.referenceId}/contract-detail`, '계약서 보기', true);
+      ? destination(`/contracts/${n.referenceId}/change-requests/${n.secondaryReferenceId}`, '변경 요청 확인하기')
+      : destination(`/contracts/${n.referenceId}/contract-detail`, '계약서 보기');
   }
   const isDue = ['SETTLEMENT_DUE_REMINDER_D3', 'SETTLEMENT_DUE_REMINDER_D1', 'SETTLEMENT_DUE_REMINDER_DDAY'].includes(n.notificationType);
   if (isDue || n.notificationType === 'SETTLEMENT_PARTICIPANT_ADDED') {
     const id = isDue ? n.secondaryReferenceId
       : n.referenceType === 'SETTLEMENT' ? n.referenceId : n.secondaryReferenceId;
     if (isNotificationId(id)) return destination(`/settlements/${id}`, '정산 보기');
+  }
+  const isRepaymentDue = ['REPAYMENT_DUE_REMINDER_D3', 'REPAYMENT_DUE_REMINDER_D1',
+    'REPAYMENT_DUE_REMINDER_DDAY'].includes(n.notificationType);
+  if (isRepaymentDue && isNotificationId(n.referenceId)) {
+    // Repayment reminders reference a schedule; its parent contract ID is supplied as secondaryReferenceId.
+    if (isNotificationId(n.secondaryReferenceId)) {
+      return destination(`/contracts/${n.secondaryReferenceId}/schedule`, '상환 일정 보기');
+    }
+    // Older reminder rows may only have the schedule ID; use the contract dashboard as a safe fallback.
+    return destination('/contracts/dashboard', '차용증 목록 보기');
   }
   return null;
 }

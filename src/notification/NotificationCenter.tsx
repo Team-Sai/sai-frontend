@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { MouseEvent, SyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../common/components/Button';
 import LoadingSkeleton from '../common/components/LoadingSkeleton';
@@ -20,7 +19,6 @@ export default function NotificationCenter() {
   const [category, setCategory] = useState<NotificationCategory>('ALL');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState('');
   const [source, setSource] = useState<MatchingReviewSource | null>(null);
   const request = useRef<{ id: number; controller: AbortController | null }>({ id: 0, controller: null });
 
@@ -65,15 +63,6 @@ export default function NotificationCenter() {
     await refresh();
   }, [refresh]);
 
-  function showComingSoon(event: SyntheticEvent) {
-    event.preventDefault();
-    setNotice('준비 중입니다. 계약·정산 상세 화면은 추후 제공됩니다.');
-  }
-
-  function preventAuxiliaryNavigation(event: MouseEvent<HTMLAnchorElement>) {
-    if (event.button !== 0) showComingSoon(event);
-  }
-
   const filtered = notifications?.filter(item => category === 'ALL' || item.category === category) ?? [];
 
   return (
@@ -91,7 +80,6 @@ export default function NotificationCenter() {
           ))}
         </div>
       </div>
-      <div role="status" aria-live="polite" className={notice ? styles.notice : undefined}>{notice}</div>
       {error && (
         <div role="alert" className={styles.error}>
           <p>{error}{notifications !== null && ' 기존 알림을 표시하고 있습니다.'}</p>
@@ -109,11 +97,7 @@ export default function NotificationCenter() {
                   <span className={`${styles.badge} ${styles[item.category]}`}>{item.categoryLabel}</span>
                   <h2 className={styles.title}>
                     {item.destination ? (
-                      <Link to={item.destination.url} className={styles.link} aria-label={`${item.title} — ${item.destination.label}${item.destination.available ? '' : ' (준비 중)'}`}
-                        onClick={item.destination.available ? undefined : showComingSoon}
-                        onAuxClick={item.destination.available ? undefined : preventAuxiliaryNavigation}
-                        onContextMenu={item.destination.available ? undefined : showComingSoon}
-                        onDragStart={item.destination.available ? undefined : showComingSoon} draggable={item.destination.available}>
+                      <Link to={item.destination.url} className={styles.link} aria-label={`${item.title} — ${item.destination.label}`}>
                         {item.title || item.destination.label}
                       </Link>
                     ) : item.title}

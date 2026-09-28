@@ -33,3 +33,11 @@
   padding: 32px 22px;
   font-size: 13px;
 }
+
+.contract-schedule-page .schedule-sync-info {
+  padding-top: 0;
+}
+
+.contract-schedule-page .participant-avatar-list--pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
