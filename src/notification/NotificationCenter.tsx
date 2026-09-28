@@ -74,6 +74,10 @@ export default function NotificationCenter() {
     if (event.button !== 0) showComingSoon(event);
   }
 
+  function clearIdentityVerification() {
+    sessionStorage.removeItem('identityVerificationId');
+  }
+
   const filtered = notifications?.filter(item => category === 'ALL' || item.category === category) ?? [];
 
   return (
@@ -110,7 +114,8 @@ export default function NotificationCenter() {
                   <h2 className={styles.title}>
                     {item.destination ? (
                       <Link to={item.destination.url} className={styles.link} aria-label={`${item.title} — ${item.destination.label}${item.destination.available ? '' : ' (준비 중)'}`}
-                        onClick={item.destination.available ? undefined : showComingSoon}
+                        onClick={!item.destination.available ? showComingSoon
+                          : item.destination.resetIdentity ? clearIdentityVerification : undefined}
                         onAuxClick={item.destination.available ? undefined : preventAuxiliaryNavigation}
                         onContextMenu={item.destination.available ? undefined : showComingSoon}
                         onDragStart={item.destination.available ? undefined : showComingSoon} draggable={item.destination.available}>

@@ -22,6 +22,8 @@ export interface NotificationDestination {
   url: string;
   label: string;
   available: boolean;
+  /** 이동 전에 저장된 본인인증 결과를 비워 새로 인증받게 한다. */
+  resetIdentity?: boolean;
 }
 
 export interface NotificationView {
