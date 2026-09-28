@@ -1,47 +1,54 @@
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
-import type { ReactNode } from 'react';
-import { registerPdfFonts, PDF_FONT_FAMILY } from './fonts';
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import type { ReactNode } from "react";
+import { registerPdfFonts, PDF_FONT_FAMILY } from "./fonts";
 import {
   ARCHIVE_SETTLEMENT_STATUS_LABELS,
   ARCHIVE_SETTLEMENT_TYPE_LABELS,
   SETTLEMENT_SOURCE_TYPE_LABELS,
   SETTLEMENT_SPLIT_TYPE_LABELS,
   type SettlementArchivePreview,
-} from '../types/archive';
+} from "../types/archive";
 
 registerPdfFonts();
 
 const COLORS = {
-  primary: '#006E2A',
-  text: '#1a1a1a',
-  muted: '#697080',
-  border: '#CFD5E2',
-  labelBg: '#f3f4f5',
-  theadBg: '#f0f7f2',
-  paidBg: '#e6f4ec',
-  paidText: '#0b3d2e',
-  partialBg: '#fff4e0',
-  partialText: '#a66a00',
-  unpaidBg: '#fdeee6',
-  unpaidText: '#a63d1a',
+  primary: "#006E2A",
+  text: "#1a1a1a",
+  muted: "#697080",
+  border: "#CFD5E2",
+  labelBg: "#f3f4f5",
+  theadBg: "#f0f7f2",
+  paidBg: "#e6f4ec",
+  paidText: "#0b3d2e",
+  partialBg: "#fff4e0",
+  partialText: "#a66a00",
+  unpaidBg: "#fdeee6",
+  unpaidText: "#a63d1a",
 };
 
-const OBLIGATION_STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  PAID: { bg: COLORS.paidBg, color: COLORS.paidText, label: '완납' },
-  PARTIALLY_PAID: { bg: COLORS.partialBg, color: COLORS.partialText, label: '부분납부' },
-  UNPAID: { bg: COLORS.unpaidBg, color: COLORS.unpaidText, label: '미납' },
+const OBLIGATION_STATUS_BADGE: Record<
+  string,
+  { bg: string; color: string; label: string }
+> = {
+  PAID: { bg: COLORS.paidBg, color: COLORS.paidText, label: "완납" },
+  PARTIALLY_PAID: {
+    bg: COLORS.partialBg,
+    color: COLORS.partialText,
+    label: "부분납부",
+  },
+  UNPAID: { bg: COLORS.unpaidBg, color: COLORS.unpaidText, label: "미납" },
 };
 
 function formatAmount(amount: number | null | undefined): string {
-  return `${Number(amount ?? 0).toLocaleString('ko-KR')}원`;
+  return `${Number(amount ?? 0).toLocaleString("ko-KR")}원`;
 }
 
 function formatDateTime(isoString: string | null | undefined): string {
-  if (!isoString) return '-';
+  if (!isoString) return "-";
   const date = new Date(isoString);
-  if (Number.isNaN(date.getTime())) return '-';
+  if (Number.isNaN(date.getTime())) return "-";
 
-  const pad = (n: number) => String(n).padStart(2, '0');
+  const pad = (n: number) => String(n).padStart(2, "0");
   return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
@@ -50,12 +57,12 @@ const styles = StyleSheet.create({
     fontFamily: PDF_FONT_FAMILY,
     fontSize: 9,
     color: COLORS.text,
-    padding: '12mm 8mm',
+    padding: "12mm 8mm",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
     marginBottom: 20,
   },
   title: {
@@ -65,7 +72,7 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   ref: {
-    flexDirection: 'row',
+    flexDirection: "row",
     color: COLORS.muted,
     fontSize: 8,
   },
@@ -108,10 +115,10 @@ const styles = StyleSheet.create({
     borderLeftColor: COLORS.border,
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   infoLabelCell: {
-    width: '20%',
+    width: "20%",
     backgroundColor: COLORS.labelBg,
     color: COLORS.muted,
     fontWeight: 700,
@@ -123,8 +130,8 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
   infoValueCell: {
-    width: '30%',
-    backgroundColor: '#ffffff',
+    width: "30%",
+    backgroundColor: "#ffffff",
     fontSize: 8.5,
     padding: 6,
     borderRightWidth: 0.75,
@@ -133,7 +140,7 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
   infoValueCellWide: {
-    width: '80%',
+    width: "80%",
   },
   readonlyValue: {
     color: COLORS.primary,
@@ -166,16 +173,16 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
   dataCellAmount: {
-    textAlign: 'right',
+    textAlign: "right",
   },
   dataCellEmpty: {
-    width: '100%',
-    textAlign: 'center',
-    color: '#999999',
+    width: "100%",
+    textAlign: "center",
+    color: "#999999",
     padding: 12,
   },
   badge: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     borderRadius: 6,
     paddingVertical: 2,
     paddingHorizontal: 6,
@@ -188,10 +195,22 @@ function InfoLabel({ children }: { children: ReactNode }) {
   return <Text style={styles.infoLabelCell}>{children}</Text>;
 }
 
-function InfoValue({ children, readonly, wide }: { children: ReactNode; readonly?: boolean; wide?: boolean }) {
+function InfoValue({
+  children,
+  readonly,
+  wide,
+}: {
+  children: ReactNode;
+  readonly?: boolean;
+  wide?: boolean;
+}) {
   return (
     <Text
-      style={[styles.infoValueCell, wide ? styles.infoValueCellWide : undefined, readonly ? styles.readonlyValue : undefined]}
+      style={[
+        styles.infoValueCell,
+        wide ? styles.infoValueCellWide : undefined,
+        readonly ? styles.readonlyValue : undefined,
+      ]}
     >
       {children}
     </Text>
@@ -207,7 +226,10 @@ function DataTableHeader({ columns }: { columns: DataColumn[] }) {
   return (
     <View style={styles.row} wrap={false}>
       {columns.map((col) => (
-        <Text key={col.label} style={[styles.dataHeaderCell, { width: col.width }]}>
+        <Text
+          key={col.label}
+          style={[styles.dataHeaderCell, { width: col.width }]}
+        >
           {col.label}
         </Text>
       ))}
@@ -219,20 +241,22 @@ interface SettlementPdfTemplateProps {
   preview: SettlementArchivePreview;
 }
 
-export default function SettlementPdfTemplate({ preview }: SettlementPdfTemplateProps) {
+export default function SettlementPdfTemplate({
+  preview,
+}: SettlementPdfTemplateProps) {
   const generatedAt = new Date();
   const obligationColumns: DataColumn[] = [
-    { label: '참여자', width: '25%' },
-    { label: '최초 부담금', width: '25%' },
-    { label: '현재 납부금', width: '25%' },
-    { label: '진행상태', width: '25%' },
+    { label: "참여자", width: "25%" },
+    { label: "최초 부담금", width: "25%" },
+    { label: "현재 납부금", width: "25%" },
+    { label: "진행상태", width: "25%" },
   ];
   const historyColumns: DataColumn[] = [
-    { label: '일시', width: '18%' },
-    { label: '납부자', width: '16%' },
-    { label: '승인 금액', width: '16%' },
-    { label: '처리방식', width: '16%' },
-    { label: '거래 상대방', width: '34%' },
+    { label: "일시", width: "18%" },
+    { label: "납부자", width: "16%" },
+    { label: "승인 금액", width: "16%" },
+    { label: "처리방식", width: "16%" },
+    { label: "거래 상대방", width: "34%" },
   ];
 
   return (
@@ -269,15 +293,24 @@ export default function SettlementPdfTemplate({ preview }: SettlementPdfTemplate
             </View>
             <View style={styles.row} wrap={false}>
               <InfoLabel>유형</InfoLabel>
-              <InfoValue>{ARCHIVE_SETTLEMENT_TYPE_LABELS[preview.settlementType] ?? preview.settlementType}</InfoValue>
+              <InfoValue>
+                {ARCHIVE_SETTLEMENT_TYPE_LABELS[preview.settlementType] ??
+                  preview.settlementType}
+              </InfoValue>
               <InfoLabel>분담방식</InfoLabel>
-              <InfoValue>{SETTLEMENT_SPLIT_TYPE_LABELS[preview.splitType] ?? preview.splitType}</InfoValue>
+              <InfoValue>
+                {SETTLEMENT_SPLIT_TYPE_LABELS[preview.splitType] ??
+                  preview.splitType}
+              </InfoValue>
             </View>
             <View style={styles.row} wrap={false}>
               <InfoLabel>정산상태</InfoLabel>
-              <InfoValue>{ARCHIVE_SETTLEMENT_STATUS_LABELS[preview.settlementStatus] ?? preview.settlementStatus}</InfoValue>
+              <InfoValue>
+                {ARCHIVE_SETTLEMENT_STATUS_LABELS[preview.settlementStatus] ??
+                  preview.settlementStatus}
+              </InfoValue>
               <InfoLabel>마감일</InfoLabel>
-              <InfoValue>{preview.dueDate ?? '-'}</InfoValue>
+              <InfoValue>{preview.dueDate ?? "-"}</InfoValue>
             </View>
           </View>
         </View>
@@ -287,13 +320,32 @@ export default function SettlementPdfTemplate({ preview }: SettlementPdfTemplate
           <View style={styles.infoTable}>
             <View style={styles.row} wrap={false}>
               <InfoLabel>총 정산금액</InfoLabel>
-              <InfoValue readonly>{formatAmount(preview.paymentStatus.totalExpectedAmount)}</InfoValue>
+              <InfoValue readonly>
+                {formatAmount(
+                  (preview.ownerAmount ?? 0) +
+                    (preview.paymentStatus.totalExpectedAmount ?? 0),
+                )}
+              </InfoValue>
+              <InfoLabel>생성자 부담금</InfoLabel>
+              <InfoValue readonly>
+                {formatAmount(preview.ownerAmount)}
+              </InfoValue>
+            </View>
+            <View style={styles.row} wrap={false}>
+              <InfoLabel>참여자 부담금</InfoLabel>
+              <InfoValue readonly>
+                {formatAmount(preview.paymentStatus.totalExpectedAmount)}
+              </InfoValue>
               <InfoLabel>확인된 납부금</InfoLabel>
-              <InfoValue readonly>{formatAmount(preview.paymentStatus.totalPaidAmount)}</InfoValue>
+              <InfoValue readonly>
+                {formatAmount(preview.paymentStatus.totalPaidAmount)}
+              </InfoValue>
             </View>
             <View style={styles.row} wrap={false}>
               <InfoLabel>미납금</InfoLabel>
-              <InfoValue readonly>{formatAmount(preview.paymentStatus.totalRemainingAmount)}</InfoValue>
+              <InfoValue readonly>
+                {formatAmount(preview.paymentStatus.totalRemainingAmount)}
+              </InfoValue>
               <InfoLabel>진행률</InfoLabel>
               <InfoValue>{preview.paymentStatus.progressRate ?? 0}%</InfoValue>
             </View>
@@ -302,7 +354,8 @@ export default function SettlementPdfTemplate({ preview }: SettlementPdfTemplate
               <InfoValue>{preview.paymentStatus.paidCount ?? 0}명</InfoValue>
               <InfoLabel>부분납부 / 미납</InfoLabel>
               <InfoValue>
-                {preview.paymentStatus.partiallyPaidCount ?? 0}명 / {preview.paymentStatus.unpaidCount ?? 0}명
+                {preview.paymentStatus.partiallyPaidCount ?? 0}명 /{" "}
+                {preview.paymentStatus.unpaidCount ?? 0}명
               </InfoValue>
             </View>
           </View>
@@ -316,11 +369,15 @@ export default function SettlementPdfTemplate({ preview }: SettlementPdfTemplate
                 <InfoLabel>은행</InfoLabel>
                 <InfoValue>{preview.settlementAccount.bankName}</InfoValue>
                 <InfoLabel>예금주</InfoLabel>
-                <InfoValue>{preview.settlementAccount.accountHolderName}</InfoValue>
+                <InfoValue>
+                  {preview.settlementAccount.accountHolderName}
+                </InfoValue>
               </View>
               <View style={styles.row} wrap={false}>
                 <InfoLabel>계좌번호</InfoLabel>
-                <InfoValue wide>{preview.settlementAccount.maskedAccountNumber}</InfoValue>
+                <InfoValue wide>
+                  {preview.settlementAccount.maskedAccountNumber}
+                </InfoValue>
               </View>
             </View>
           ) : (
@@ -334,22 +391,51 @@ export default function SettlementPdfTemplate({ preview }: SettlementPdfTemplate
             <DataTableHeader columns={obligationColumns} />
             {preview.paymentStatus.obligations.length === 0 ? (
               <View style={styles.row}>
-                <Text style={styles.dataCellEmpty}>참여자 납부 내역이 없습니다.</Text>
+                <Text style={styles.dataCellEmpty}>
+                  참여자 납부 내역이 없습니다.
+                </Text>
               </View>
             ) : (
               preview.paymentStatus.obligations.map((obligation) => {
-                const badge = OBLIGATION_STATUS_BADGE[obligation.paymentStatus] ?? OBLIGATION_STATUS_BADGE.UNPAID;
+                const badge =
+                  OBLIGATION_STATUS_BADGE[obligation.paymentStatus] ??
+                  OBLIGATION_STATUS_BADGE.UNPAID;
                 return (
-                  <View key={obligation.paymentObligationId} style={styles.row} wrap={false}>
-                    <Text style={[styles.dataCell, { width: '25%' }]}>{obligation.participantName}</Text>
-                    <Text style={[styles.dataCell, styles.dataCellAmount, { width: '25%' }]}>
+                  <View
+                    key={obligation.paymentObligationId}
+                    style={styles.row}
+                    wrap={false}
+                  >
+                    <Text style={[styles.dataCell, { width: "25%" }]}>
+                      {obligation.participantName}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.dataCell,
+                        styles.dataCellAmount,
+                        { width: "25%" },
+                      ]}
+                    >
                       {formatAmount(obligation.expectedAmount)}
                     </Text>
-                    <Text style={[styles.dataCell, styles.dataCellAmount, { width: '25%' }]}>
+                    <Text
+                      style={[
+                        styles.dataCell,
+                        styles.dataCellAmount,
+                        { width: "25%" },
+                      ]}
+                    >
                       {formatAmount(obligation.paidAmount)}
                     </Text>
-                    <View style={[styles.dataCell, { width: '25%' }]}>
-                      <Text style={[styles.badge, { backgroundColor: badge.bg, color: badge.color }]}>{badge.label}</Text>
+                    <View style={[styles.dataCell, { width: "25%" }]}>
+                      <Text
+                        style={[
+                          styles.badge,
+                          { backgroundColor: badge.bg, color: badge.color },
+                        ]}
+                      >
+                        {badge.label}
+                      </Text>
                     </View>
                   </View>
                 );
@@ -364,20 +450,38 @@ export default function SettlementPdfTemplate({ preview }: SettlementPdfTemplate
             <DataTableHeader columns={historyColumns} />
             {preview.paymentHistory.length === 0 ? (
               <View style={styles.row}>
-                <Text style={styles.dataCellEmpty}>확인된 납부·거래 내역이 없습니다.</Text>
+                <Text style={styles.dataCellEmpty}>
+                  확인된 납부·거래 내역이 없습니다.
+                </Text>
               </View>
             ) : (
               preview.paymentHistory.map((record) => (
-                <View key={record.paymentRecordId} style={styles.row} wrap={false}>
-                  <Text style={[styles.dataCell, { width: '18%' }]}>{formatDateTime(record.recordedAt)}</Text>
-                  <Text style={[styles.dataCell, { width: '16%' }]}>{record.payerName}</Text>
-                  <Text style={[styles.dataCell, styles.dataCellAmount, { width: '16%' }]}>
+                <View
+                  key={record.paymentRecordId}
+                  style={styles.row}
+                  wrap={false}
+                >
+                  <Text style={[styles.dataCell, { width: "18%" }]}>
+                    {formatDateTime(record.recordedAt)}
+                  </Text>
+                  <Text style={[styles.dataCell, { width: "16%" }]}>
+                    {record.payerName}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.dataCell,
+                      styles.dataCellAmount,
+                      { width: "16%" },
+                    ]}
+                  >
                     {formatAmount(record.amount)}
                   </Text>
-                  <Text style={[styles.dataCell, { width: '16%' }]}>
-                    {SETTLEMENT_SOURCE_TYPE_LABELS[record.sourceType] ?? '수동'}
+                  <Text style={[styles.dataCell, { width: "16%" }]}>
+                    {SETTLEMENT_SOURCE_TYPE_LABELS[record.sourceType] ?? "수동"}
                   </Text>
-                  <Text style={[styles.dataCell, { width: '34%' }]}>{record.counterpartyName ?? '-'}</Text>
+                  <Text style={[styles.dataCell, { width: "34%" }]}>
+                    {record.counterpartyName ?? "-"}
+                  </Text>
                 </View>
               ))
             )}
@@ -403,12 +507,16 @@ export default function SettlementPdfTemplate({ preview }: SettlementPdfTemplate
 
           <View style={styles.noticeList}>
             <Text style={styles.noticeListItem}>
-              본 기록은 사이원장 서비스에 저장된 정산 정보와 연결된 거래·납부 이력을 기록 생성 시점을 기준으로 정리한
-              자료입니다. 당사자 간 법률관계 또는 채무의 존재를 확정하거나 법적 효력을 보증하는 문서는 아닙니다.
+              본 기록은 사이원장 서비스에 저장된 정산 정보와 연결된 거래·납부
+              이력을 기록 생성 시점을 기준으로 정리한 자료입니다. 당사자 간
+              법률관계 또는 채무의 존재를 확정하거나 법적 효력을 보증하는 문서는
+              아닙니다.
             </Text>
             <Text style={styles.noticeListItem}>
-              계좌거래 자동매칭 항목은 사이원장에 연동된 거래정보를 기준으로 해당 정산의 납부기록과 연결된 내역입니다.
-              위 상세 납부 및 계좌 거래 내역 표에서 처리방식이 "자동매칭"으로 표시된 항목이 이에 해당합니다.
+              계좌거래 자동매칭 항목은 사이원장에 연동된 거래정보를 기준으로
+              해당 정산의 납부기록과 연결된 내역입니다. 위 상세 납부 및 계좌
+              거래 내역 표에서 처리방식이 "자동매칭"으로 표시된 항목이 이에
+              해당합니다.
             </Text>
           </View>
         </View>
