@@ -1,47 +1,62 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import type { MouseEvent, SyntheticEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '../common/components/Button';
-import LoadingSkeleton from '../common/components/LoadingSkeleton';
-import { getContractDetail } from '../contract/api/contractApi';
-import MatchingReviewModal from '../matching/MatchingReviewModal';
-import type { MatchingReviewSource } from '../matching/types';
-import { fetchNotifications } from './notificationApi';
-import { normalizeNotification } from './normalizeNotification';
-import type { NotificationCategory, NotificationDestination, NotificationView } from './types';
-import styles from './NotificationCenter.module.css';
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { MouseEvent, SyntheticEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "../common/components/Button";
+import LoadingSkeleton from "../common/components/LoadingSkeleton";
+import { getContractDetail } from "../contract/api/contractApi";
+import MatchingReviewModal from "../matching/MatchingReviewModal";
+import type { MatchingReviewSource } from "../matching/types";
+import { fetchNotifications } from "./notificationApi";
+import { normalizeNotification } from "./normalizeNotification";
+import type {
+  NotificationCategory,
+  NotificationDestination,
+  NotificationView,
+} from "./types";
+import styles from "./NotificationCenter.module.css";
 
 const categories: { value: NotificationCategory; label: string }[] = [
-  { value: 'ALL', label: '전체' }, { value: 'SIGN', label: '서명·계약' },
-  { value: 'SETTLEMENT', label: '정산' }, { value: 'SYSTEM', label: '시스템' },
+  { value: "ALL", label: "전체" },
+  { value: "SIGN", label: "서명·계약" },
+  { value: "SETTLEMENT", label: "정산" },
+  { value: "SYSTEM", label: "시스템" },
 ];
 
 export default function NotificationCenter() {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<NotificationView[] | null>(null);
-  const [category, setCategory] = useState<NotificationCategory>('ALL');
+  const [notifications, setNotifications] = useState<NotificationView[] | null>(
+    null,
+  );
+  const [category, setCategory] = useState<NotificationCategory>("ALL");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState('');
+  const [notice, setNotice] = useState("");
   const [source, setSource] = useState<MatchingReviewSource | null>(null);
-  const request = useRef<{ id: number; controller: AbortController | null }>({ id: 0, controller: null });
+  const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
+  const request = useRef<{ id: number; controller: AbortController | null }>({
+    id: 0,
+    controller: null,
+  });
 
   const refresh = useCallback(async () => {
     request.current.controller?.abort();
     const controller = new AbortController();
     const id = ++request.current.id;
     request.current.controller = controller;
-    const current = () => !controller.signal.aborted && request.current.id === id;
+    const current = () =>
+      !controller.signal.aborted && request.current.id === id;
     setLoading(true);
     setError(null);
     try {
       const rows = await fetchNotifications(controller.signal);
       if (!current()) return;
       const now = Date.now();
-      setNotifications(rows.map(row => normalizeNotification(row, now)));
+      setNotifications(rows.map((row) => normalizeNotification(row, now)));
     } catch (cause) {
       if (!current()) return;
-      setError(cause instanceof Error ? cause.message : '알림을 불러오지 못했습니다.');
+      setError(
+        cause instanceof Error ? cause.message : "알림을 불러오지 못했습니다.",
+      );
     } finally {
       if (current()) setLoading(false);
     }
@@ -50,7 +65,6 @@ export default function NotificationCenter() {
   useEffect(() => {
     const activeRequest = request.current;
     let disposed = false;
-    // Defer the initial read; StrictMode cleanup cancels its first setup.
     queueMicrotask(() => {
       if (!disposed) void refresh();
     });
@@ -60,30 +74,37 @@ export default function NotificationCenter() {
       ++activeRequest.id;
     };
   }, [refresh]);
-
-  // A failed read after a successful modal action is a page refresh error.
-  // refresh handles that error and resolves, so it cannot mark the action failed.
   const handleStateChanged = useCallback(async () => {
     await refresh();
   }, [refresh]);
 
   function showComingSoon(event: SyntheticEvent) {
     event.preventDefault();
-    setNotice('준비 중입니다. 계약·정산 상세 화면은 추후 제공됩니다.');
+    setNotice("준비 중입니다. 계약·정산 상세 화면은 추후 제공됩니다.");
   }
 
   function preventAuxiliaryNavigation(event: MouseEvent<HTMLAnchorElement>) {
     if (event.button !== 0) showComingSoon(event);
   }
 
-  // 새 탭 열기 등 수정키 클릭은 기본 동작에 맡기고, 완료 여부는 목적지 페이지에서도 확인한다.
-  async function openContractSign(event: MouseEvent<HTMLAnchorElement>, destination: NotificationDestination) {
-    if (!destination.contractId || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  async function openContractSign(
+    event: MouseEvent<HTMLAnchorElement>,
+    destination: NotificationDestination | null,
+  ) {
+    if (
+      !destination?.contractId ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
     event.preventDefault();
     try {
       const detail = await getContractDetail(destination.contractId);
-      if (detail.status === 'COMPLETED') {
-        setNotice('이미 작성 완료된 차용증입니다.');
+      if (detail.status === "COMPLETED") {
+        setIsCompletedModalOpen(true);
         return;
       }
     } catch {
@@ -92,64 +113,176 @@ export default function NotificationCenter() {
     navigate(destination.url);
   }
 
-  const filtered =notifications?.filter(item => category === 'ALL' || item.category === category) ?? [];
+  const filtered =
+    notifications?.filter(
+      (item) => category === "ALL" || item.category === category,
+    ) ?? [];
 
   return (
     <section className={styles.page} aria-labelledby="notification-heading">
       <header>
-        <h1 id="notification-heading" className={styles.heading}>알림센터</h1>
+        <h1 id="notification-heading" className={styles.heading}>
+          알림센터
+        </h1>
       </header>
       <div className={styles.toolbar}>
         <div className={styles.filters} role="tablist" aria-label="알림 분류">
-          {categories.map(item => (
-            <Button key={item.value} variant="secondary" role="tab" className={`${styles.filter} ${category === item.value ? styles.active : ''}`}
-              aria-selected={category === item.value} onClick={() => setCategory(item.value)}>
+          {categories.map((item) => (
+            <Button
+              key={item.value}
+              variant="secondary"
+              role="tab"
+              className={`${styles.filter} ${category === item.value ? styles.active : ""}`}
+              aria-selected={category === item.value}
+              onClick={() => setCategory(item.value)}
+            >
               {item.label}
             </Button>
           ))}
         </div>
       </div>
-      <div role="status" aria-live="polite" className={notice ? styles.notice : undefined}>{notice}</div>
+      <div
+        role="status"
+        aria-live="polite"
+        className={notice ? styles.notice : undefined}
+      >
+        {notice}
+      </div>
       {error && (
         <div role="alert" className={styles.error}>
-          <p>{error}{notifications !== null && ' 기존 알림을 표시하고 있습니다.'}</p>
-          <Button variant="secondary" onClick={() => void refresh()}>다시 시도</Button>
+          <p>
+            {error}
+            {notifications !== null && " 기존 알림을 표시하고 있습니다."}
+          </p>
+          <Button variant="secondary" onClick={() => void refresh()}>
+            다시 시도
+          </Button>
         </div>
       )}
-      {notifications === null && loading && <LoadingSkeleton className="loading-skeleton--page" rows={5} />}
+      {notifications === null && loading && (
+        <LoadingSkeleton className="loading-skeleton--page" rows={5} />
+      )}
       {notifications !== null && (
         <ul className={styles.list} aria-label="알림 목록" aria-busy={loading}>
-          {filtered.length === 0 && <li className={styles.empty}>{notifications.length === 0 ? '아직 도착한 알림이 없습니다.' : '해당 알림이 없습니다.'}</li>}
+          {filtered.length === 0 && (
+            <li className={styles.empty}>
+              {notifications.length === 0
+                ? "아직 도착한 알림이 없습니다."
+                : "해당 알림이 없습니다."}
+            </li>
+          )}
           {filtered.map((item, index) => (
             <li key={item.id ?? `missing-${index}`} className={styles.card}>
               <div className={styles.message}>
                 <div className={styles.titleRow}>
-                  <span className={`${styles.badge} ${styles[item.category]}`}>{item.categoryLabel}</span>
+                  <span className={`${styles.badge} ${styles[item.category]}`}>
+                    {item.categoryLabel}
+                  </span>
                   <h2 className={styles.title}>
                     {item.destination ? (
-                      <Link to={item.destination.url} className={styles.link} aria-label={`${item.title} — ${item.destination.label}${item.destination.available ? '' : ' (준비 중)'}`}
-                        onClick={!item.destination.available ? showComingSoon
-                          : item.destination.contractId ? event => void openContractSign(event, item.destination!) : undefined}
-                        onAuxClick={item.destination.available ? undefined : preventAuxiliaryNavigation}
-                        onContextMenu={item.destination.available ? undefined : showComingSoon}
-                        onDragStart={item.destination.available ? undefined : showComingSoon} draggable={item.destination.available}>
+                      <Link
+                        to={item.destination.url}
+                        className={styles.link}
+                        aria-label={`${item.title} — ${item.destination.label}${item.destination.available ? "" : " (준비 중)"}`}
+                        onClick={
+                          !item.destination.available
+                            ? showComingSoon
+                            : item.destination.contractId
+                              ? (event) =>
+                                  void openContractSign(event, item.destination)
+                              : undefined
+                        }
+                        onAuxClick={
+                          item.destination.available
+                            ? undefined
+                            : preventAuxiliaryNavigation
+                        }
+                        onContextMenu={
+                          item.destination.available
+                            ? undefined
+                            : showComingSoon
+                        }
+                        onDragStart={
+                          item.destination.available
+                            ? undefined
+                            : showComingSoon
+                        }
+                        draggable={item.destination.available}
+                      >
                         {item.title || item.destination.label}
                       </Link>
-                    ) : item.title}
+                    ) : (
+                      item.title
+                    )}
                   </h2>
                 </div>
                 <p className={styles.description}>{item.description}</p>
               </div>
               <div className={styles.meta}>
-                {item.createdAt && <time className={styles.time} dateTime={item.createdAt}>{item.timeLabel}</time>}
-                {item.reviewSource && <Button className={styles.review} onClick={() => setSource(item.reviewSource)}>매칭 확인하기</Button>}
-                {item.statusLabel && <span className={`${styles.status} ${styles[item.statusTone]}`}>{item.statusLabel}</span>}
+                {item.createdAt && (
+                  <time className={styles.time} dateTime={item.createdAt}>
+                    {item.timeLabel}
+                  </time>
+                )}
+                {item.reviewSource && (
+                  <Button
+                    className={styles.review}
+                    onClick={() => setSource(item.reviewSource)}
+                  >
+                    매칭 확인하기
+                  </Button>
+                )}
+                {item.statusLabel && (
+                  <span
+                    className={`${styles.status} ${styles[item.statusTone]}`}
+                  >
+                    {item.statusLabel}
+                  </span>
+                )}
               </div>
             </li>
           ))}
         </ul>
       )}
-      {source && <MatchingReviewModal open source={source} onClose={() => setSource(null)} onStateChanged={handleStateChanged} />}
+      {source && (
+        <MatchingReviewModal
+          open
+          source={source}
+          onClose={() => setSource(null)}
+          onStateChanged={handleStateChanged}
+        />
+      )}
+      {isCompletedModalOpen && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setIsCompletedModalOpen(false)}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setIsCompletedModalOpen(false);
+          }}
+        >
+          <div
+            className={styles.modal}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="completed-contract-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 id="completed-contract-title" className={styles.modalTitle}>
+              이미 작성 완료된 차용증입니다.
+            </h2>
+            <p className={styles.modalDescription}>
+              서명이 모두 완료되어 더 이상 서명할 수 없습니다.
+            </p>
+            <Button
+              fullWidth
+              autoFocus
+              onClick={() => setIsCompletedModalOpen(false)}
+            >
+              확인
+            </Button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

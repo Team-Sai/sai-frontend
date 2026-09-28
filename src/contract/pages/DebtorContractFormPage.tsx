@@ -34,32 +34,33 @@ export default function DebtorContractFormPage() {
   useEffect(() => {
     if (!contractId) return;
 
+    let cancelled = false;
+
     // 다른 계약에서 받은 본인인증은 재사용하지 않고 이 계약에 대해 새로 인증받는다.
-    if (!isIdentityVerifiedFor(`/contracts/${contractId}/approve`)) {
+    function requireIdentityVerification() {
+      if (isIdentityVerifiedFor(`/contracts/${contractId}/approve`)) return false;
       clearIdentityVerification();
       navigate(
         `/identity-test?returnTo=${encodeURIComponent(`/contracts/${contractId}/approve`)}`,
         { replace: true },
       );
+      return true;
     }
-  }, [contractId, navigate]);
-
-  useEffect(() => {
-    if (!contractId) return;
-
-    let cancelled = false;
 
     async function loadContract() {
       try {
         const data = await getContractDetail(Number(contractId));
         if (cancelled) return;
 
+        // 이미 작성 완료된 차용증은 본인인증 없이 완료 안내만 보여준다.
+        if (data.status !== 'COMPLETED' && requireIdentityVerification()) return;
+
         setNeedsLinkConfirm(false);
         setDetail(data);
         setDebtorAddress(data.debtorAddress ?? '');
 
         if (data.status === 'COMPLETED') {
-          setLockMessage('이미 서명이 완료된 계약입니다.');
+          setLockMessage('이미 작성 완료된 차용증입니다.');
         } else if (data.status === 'DRAFT') {
           setLockMessage('채권자가 아직 계약서를 전송하지 않았습니다. 전송 후 다시 확인해 주세요.');
         } else {
@@ -71,6 +72,7 @@ export default function DebtorContractFormPage() {
 
         const status = (error as HttpError).status;
         if (status === 403) {
+          if (requireIdentityVerification()) return;
           setNeedsLinkConfirm(true);
           setIsLoading(false);
           return;
@@ -88,7 +90,7 @@ export default function DebtorContractFormPage() {
     return () => {
       cancelled = true;
     };
-  }, [contractId]);
+  }, [contractId, navigate]);
 
   async function handleConfirmLink() {
     if (!contractId || isLinking) return;
@@ -105,7 +107,7 @@ export default function DebtorContractFormPage() {
       setDebtorAddress(data.debtorAddress ?? '');
       setLockMessage(
         data.status === 'COMPLETED'
-          ? '이미 서명이 완료된 계약입니다.'
+          ? '이미 작성 완료된 차용증입니다.'
           : data.status === 'DRAFT'
               ? '채권자가 아직 계약서를 전송하지 않았습니다. 전송 후 다시 확인해 주세요.'
               : null,
