@@ -1,9 +1,13 @@
-export type SettlementType = 'SHARED' | 'RECURRING';
-export type SettlementStatus = 'IN_PROGRESS' | 'CLOSED';
-export type SettlementRole = 'OWNER' | 'MEMBER';
-export type SplitType = 'EQUAL' | 'CUSTOM';
-export type ObligationStatus = 'ACTIVE' | 'WRITTEN_OFF' | 'EXCLUDED' | 'CANCELLED';
-export type PaymentStatus = 'UNPAID' | 'PARTIALLY_PAID' | 'PAID';
+export type SettlementType = "SHARED" | "RECURRING";
+export type SettlementStatus = "IN_PROGRESS" | "CLOSED";
+export type SettlementRole = "OWNER" | "MEMBER";
+export type SplitType = "EQUAL" | "CUSTOM";
+export type ObligationStatus =
+  | "ACTIVE"
+  | "WRITTEN_OFF"
+  | "EXCLUDED"
+  | "CANCELLED";
+export type PaymentStatus = "UNPAID" | "PARTIALLY_PAID" | "PAID";
 
 export interface SettlementListItem {
   settlementId: number;
@@ -53,7 +57,7 @@ export interface SettlementAccount {
   settlementAccountId?: number;
   settlementId?: number;
   linkedAccountId: number;
-  accountStatus?: 'ACTIVE' | 'ENDED';
+  accountStatus?: "ACTIVE" | "ENDED";
   bankName?: string;
   maskedAccountNumber?: string;
   accountHolderName?: string;
@@ -68,6 +72,7 @@ export interface SettlementDetail {
   settlementType: SettlementType;
   settlementStatus: SettlementStatus;
   splitType?: SplitType;
+  totalAmount?: number;
   dueDate?: string | null;
   startDate?: string | null;
   endDate?: string | null;
@@ -112,24 +117,33 @@ export interface CurrentUser {
   userName?: string;
 }
 
+export interface CreateSettlementParticipantPayload {
+  userToken: string;
+  amount?: number;
+}
+
 export interface CreateSharedSettlementPayload {
   settlementCategory: string;
   title: string;
-  dueDate: string;
+  splitType: SplitType;
   totalAmount: number;
+  ownerAmount?: number;
+  dueDate: string;
   linkedAccountId: number;
-  participants: Array<{ userToken: string }>;
+  participants: CreateSettlementParticipantPayload[];
 }
 
 export interface CreateRecurringSettlementPayload {
   settlementCategory: string;
   title: string;
+  splitType: SplitType;
   totalAmount: number;
-  cycleRule: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+  ownerAmount?: number;
+  cycleRule: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
   startDate: string;
   endDate: string | null;
   linkedAccountId: number;
-  participants: Array<{ userToken: string }>;
+  participants: CreateSettlementParticipantPayload[];
 }
 
 export interface CreateSharedSettlementResponse {

@@ -287,6 +287,12 @@ export default function SettlementPdfTemplate({ preview }: SettlementPdfTemplate
           <View style={styles.infoTable}>
             <View style={styles.row} wrap={false}>
               <InfoLabel>총 정산금액</InfoLabel>
+              <InfoValue readonly>{formatAmount(preview.ownerAmount + preview.paymentStatus.totalExpectedAmount)}</InfoValue>
+              <InfoLabel>생성자 부담금</InfoLabel>
+              <InfoValue readonly>{formatAmount(preview.ownerAmount)}</InfoValue>
+            </View>
+            <View style={styles.row} wrap={false}>
+              <InfoLabel>참여자 부담금</InfoLabel>
               <InfoValue readonly>{formatAmount(preview.paymentStatus.totalExpectedAmount)}</InfoValue>
               <InfoLabel>확인된 납부금</InfoLabel>
               <InfoValue readonly>{formatAmount(preview.paymentStatus.totalPaidAmount)}</InfoValue>

@@ -142,6 +142,7 @@ export interface SettlementArchivePreview {
   settlementCategory: string;
   settlementStatus: ArchiveSettlementStatus;
   splitType: string;
+  ownerAmount: number;
   dueDate: string | null;
   createdAt: string;
   paymentStatus: SettlementPaymentStatus;
