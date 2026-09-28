@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MouseEvent, SyntheticEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../common/components/Button';
 import LoadingSkeleton from '../common/components/LoadingSkeleton';
+import { getContractDetail } from '../contract/api/contractApi';
 import MatchingReviewModal from '../matching/MatchingReviewModal';
 import type { MatchingReviewSource } from '../matching/types';
 import { fetchNotifications } from './notificationApi';
 import { normalizeNotification } from './normalizeNotification';
-import type { NotificationCategory, NotificationView } from './types';
+import type { NotificationCategory, NotificationDestination, NotificationView } from './types';
 import styles from './NotificationCenter.module.css';
 
 const categories: { value: NotificationCategory; label: string }[] = [
@@ -16,6 +17,7 @@ const categories: { value: NotificationCategory; label: string }[] = [
 ];
 
 export default function NotificationCenter() {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<NotificationView[] | null>(null);
   const [category, setCategory] = useState<NotificationCategory>('ALL');
   const [loading, setLoading] = useState(true);
@@ -74,11 +76,23 @@ export default function NotificationCenter() {
     if (event.button !== 0) showComingSoon(event);
   }
 
-  function clearIdentityVerification() {
-    sessionStorage.removeItem('identityVerificationId');
+  // 새 탭 열기 등 수정키 클릭은 기본 동작에 맡기고, 완료 여부는 목적지 페이지에서도 확인한다.
+  async function openContractSign(event: MouseEvent<HTMLAnchorElement>, destination: NotificationDestination) {
+    if (!destination.contractId || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    try {
+      const detail = await getContractDetail(destination.contractId);
+      if (detail.status === 'COMPLETED') {
+        setNotice('이미 작성 완료된 차용증입니다.');
+        return;
+      }
+    } catch {
+      // 조회 실패(채무자 미연결 403 등)는 목적지 페이지에서 처리한다.
+    }
+    navigate(destination.url);
   }
 
-  const filtered = notifications?.filter(item => category === 'ALL' || item.category === category) ?? [];
+  const filtered =notifications?.filter(item => category === 'ALL' || item.category === category) ?? [];
 
   return (
     <section className={styles.page} aria-labelledby="notification-heading">
@@ -115,7 +129,7 @@ export default function NotificationCenter() {
                     {item.destination ? (
                       <Link to={item.destination.url} className={styles.link} aria-label={`${item.title} — ${item.destination.label}${item.destination.available ? '' : ' (준비 중)'}`}
                         onClick={!item.destination.available ? showComingSoon
-                          : item.destination.resetIdentity ? clearIdentityVerification : undefined}
+                          : item.destination.contractId ? event => void openContractSign(event, item.destination!) : undefined}
                         onAuxClick={item.destination.available ? undefined : preventAuxiliaryNavigation}
                         onContextMenu={item.destination.available ? undefined : showComingSoon}
                         onDragStart={item.destination.available ? undefined : showComingSoon} draggable={item.destination.available}>

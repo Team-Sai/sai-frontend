@@ -22,8 +22,8 @@ export interface NotificationDestination {
   url: string;
   label: string;
   available: boolean;
-  /** 이동 전에 저장된 본인인증 결과를 비워 새로 인증받게 한다. */
-  resetIdentity?: boolean;
+  /** 차용증 서명 알림의 계약 ID. 이동 전에 이미 작성 완료된 차용증인지 확인한다. */
+  contractId?: number;
 }
 
 export interface NotificationView {

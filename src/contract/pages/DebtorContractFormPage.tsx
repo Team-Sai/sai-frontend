@@ -11,6 +11,7 @@ import {
   REPAYMENT_METHOD_LABELS,
   type ContractDetail,
 } from '../types/contract';
+import { clearIdentityVerification, isIdentityVerifiedFor } from '../../identity/identityVerificationStorage';
 
 interface HttpError extends Error {
   status?: number;
@@ -33,7 +34,9 @@ export default function DebtorContractFormPage() {
   useEffect(() => {
     if (!contractId) return;
 
-    if (!sessionStorage.getItem('identityVerificationId')) {
+    // 다른 계약에서 받은 본인인증은 재사용하지 않고 이 계약에 대해 새로 인증받는다.
+    if (!isIdentityVerifiedFor(`/contracts/${contractId}/approve`)) {
+      clearIdentityVerification();
       navigate(
         `/identity-test?returnTo=${encodeURIComponent(`/contracts/${contractId}/approve`)}`,
         { replace: true },
