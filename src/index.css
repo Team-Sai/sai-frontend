@@ -35,9 +35,9 @@
   --text-tiny--line-height: 1.5;
 }
 
-/* Keep centered shell content aligned on both short and scrollable pages. */
+/* Reserve scrollbar space only when the page actually scrolls. */
 html {
-  scrollbar-gutter: stable;
+  scrollbar-gutter: auto;
 }
 
 body {

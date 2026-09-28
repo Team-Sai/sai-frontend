@@ -40,6 +40,16 @@ function formatDateTimeKorean(dateString: string): string {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")} ${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
+function formatPaidAt(dateString: string | null): { date: string; time: string } | null {
+  if (!dateString) return null;
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return null;
+  return {
+    date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
+    time: `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`,
+  };
+}
+
 function rowStatusClass(status: RepaymentScheduleRow["status"]): string {
   if (status === "PAID") return "status-paid";
   if (status === "OVERDUE") return "status-overdue";
@@ -185,18 +195,10 @@ function ScheduleContent({ contractId }: { contractId: string }) {
           <h1>{contract.contractAlias}</h1>
         </div>
         <div className="heading-actions">
-          {isCreditor && <p className="updated-text">최근 동기화 <span>{syncTime}</span></p>}
-          <button
-            type="button"
-            className="button button-secondary"
-            onClick={() => navigate("/contracts/dashboard")}
-          >
-            목록으로
-          </button>
           {isCreditor && (
             <button
               type="button"
-              className="button button-secondary"
+              className="button button-secondary settlement-sync-button"
               onClick={() => void syncTransactions()}
               disabled={isSyncing}
             >
@@ -281,22 +283,18 @@ function ScheduleContent({ contractId }: { contractId: string }) {
             <section className="panel">
               <div className="panel-header">
                 <h2>상환 수취 계좌</h2>
-                <button className="text-button" type="button" disabled>
-                  계좌 변경
-                </button>
               </div>
-              {account ? (
-                <div className="account-card">
-                  <div className="account-icon">₩</div>
-                  <div>
-                    <span>{account.bankName}</span>
-                    <strong>{account.maskedAccountNumber}</strong>
-                    <small>{account.accountHolderName}</small>
-                  </div>
+              <div className="account-card">
+                <div className="account-icon">₩</div>
+                <div>
+                  <span>{account?.bankName ?? "수취 계좌"}</span>
+                  <strong>{account?.maskedAccountNumber ?? "계좌 정보 없음"}</strong>
+                  <small>{account?.accountHolderName ?? "-"}</small>
                 </div>
-              ) : (
-                <div className="empty-state">등록된 수취 계좌가 없습니다.</div>
-              )}
+              </div>
+              <dl className="info-list schedule-sync-info">
+                <div><dt>최근 동기화</dt><dd>{syncTime}</dd></div>
+              </dl>
             </section>
           )}
 
@@ -304,7 +302,7 @@ function ScheduleContent({ contractId }: { contractId: string }) {
             <div className="panel-header">
               <h2>계약 당사자</h2>
             </div>
-            <div className="participant-avatar-list">
+            <div className="participant-avatar-list participant-avatar-list--pair">
               <div className="participant-avatar">
                 <div className="avatar-circle" aria-hidden="true">
                   <svg viewBox="0 0 24 24">
@@ -353,19 +351,22 @@ function ScheduleContent({ contractId }: { contractId: string }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {pageItems.map((row) => (
-                      <tr key={row.scheduleId}>
-                        <td>{row.sequence}회차</td>
-                        <td>{row.dueDate}</td>
-                        <td>{formatWon(row.totalPaymentDue)}</td>
-                        <td>{row.paidAt ?? "-"}</td>
-                        <td>
-                          <span className={`status-chip ${rowStatusClass(row.status)}`}>
-                            ● {SCHEDULE_STATUS_LABELS[row.status]}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                    {pageItems.map((row) => {
+                      const paidAt = formatPaidAt(row.paidAt);
+                      return (
+                        <tr key={row.scheduleId}>
+                          <td>{row.sequence}회차</td>
+                          <td>{row.dueDate}</td>
+                          <td>{formatWon(row.totalPaymentDue)}</td>
+                          <td>{paidAt ? <span className="payment-date-time"><span>{paidAt.date}</span><span>{paidAt.time}</span></span> : "-"}</td>
+                          <td>
+                            <span className={`status-chip ${rowStatusClass(row.status)}`}>
+                              ● {SCHEDULE_STATUS_LABELS[row.status]}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

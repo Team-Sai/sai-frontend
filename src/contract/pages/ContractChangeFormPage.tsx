@@ -155,89 +155,112 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
   }
 
   return (
-    <div className="contract-scope contract-scope--change-form">
-      <div className="page-header">
-        <h1 className="page-title">계약 조건 변경 요청</h1>
-        <p className="page-description">
-          협의된 새로운 계약 조건들을 입력해주세요. 제출 시 상대방에게 알림이
-          전송됩니다.
-        </p>
-      </div>
+    <div className="contract-scope contract-scope--change-form contract-change-page">
+      <header className="change-page-heading">
+        <h1>계약 변경 요청</h1>
+      </header>
 
       <div className="change-form-layout">
         <form className="change-form" onSubmit={handleSubmit}>
-          <label htmlFor="changeReason">변경 사유</label>
-          <textarea
-            id="changeReason"
-            value={changeReason}
-            onChange={(e) => setChangeReason(e.target.value)}
-            placeholder="변경하고자 하는 구체적인 사유를 입력해주세요."
-          />
+          <div className="change-form__section-heading">
+            <h2>변경할 내용</h2>
+            <span>변경할 항목만 입력해주세요.</span>
+          </div>
 
-          <label htmlFor="newMaturityDate">변경 만기일</label>
-          <input
-            type="date"
-            id="newMaturityDate"
-            value={newMaturityDate}
-            onChange={(e) => setNewMaturityDate(e.target.value)}
-          />
+          <div className="change-form__field change-form__field--wide">
+            <label htmlFor="changeReason">변경 사유</label>
+            <textarea
+              id="changeReason"
+              value={changeReason}
+              onChange={(e) => setChangeReason(e.target.value)}
+              placeholder="변경 사유를 입력해주세요."
+            />
+          </div>
 
-          <label htmlFor="newInterestRate">변경 이율</label>
-          <input
-            type="number"
-            id="newInterestRate"
-            step={0.5}
-            min={0.5}
-            max={20}
-            value={newInterestRate}
-            onChange={(e) => setNewInterestRate(e.target.value)}
-            placeholder="0.5% 단위로 입력해주세요."
-          />
-          <label htmlFor="newRepaymentType">상환방식</label>
-          <select
-            id="newRepaymentType"
-            value={newRepaymentType}
-            onChange={(e) => setNewRepaymentType(e.target.value)}
-          >
-            <option value="">선택해주세요</option>
-            <option value="EQUAL_PRINCIPAL_AND_INTEREST">원리금균등상환</option>
-            <option value="EQUAL_PRINCIPAL">원금균등상환</option>
-            <option value="BULLET_REPAYMENT">만기일시상환</option>
-          </select>
+          <div className="change-form__field">
+            <label htmlFor="newMaturityDate">변경 만기일</label>
+            <input
+              type="date"
+              id="newMaturityDate"
+              value={newMaturityDate}
+              onChange={(e) => setNewMaturityDate(e.target.value)}
+            />
+          </div>
 
-          <label htmlFor="newRepaymentDate">상환일 변경</label>
-          <input
-            type="number"
-            id="newRepaymentDate"
-            min={1}
-            max={31}
-            placeholder="예: 15"
-            value={newRepaymentDate}
-            onChange={(e) => setNewRepaymentDate(e.target.value)}
-          />
+          <div className="change-form__field">
+            <label htmlFor="newInterestRate">변경 이율</label>
+            <div className="change-form__input-suffix">
+              <input
+                type="number"
+                id="newInterestRate"
+                step={0.5}
+                min={0.5}
+                max={20}
+                value={newInterestRate}
+                onChange={(e) => setNewInterestRate(e.target.value)}
+                placeholder="0.5 단위"
+              />
+              <span>%</span>
+            </div>
+          </div>
 
-          <label htmlFor="newTerms">특약사항 변경</label>
-          <textarea
-            id="newTerms"
-            value={newTerms}
-            onChange={(e) => setNewTerms(e.target.value)}
-            placeholder="변경할 특약사항을 입력해주세요."
-          />
+          <div className="change-form__field">
+            <label htmlFor="newRepaymentType">상환 방식</label>
+            <select
+              id="newRepaymentType"
+              value={newRepaymentType}
+              onChange={(e) => setNewRepaymentType(e.target.value)}
+            >
+              <option value="">선택해주세요</option>
+              <option value="EQUAL_PRINCIPAL_AND_INTEREST">원리금균등상환</option>
+              <option value="EQUAL_PRINCIPAL">원금균등상환</option>
+              <option value="BULLET_REPAYMENT">만기일시상환</option>
+            </select>
+          </div>
 
-          {submitError && <p className="form-error">{submitError}</p>}
+          <div className="change-form__field">
+            <label htmlFor="newRepaymentDate">상환일</label>
+            <div className="change-form__input-suffix">
+              <input
+                type="number"
+                id="newRepaymentDate"
+                min={1}
+                max={31}
+                placeholder="1~31"
+                value={newRepaymentDate}
+                onChange={(e) => setNewRepaymentDate(e.target.value)}
+              />
+              <span>일</span>
+            </div>
+          </div>
+
+          <div className="change-form__field change-form__field--wide">
+            <label htmlFor="newTerms">특약사항</label>
+            <textarea
+              id="newTerms"
+              value={newTerms}
+              onChange={(e) => setNewTerms(e.target.value)}
+              placeholder="변경할 특약사항을 입력해주세요."
+            />
+          </div>
+
+          {submitError && <p className="form-error" role="alert">{submitError}</p>}
 
           <div className="change-form__actions">
             <button type="button" onClick={() => navigate(-1)}>
-              변경 취소
+              취소
             </button>
             <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "제출 중..." : "변경 요청 보내기"}
+              {isSubmitting ? "요청 중..." : "변경 요청"}
             </button>
           </div>
         </form>
 
         <div className="current-contract">
-          <h2>현재 계약조건</h2>
+          <div className="current-contract__heading">
+            <span aria-hidden="true">✓</span>
+            <h2>현재 계약 조건</h2>
+          </div>
           <dl>
             <dt>계약 금액</dt>
             <dd>{current.principalAmount.toLocaleString("ko-KR")}원</dd>

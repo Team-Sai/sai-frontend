@@ -20,7 +20,7 @@ async function fetchReviewPage(options: Options, page: number): Promise<ReviewPa
 }
 
 const money=(v?:number)=>`${Number(v??0).toLocaleString('ko-KR')}원`;
-const dt=(v?:string)=>{if(!v)return '거래일시 미상';const date=new Date(v);if(Number.isNaN(date.getTime()))return '거래일시 미상';const dateLabel=`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;const timeLabel=new Intl.DateTimeFormat('ko-KR',{hour:'2-digit',minute:'2-digit'}).format(date);return `${dateLabel} ${timeLabel}`};
+const dt=(v?:string)=>{if(!v)return '거래일시 미상';const date=new Date(v);if(Number.isNaN(date.getTime()))return '거래일시 미상';const dateLabel=`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;const timeLabel=new Intl.DateTimeFormat('ko-KR',{hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(date);return `${dateLabel} ${timeLabel}`};
 
 export default function MatchingReviewModal({ open, onClose, options }: Props) {
   const { reviewChannel, targetType, aggregateId } = options;

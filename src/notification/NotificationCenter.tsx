@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { MouseEvent, SyntheticEvent } from "react";
+import type { MouseEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../common/components/Button";
 import LoadingSkeleton from "../common/components/LoadingSkeleton";
@@ -30,7 +30,6 @@ export default function NotificationCenter() {
   const [category, setCategory] = useState<NotificationCategory>("ALL");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState("");
   const [source, setSource] = useState<MatchingReviewSource | null>(null);
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
   const request = useRef<{ id: number; controller: AbortController | null }>({
@@ -77,15 +76,6 @@ export default function NotificationCenter() {
   const handleStateChanged = useCallback(async () => {
     await refresh();
   }, [refresh]);
-
-  function showComingSoon(event: SyntheticEvent) {
-    event.preventDefault();
-    setNotice("준비 중입니다. 계약·정산 상세 화면은 추후 제공됩니다.");
-  }
-
-  function preventAuxiliaryNavigation(event: MouseEvent<HTMLAnchorElement>) {
-    if (event.button !== 0) showComingSoon(event);
-  }
 
   async function openContractSign(
     event: MouseEvent<HTMLAnchorElement>,
@@ -141,13 +131,6 @@ export default function NotificationCenter() {
           ))}
         </div>
       </div>
-      <div
-        role="status"
-        aria-live="polite"
-        className={notice ? styles.notice : undefined}
-      >
-        {notice}
-      </div>
       {error && (
         <div role="alert" className={styles.error}>
           <p>
@@ -183,31 +166,13 @@ export default function NotificationCenter() {
                       <Link
                         to={item.destination.url}
                         className={styles.link}
-                        aria-label={`${item.title} — ${item.destination.label}${item.destination.available ? "" : " (준비 중)"}`}
+                        aria-label={`${item.title} — ${item.destination.label}`}
                         onClick={
-                          !item.destination.available
-                            ? showComingSoon
-                            : item.destination.contractId
-                              ? (event) =>
-                                  void openContractSign(event, item.destination)
-                              : undefined
+                          item.destination.contractId
+                            ? (event) =>
+                                void openContractSign(event, item.destination)
+                            : undefined
                         }
-                        onAuxClick={
-                          item.destination.available
-                            ? undefined
-                            : preventAuxiliaryNavigation
-                        }
-                        onContextMenu={
-                          item.destination.available
-                            ? undefined
-                            : showComingSoon
-                        }
-                        onDragStart={
-                          item.destination.available
-                            ? undefined
-                            : showComingSoon
-                        }
-                        draggable={item.destination.available}
                       >
                         {item.title || item.destination.label}
                       </Link>

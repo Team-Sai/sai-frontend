@@ -1,52 +1,112 @@
+.contract-document-page {
+  box-sizing: border-box;
+  width: min(1344px, calc(100% - 96px));
+  min-width: 0;
+  margin: 0 auto;
+  padding: 36px 0 96px;
+}
+
+.contract-document-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 8px;
+}
+
+.contract-document-heading h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.contract-document-action {
+  min-height: 44px;
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  background: var(--primary);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.contract-document-action:hover {
+  border-color: #0b7651;
+  background: #0b7651;
+}
+
+.document-panel {
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
 .contract-scope--document .document-paper {
-  background: #fff;
-  border: 1px solid var(--border, #d9dee8);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 920px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 28px 40px 36px;
+  border: 1px solid var(--line);
   border-radius: 4px;
-  padding: 36px 40px;
+  background: #fff;
   font-family: var(--font-ui);
-  margin-bottom: 20px;
 }
 
 .contract-scope--document .document-title {
+  margin: 0 0 32px;
+  color: var(--text);
   text-align: center;
   font-size: 22px;
   font-weight: 600;
   letter-spacing: 8px;
-  margin: 0 0 32px;
-  color: var(--text);
 }
 
 .contract-scope--document .document-article {
-  border-top: 1px solid var(--line);
-  padding-top: 16px;
   margin-bottom: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
 
 .contract-scope--document .document-article__heading {
-  font-size: 15px;
-  font-weight: 600;
   margin: 0 0 10px;
   color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .contract-scope--document .document-article__body {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.7;
   margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
 }
 
 .contract-scope--document .document-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 14px;
 }
 
 .contract-scope--document .document-table th {
-  text-align: left;
   width: 100px;
   padding: 6px 0;
   color: var(--muted);
+  text-align: left;
   font-weight: 500;
 }
 
@@ -54,14 +114,15 @@
   padding: 6px 0;
   color: var(--text);
   font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
 .contract-scope--document .document-signature {
   display: flex;
   justify-content: space-around;
-  border-top: 2px solid var(--line);
-  padding-top: 24px;
   margin-top: 8px;
+  padding-top: 24px;
+  border-top: 2px solid var(--line);
 }
 
 .contract-scope--document .document-signature__party {
@@ -72,36 +133,94 @@
 }
 
 .contract-scope--document .document-signature__label {
-  font-size: 12px;
   color: var(--muted);
+  font-size: 12px;
 }
 
 .contract-scope--document .document-signature__name {
+  color: var(--text);
   font-size: 15px;
   font-weight: 600;
-  color: var(--text);
-}
-
-.contract-scope--document .btn-primary-small {
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  white-space: nowrap;
-  background: var(--primary);
-  border: 1px solid var(--primary);
-  color: #fff;
 }
 
 .contract-scope--document .document-notice {
-  font-size: 13px;
+  max-width: 920px;
+  margin: 20px auto 0;
   color: var(--muted);
+  font-size: 13px;
 }
 
-.disclaimer {
+.contract-scope--document .disclaimer {
+  max-width: 920px;
+  margin: 16px auto 0;
+  color: #777f8c;
   font-size: 11px;
-  color: #999;
-  margin-top: 20px;
-  line-height: 1.5;
+  line-height: 1.6;
+}
+
+.contract-document-empty {
+  padding: 72px 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .contract-document-page {
+    width: calc(100% - 32px);
+    max-width: 680px;
+    padding-top: 24px;
+  }
+
+  .contract-document-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .contract-document-heading h1 {
+    font-size: 28px;
+  }
+
+  .contract-document-action {
+    width: 100%;
+  }
+
+  .document-panel {
+    padding: 14px;
+  }
+
+  .contract-scope--document .document-paper {
+    padding: 24px 18px 28px;
+  }
+
+  .contract-scope--document .document-table th {
+    width: 84px;
+  }
+
+  .contract-scope--document .document-title {
+    font-size: 18px;
+    letter-spacing: 5px;
+  }
+}
+
+@media (max-width: 420px) {
+  .contract-document-page {
+    width: calc(100% - 24px);
+    padding-bottom: 48px;
+  }
+
+  .document-panel {
+    padding: 10px;
+  }
+
+  .contract-scope--document .document-paper {
+    padding: 22px 14px 26px;
+  }
+
+  .contract-scope--document .document-title {
+    letter-spacing: 3px;
+  }
 }

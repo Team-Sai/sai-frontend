@@ -168,6 +168,14 @@
   background: var(--green-soft);
 }
 
+.settlement-detail-page .badge-shared {
+color:var(--green-600);background:var(--green-soft)
+}
+
+.settlement-detail-page .badge-recurring {
+color:var(--blue-600);background:#edf6ff
+}
+
 .settlement-detail-page .button {
   min-height: 44px;
   padding: 0 20px;
