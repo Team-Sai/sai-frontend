@@ -67,6 +67,8 @@ export default function ContractDashboardPage() {
 
   function handleRelationConfirm(relation: ContractRelationType) {
     setIsRelationModalOpen(false);
+    // 차용증 생성마다 본인인증을 새로 받도록 이전 인증 결과를 비운다.
+    sessionStorage.removeItem("identityVerificationId");
     navigate(`/contracts/new?relation=${relation}`);
   }
 
