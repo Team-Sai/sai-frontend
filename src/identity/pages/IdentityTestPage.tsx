@@ -7,6 +7,7 @@ import {
 import { authFetch } from '../../auth/authFetch';
 import { Button } from '../../common/components';
 import Stepper from '../../contract/components/Stepper';
+import { saveIdentityVerification } from '../identityVerificationStorage';
 
 const DEFAULT_RETURN_TO = '/contracts/new';
 
@@ -405,9 +406,9 @@ export default function IdentityTestPage() {
                     searchParams.get('returnTo'),
                 ) ?? DEFAULT_RETURN_TO;
 
-            sessionStorage.setItem(
-                'identityVerificationId',
+            saveIdentityVerification(
                 prepare.identityVerificationId,
+                returnTo,
             );
 
             setIsRedirecting(true);

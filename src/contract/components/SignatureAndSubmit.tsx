@@ -73,9 +73,10 @@ export default function SignatureAndSubmit({
     if (!ctx) return;
 
     const { x, y } = getPoint(event);
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 4;
     ctx.lineCap = "round";
-    ctx.strokeStyle = "#181c1e";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#000000";
     ctx.lineTo(x, y);
     ctx.stroke();
     setHasSignature(true);
