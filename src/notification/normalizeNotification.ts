@@ -19,7 +19,7 @@ export function getNotificationDestination(n: NotificationResponse): Notificatio
   if (!isNotificationId(n.notificationId)) return null;
   const destination = (url: string, label: string): NotificationDestination => ({ url, label, available: true });
   if (n.notificationType === 'CONTRACT_REQUESTED' && isNotificationId(n.referenceId)) {
-    return destination(`/contracts/${n.referenceId}/approve`, '서명하러 가기');
+    return { ...destination(`/contracts/${n.referenceId}/approve`, '서명하러 가기'), contractId: n.referenceId };
   }
   if (n.notificationType === 'CONTRACT_CHANGE' && isNotificationId(n.referenceId)) {
     return isNotificationId(n.secondaryReferenceId)

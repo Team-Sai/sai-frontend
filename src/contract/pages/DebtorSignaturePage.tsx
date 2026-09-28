@@ -8,6 +8,10 @@ import {
   DEBTOR_APPROVAL_DRAFT_KEY,
   type DebtorApprovalDraft,
 } from "../types/contract";
+import {
+  clearIdentityVerification,
+  isIdentityVerifiedFor,
+} from "../../identity/identityVerificationStorage";
 
 export default function DebtorSignaturePage() {
   const navigate = useNavigate();
@@ -29,7 +33,8 @@ export default function DebtorSignaturePage() {
       return;
     }
 
-    if (!sessionStorage.getItem("identityVerificationId")) {
+    if (!isIdentityVerifiedFor(`/contracts/${contractId}/approve`)) {
+      clearIdentityVerification();
       navigate(
         `/identity-test?returnTo=${encodeURIComponent(`/contracts/${contractId}/approve/signature`)}`,
         { replace: true },
@@ -62,7 +67,7 @@ export default function DebtorSignaturePage() {
         signature,
         identityVerificationId,
       );
-      sessionStorage.removeItem("identityVerificationId");
+      clearIdentityVerification();
       sessionStorage.removeItem(DEBTOR_APPROVAL_DRAFT_KEY);
       navigate(`/contracts/complete?contractId=${contractId}`);
     } catch (error) {

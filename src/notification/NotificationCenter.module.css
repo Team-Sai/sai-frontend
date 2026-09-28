@@ -298,3 +298,35 @@
     min-height: 36px;
   }
 }
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgb(15 23 42 / 45%);
+}
+
+.modal {
+  width: min(400px, 100%);
+  padding: 28px 24px 24px;
+  border-radius: 12px;
+  background: var(--color-surface);
+  box-shadow: 0 20px 50px rgb(28 39 60 / 20%);
+  text-align: center;
+}
+
+.modalTitle {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.modalDescription {
+  margin: 0 0 24px;
+  color: var(--color-muted);
+  font-size: 14px;
+}

@@ -926,3 +926,63 @@ background: #0f8a5f;
         padding: 16px;
     }
 }
+
+
+/* CUSTOM 분배 금액 입력 */
+.settlement-create-page .custom-amount-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--settlement-border);
+}
+
+.settlement-create-page .custom-amount-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    align-items: center;
+    gap: 12px;
+}
+
+.settlement-create-page .custom-amount-row > span {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.settlement-create-page .custom-amount-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settlement-create-page .custom-amount-input input {
+    width: 100%;
+    min-width: 0;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid var(--settlement-border-strong);
+    border-radius: 8px;
+    outline: none;
+    background: #ffffff;
+    color: var(--settlement-text);
+    text-align: right;
+}
+
+.settlement-create-page .custom-amount-input input:focus {
+    border-color: var(--settlement-primary);
+    box-shadow: 0 0 0 3px rgba(15, 138, 95, 0.12);
+}
+
+.settlement-create-page .custom-amount-input > span {
+    flex: 0 0 auto;
+    color: var(--settlement-muted);
+    font-size: 13px;
+}
+
+@media (max-width: 640px) {
+    .settlement-create-page .custom-amount-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+}

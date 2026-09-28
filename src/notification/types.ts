@@ -22,6 +22,8 @@ export interface NotificationDestination {
   url: string;
   label: string;
   available: boolean;
+  /** 차용증 서명 알림의 계약 ID. 이동 전에 이미 작성 완료된 차용증인지 확인한다. */
+  contractId?: number;
 }
 
 export interface NotificationView {

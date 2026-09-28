@@ -5,13 +5,17 @@ import {
 } from 'react';
 
 import { authFetch } from '../../auth/authFetch';
-import { Button, Select } from '../../common/components';
+import { Button } from '../../common/components';
 import Stepper from '../../contract/components/Stepper';
+import { saveIdentityVerification } from '../identityVerificationStorage';
 
 const DEFAULT_RETURN_TO = '/contracts/new';
 
 type IdentityPurpose =
     | 'LOAN_CONTRACT';
+
+// 백엔드가 인증 소비 시 LOAN_CONTRACT 목적을 검증하므로 고정값으로 보낸다.
+const IDENTITY_PURPOSE: IdentityPurpose = 'LOAN_CONTRACT';
 
 interface PrepareIdentityResponse {
     identityVerificationId: string;
@@ -128,11 +132,6 @@ async function readResponse(
 }
 
 export default function IdentityTestPage() {
-    const [purpose, setPurpose] =
-        useState<IdentityPurpose>(
-            'LOAN_CONTRACT',
-        );
-
     const [result, setResult] =
         useState('대기 중');
 
@@ -364,7 +363,7 @@ export default function IdentityTestPage() {
 
             const prepare =
                 await prepareIdentityVerification(
-                    purpose,
+                    IDENTITY_PURPOSE,
                 );
 
             setResult(
@@ -407,9 +406,9 @@ export default function IdentityTestPage() {
                     searchParams.get('returnTo'),
                 ) ?? DEFAULT_RETURN_TO;
 
-            sessionStorage.setItem(
-                'identityVerificationId',
+            saveIdentityVerification(
                 prepare.identityVerificationId,
+                returnTo,
             );
 
             setIsRedirecting(true);
@@ -457,41 +456,11 @@ export default function IdentityTestPage() {
                     </h1>
 
                     <p className="mt-2 text-sm leading-relaxed text-muted">
-                        본인인증 목적을 선택한 후 인증을 진행해 주세요.
+                        본인인증을 진행해 주세요.
                     </p>
                 </header>
 
                 <div className="space-y-5 px-6 py-7 md:px-10">
-                    <div>
-                        <label
-                            htmlFor="purpose"
-                            className="mb-2 block text-sm font-bold text-text"
-                        >
-                            본인인증 목적
-                        </label>
-
-                        <Select
-                            id="purpose"
-                            value={purpose}
-                            onChange={(event) =>
-                                setPurpose(
-                                    event.target
-                                        .value as IdentityPurpose,
-                                )
-                            }
-                            disabled={
-                                isLoading ||
-                                isRedirecting
-                            }
-                            className="h-12 rounded-lg bg-surface px-4 py-0 text-sm text-text transition focus:shadow-none focus:ring-2 focus:ring-primary/15 disabled:bg-surface-low disabled:text-muted"
-                        >
-                            <option value="LOAN_CONTRACT">
-                                금전소비대차 계약
-                            </option>
-
-                        </Select>
-                    </div>
-
                     <Button
                         id="verification-button"
                         fullWidth

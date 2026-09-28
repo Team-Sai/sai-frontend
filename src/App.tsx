@@ -30,6 +30,7 @@ import ContractChangeRequestSentPage from './contract/pages/ContractChangeReques
 import ContractChangeSignaturePage from './contract/pages/ContractChangeSignaturePage';
 import DebtorContractFormPage from './contract/pages/DebtorContractFormPage';
 import DebtorSignaturePage from './contract/pages/DebtorSignaturePage';
+import DebtorApprovalIdentityGuard from './contract/components/DebtorApprovalIdentityGuard';
 
 import NotificationCenter from './notification/NotificationCenter';
 
@@ -46,6 +47,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <DebtorApprovalIdentityGuard />
         <Routes>
           <Route path="/" element={<Navigate to="/intro" replace />} />
           <Route element={<GuestLayout />}>
