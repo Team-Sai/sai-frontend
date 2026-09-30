@@ -24,6 +24,12 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     padding: '12mm 8mm',
   },
+  ref: {
+    textAlign: 'right',
+    color: COLORS.muted,
+    fontSize: 8,
+    marginBottom: 6,
+  },
   title: {
     textAlign: 'center',
     color: COLORS.primary,
@@ -157,6 +163,7 @@ export default function ContractPdfTemplate({
   return (
     <Document title={`차용증_${contract.contractId}`} author="사이원장" subject="금전 차용 계약서" language="ko">
       <Page size="A4" style={styles.page}>
+        <Text style={styles.ref}>{contract.contractDisplayId}</Text>
         <Text style={styles.title}>금 전 차 용 계 약 서</Text>
 
         <View style={styles.article}>
