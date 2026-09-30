@@ -76,9 +76,6 @@ const styles = StyleSheet.create({
     color: COLORS.muted,
     fontSize: 8,
   },
-  refSep: {
-    marginHorizontal: 4,
-  },
   article: {
     marginBottom: 16,
   },
@@ -271,8 +268,6 @@ export default function SettlementPdfTemplate({
           <Text style={styles.title}>정 산 내 역 서</Text>
           <View style={styles.ref}>
             <Text>{preview.settlementDisplayId}</Text>
-            <Text style={styles.refSep}>·</Text>
-            <Text>{preview.documentVersion}</Text>
           </View>
         </View>
 
@@ -496,12 +491,6 @@ export default function SettlementPdfTemplate({
               <InfoValue>{formatDateTime(generatedAt.toISOString())}</InfoValue>
               <InfoLabel>사이원장 정산 ID</InfoLabel>
               <InfoValue>{preview.settlementDisplayId}</InfoValue>
-            </View>
-            <View style={styles.row} wrap={false}>
-              <InfoLabel>데이터 기준시각</InfoLabel>
-              <InfoValue>{formatDateTime(generatedAt.toISOString())}</InfoValue>
-              <InfoLabel>기록 문서 버전</InfoLabel>
-              <InfoValue>{preview.documentVersion}</InfoValue>
             </View>
           </View>
 

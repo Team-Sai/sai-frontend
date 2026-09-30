@@ -148,5 +148,4 @@ export interface SettlementArchivePreview {
   paymentStatus: SettlementPaymentStatus;
   paymentHistory: SettlementPaymentHistory[];
   settlementAccount: SettlementAccount | null;
-  documentVersion: string;
 }
