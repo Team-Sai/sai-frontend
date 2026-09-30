@@ -98,6 +98,7 @@ export interface DebtorApprovalDraft {
 export interface LoanContractResponse {
   contractId: number;
   previousContractId: number | null;
+  contractDisplayId: string | null;
   creditorName: string;
   creditorBirthDate: string;
   creditorAddress: string | null;

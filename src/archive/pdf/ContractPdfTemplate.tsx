@@ -17,12 +17,6 @@ function formatAmount(amount: number): string {
   return Number(amount).toLocaleString('ko-KR');
 }
 
-function formatContractDisplayId(contract: LoanContractResponse): string {
-  return contract.previousContractId !== null
-    ? `LC-${contract.previousContractId}-${contract.contractId}`
-    : `LC-${contract.contractId}`;
-}
-
 const styles = StyleSheet.create({
   page: {
     fontFamily: PDF_FONT_FAMILY,
@@ -169,7 +163,7 @@ export default function ContractPdfTemplate({
   return (
     <Document title={`차용증_${contract.contractId}`} author="사이원장" subject="금전 차용 계약서" language="ko">
       <Page size="A4" style={styles.page}>
-        <Text style={styles.ref}>{formatContractDisplayId(contract)}</Text>
+        <Text style={styles.ref}>{contract.contractDisplayId}</Text>
         <Text style={styles.title}>금 전 차 용 계 약 서</Text>
 
         <View style={styles.article}>
