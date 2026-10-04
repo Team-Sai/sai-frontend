@@ -7,6 +7,7 @@ import {
 import type { CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingSkeleton from '../../common/components/LoadingSkeleton';
+import RepaymentManagementCard from '../../contract/components/RepaymentManagementCard';
 
 import { dashboardApi } from '../api/dashboardApi';
 
@@ -661,15 +662,15 @@ export default function DashboardPage() {
             요약 현황
           </p>
 
-          <p
+          <div
             key={summaryIndex}
             className="summary-sentence is-summary-entering"
           >
             {renderSummary()}
-          </p>
+          </div>
         </div>
       </section>
-
+      <RepaymentManagementCard />
       <section
         className="dashboard-grid"
         aria-label="월별 현황과 확인 필요 내역"
