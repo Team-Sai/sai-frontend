@@ -170,7 +170,7 @@ export default function ContractDashboardPage() {
           </div>
           <span className="summary-arrow positive">↗</span>
           <p className="summary-foot">
-            당월 상환 예정액 <span>{money(data.summary.thisMonthDueAmount)}원</span>
+            당월 상환 예정액 <span>{money(data.summary.payableThisMonthAmount)}원</span>
           </p>
         </article>
       </section>
