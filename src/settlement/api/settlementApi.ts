@@ -7,6 +7,7 @@ import type {
   CurrentUser,
   LinkedSettlementAccount,
   ParticipantLookup,
+  RecurringSettlementCycleList,
   SettlementAccount,
   SettlementDetail,
   SettlementListItem,
@@ -91,6 +92,11 @@ export const settlementApi = {
   paymentStatus: (id: number) =>
     requestJson<SettlementPaymentStatus>(
       `/api/settlements/${id}/payment-status`,
+    ),
+
+  recurringCycles: (recurringSettlementId: number) =>
+    requestJson<RecurringSettlementCycleList>(
+      `/api/settlements/recurring/${recurringSettlementId}/cycles`,
     ),
 
   account: (id: number) =>
