@@ -44,9 +44,13 @@ interface LatestCycleData {
   detail: SettlementDetail | null;
   status: SettlementPaymentStatus;
   account: SettlementAccount | null;
+  // 부가 정보 조회 실패는 사이드 패널에만 표시하고 회차 표는 그대로 보여준다
+  requestInfoFailed: boolean;
+  statusFailed: boolean;
 }
 
-const emptyLatest: LatestCycleData = { detail: null, status: {}, account: null };
+const emptyLatest: LatestCycleData = { detail: null, status: {}, account: null, requestInfoFailed: false, statusFailed: false };
+const SIDE_PANEL_ERROR = '정보를 불러오지 못했습니다.';
 
 // 정산 요청 정보·참여자 현황은 회차마다 다르므로 최신 회차 기준으로 보여준다
 async function fetchCyclePageData(recurringSettlementId: number) {
@@ -57,13 +61,23 @@ async function fetchCyclePageData(recurringSettlementId: number) {
     return { cycleList, latest: emptyLatest };
   }
 
-  const [detail, status, account] = await Promise.all([
+  const [detailResult, statusResult, accountResult] = await Promise.allSettled([
     settlementApi.detail(latestCycle.settlementId),
     settlementApi.paymentStatus(latestCycle.settlementId),
     settlementApi.account(latestCycle.settlementId),
   ]);
+  const statusFailed = statusResult.status === 'rejected';
 
-  return { cycleList, latest: { detail, status, account } };
+  return {
+    cycleList,
+    latest: {
+      detail: detailResult.status === 'fulfilled' ? detailResult.value : null,
+      status: statusResult.status === 'fulfilled' ? statusResult.value : {},
+      account: accountResult.status === 'fulfilled' ? accountResult.value : null,
+      requestInfoFailed: detailResult.status === 'rejected' || accountResult.status === 'rejected' || statusFailed,
+      statusFailed,
+    },
+  };
 }
 
 export default function RecurringSettlementCyclePage() {
@@ -198,6 +212,7 @@ export default function RecurringSettlementCyclePage() {
         <aside className="side-column">
           <section className="panel">
             <div className="panel-header"><h2>정산 요청 정보</h2><span className="panel-side-text">{latestLabel}</span></div>
+            {latest.requestInfoFailed ? <div className="empty-state" role="alert">{SIDE_PANEL_ERROR}</div> : <>
             <div className="account-card">
               <div className="account-icon">₩</div>
               <div>
@@ -212,11 +227,12 @@ export default function RecurringSettlementCyclePage() {
               <div><dt>최근 동기화</dt><dd>{syncTime}</dd></div>
               <div><dt>확인 필요</dt><dd className="text-danger">{attentionCount}명</dd></div>
             </dl>
+            </>}
           </section>
 
           <section className="panel">
-            <div className="panel-header"><h2>참여자 정산 현황</h2><span className="panel-side-text">{participantProgress}%</span></div>
-            <div className="participant-avatar-list">
+            <div className="panel-header"><h2>참여자 정산 현황</h2>{!latest.statusFailed && <span className="panel-side-text">{participantProgress}%</span>}</div>
+            {latest.statusFailed ? <div className="empty-state" role="alert">{SIDE_PANEL_ERROR}</div> : <div className="participant-avatar-list">
               {obligations.length ? obligations.slice(0, 6).map((o) => (
                 <div key={o.paymentObligationId || o.participantId} className="participant-avatar">
                   <div className="avatar-circle" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg></div>
@@ -224,7 +240,7 @@ export default function RecurringSettlementCyclePage() {
                   <small>{paymentText(o)}</small>
                 </div>
               )) : <div className="participant-avatar"><small>참여자가 없습니다.</small></div>}
-            </div>
+            </div>}
           </section>
         </aside>
 
