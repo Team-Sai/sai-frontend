@@ -590,3 +590,876 @@
     min-height: 240px;
   }
 }
+.calendar-dot--preparation {
+  background-color: #7c3aed;
+}
+
+.calendar-preparation-section {
+  margin-bottom: 24px;
+}
+
+.calendar-preparation-section h3 {
+  margin-bottom: 12px;
+}
+
+.calendar-layout--planning {
+  grid-template-columns: minmax(0, 1.4fr) minmax(380px, 1fr);
+  align-items: start;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.calendar-left-column {
+  min-width: 0;
+  display: grid;
+  gap: 20px;
+}
+
+.calendar-layout--planning .calendar-main,
+.calendar-layout--planning .calendar-day-panel {
+  border-color: #e3eaf2;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(28, 39, 60, 0.04);
+}
+
+.calendar-layout--planning .calendar-day-panel {
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+.calendar-layout--planning .calendar-empty {
+  min-height: 140px;
+}
+
+/* 날짜 안의 간단한 메모 */
+.calendar-layout--planning .calendar-grid {
+  grid-template-rows: 36px repeat(6, minmax(110px, 1fr));
+}
+
+.calendar-layout--planning .calendar-cell {
+  min-height: 110px;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 8px 5px;
+  border-radius: 12px;
+}
+
+.calendar-cell-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3px;
+}
+
+.calendar-cell-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.calendar-cell-note {
+  display: block;
+  min-width: 0;
+  padding: 3px 4px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.calendar-cell-note--inbound {
+  border-color: #b8ead5;
+  background: #edfdf5;
+  color: #07875e;
+}
+
+.calendar-cell-note--outbound {
+  border-color: #ffc9d2;
+  background: #fff1f4;
+  color: #e54768;
+}
+
+.calendar-cell-note--preparation {
+  border-color: #d8d2ff;
+  background: #f0edff;
+  color: #6750d9;
+}
+
+/* AI 제안 카드 */
+.preparation-planner--design {
+  min-width: 0;
+  margin: 0;
+  padding: 28px;
+  border: 1px solid #e3eaf2;
+  border-radius: 20px;
+  background: #fff;
+  color: #172033;
+  box-shadow: 0 2px 5px rgba(28, 39, 60, 0.04);
+}
+
+.planner-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 22px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.planner-heading__icon {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #16b887;
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(22, 184, 135, 0.18);
+}
+
+.planner-heading__copy {
+  flex: 1;
+  min-width: 180px;
+}
+
+.planner-heading__copy h2 {
+  margin: 0 0 5px;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.planner-heading__copy p {
+  margin: 0;
+  color: #8b9ab1;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.planner-badge {
+  padding: 5px 10px;
+  border: 1px solid #b9efd9;
+  border-radius: 999px;
+  background: #effcf6;
+  color: #07875e;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.planner-callout {
+  margin: 0 0 22px;
+  padding: 15px 16px;
+  border: 1px solid #edf1f6;
+  border-radius: 13px;
+  background: #f7f9fc;
+  color: #66758b;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.8;
+}
+
+.planner-callout--time {
+  margin: 0;
+  border-color: #dceaff;
+  background: #f5f9ff;
+  color: #4973cb;
+}
+
+.preparation-planner--design .planner-fields {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.planner-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.preparation-planner--design .planner-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+  min-width: 0;
+}
+
+.planner-field__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #46546b;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.planner-optional {
+  color: #9ba8ba;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.planner-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.planner-day {
+  min-width: 0;
+  min-height: 49px;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #e0e7f0;
+  border-radius: 12px;
+  background: #fff;
+  color: #8795aa;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.planner-day__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.planner-day--selected {
+  border-color: #20c795;
+  background: #edfcf5;
+  color: #05966b;
+}
+
+.planner-day--selected .planner-day__dot {
+  background: #05966b;
+}
+
+.planner-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 14px;
+}
+
+.preparation-planner--design input,
+.preparation-planner--design textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 11px 13px;
+  border: 1px solid #e0e7f0;
+  border-radius: 12px;
+  background: #f7f9fc;
+  color: #344054;
+  font: inherit;
+  font-size: 13px;
+}
+
+.preparation-planner--design textarea {
+  min-height: 78px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.preparation-planner--design input:focus-visible,
+.preparation-planner--design textarea:focus-visible,
+.preparation-planner--design button:focus-visible {
+  outline: 3px solid rgba(22, 184, 135, 0.22);
+  outline-offset: 2px;
+}
+
+.planner-input-unit {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-right: 12px;
+  border: 1px solid #e0e7f0;
+  border-radius: 12px;
+  background: #f7f9fc;
+}
+
+.preparation-planner--design .planner-input-unit input {
+  border: 0;
+  background: transparent;
+}
+
+.planner-input-unit > span {
+  flex: 0 0 auto;
+  color: #8b9ab1;
+  font-size: 11px;
+}
+
+.planner-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 9px;
+  border: 1px solid #edf1f6;
+  border-radius: 14px;
+  background: #f7f9fc;
+  list-style: none;
+}
+
+.planner-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 3px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #8996aa;
+  text-align: center;
+}
+
+.planner-step--active {
+  border-color: #abebd1;
+  background: #fff;
+  color: #07875e;
+}
+
+.planner-step__number {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e2e8f0;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.planner-step--active .planner-step__number {
+  background: #0c9b72;
+  color: #fff;
+}
+
+.planner-step strong {
+  font-size: 11px;
+}
+
+.planner-step small {
+  font-size: 10px;
+}
+
+.planner-primary,
+.planner-secondary {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.planner-primary {
+  background: #078463;
+  color: #fff;
+  box-shadow: 0 4px 9px rgba(7, 132, 99, 0.16);
+}
+
+.planner-primary:hover:not(:disabled) {
+  background: #066f54;
+}
+
+.planner-secondary {
+  background: #f0f4f8;
+  color: #738196;
+}
+
+.preparation-planner--design button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* 제안 결과 */
+.preparation-planner__result {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #eef2f7;
+}
+
+.preparation-planner__result > p {
+  color: #66758b;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.planner-proposals {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: proposal;
+}
+
+.planner-proposals > li {
+  position: relative;
+  padding: 16px 16px 16px 44px;
+  border: 1px solid #dfeae6;
+  border-radius: 13px;
+  background: #f8fcfa;
+  counter-increment: proposal;
+}
+
+.planner-proposals > li::before {
+  position: absolute;
+  top: 17px;
+  left: 15px;
+  content: counter(proposal);
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #dff6eb;
+  color: #07875e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.planner-proposals h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.planner-proposals p {
+  margin: 6px 0;
+  color: #66758b;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* 작은 화면에서는 세로 배치 */
+@media (max-width: 1100px) {
+  .calendar-layout--planning {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .calendar-layout--planning {
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .preparation-planner--design {
+    padding: 20px;
+  }
+
+  .calendar-layout--planning .calendar-grid {
+    grid-template-rows: 30px repeat(6, minmax(98px, 1fr));
+  }
+
+  .calendar-layout--planning .calendar-cell {
+    min-height: 98px;
+    padding: 5px 2px;
+    gap: 5px;
+  }
+
+  .calendar-cell-note {
+    padding: 2px;
+    font-size: 9px;
+  }
+
+  .calendar-cell-top {
+    gap: 0;
+  }
+
+  .planner-heading__copy h2 {
+    font-size: 16px;
+  }
+}
+
+/* 두 일정 타이틀 통일 */
+.calendar-day-panel .calendar-section-title {
+  margin: 18px 0 10px;
+  color: #0f8a5f;
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.calendar-preparation-section {
+  margin-bottom: 18px;
+}
+
+/* 준비 일정 카드: 계약·정산 카드와 같은 테두리와 구조 */
+.calendar-item--preparation {
+  padding: 0;
+  border: 1px solid #e1e6ec;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.calendar-preparation-link {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: 18px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.calendar-preparation-link:focus-visible {
+  outline: 3px solid rgba(15, 138, 95, 0.3);
+  outline-offset: 2px;
+}
+
+.calendar-preparation-link .calendar-item-title,
+.calendar-preparation-link .calendar-item-amount {
+  display: block;
+}
+
+.calendar-item-type--preparation {
+  background: #e9e5ff;
+  color: #5a33c1;
+}
+
+/* 세부 설정 접기 */
+.planner-advanced {
+  padding: 11px 13px;
+  border: 1px solid #e0e7f0;
+  border-radius: 10px;
+  background: #f7f9fc;
+}
+
+.planner-advanced summary {
+  color: #46546b;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1.6;
+}
+
+.planner-advanced summary > span {
+  margin-left: 8px;
+  color: #8795aa;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.planner-advanced[open] .planner-field-grid {
+  margin-top: 15px;
+}
+
+.planner-field-help {
+  color: #8795aa;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* 왼쪽 캘린더 / 오른쪽 상세 + AI */
+.calendar-layout--planning {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 18px;
+  margin-top: 16px;
+
+  height: clamp(720px, calc(100dvh - 290px), 900px);
+}
+
+.calendar-layout--planning > .calendar-main {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.calendar-layout--planning .calendar-main-toolbar {
+  flex: 0 0 auto;
+}
+
+/* 캘린더가 정해진 높이를 사용하도록 조정 */
+.calendar-layout--planning .calendar-grid {
+  flex: 1;
+  min-height: 460px;
+  grid-template-rows: 30px repeat(6, minmax(0, 1fr));
+}
+
+.calendar-layout--planning .calendar-cell {
+  min-height: 0;
+  padding: 6px 4px;
+  gap: 4px;
+}
+
+.calendar-right-column {
+  --calendar-detail-height: 330px;
+
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows:
+    var(--calendar-detail-height)
+    minmax(0, 1fr);
+  gap: 16px;
+
+  /* 바깥쪽은 스크롤하지 않고 두 박스가 각각 스크롤 */
+  overflow: hidden;
+}
+
+.calendar-layout--planning .calendar-day-panel {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  max-height: none;
+  padding: 18px;
+
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior-y: contain;
+}
+
+.calendar-day-panel h2 {
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.calendar-layout--planning .calendar-empty {
+  min-height: 0;
+  padding: 14px 8px;
+}
+
+.calendar-layout--planning .calendar-empty-icon {
+  display: none;
+}
+
+.calendar-right-column .preparation-planner--design {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  padding: 20px;
+
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior-y: contain;
+}
+
+.calendar-right-column .planner-heading {
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+}
+
+.calendar-right-column .planner-heading__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+}
+
+.calendar-right-column .planner-heading__copy h2 {
+  font-size: 16px;
+}
+
+.calendar-right-column .planner-callout {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  font-size: 11px;
+}
+
+.calendar-right-column .planner-callout--time {
+  margin-bottom: 0;
+}
+
+.calendar-right-column .planner-fields {
+  gap: 14px;
+}
+
+.calendar-right-column .planner-field-grid {
+  gap: 12px;
+}
+
+.calendar-right-column .planner-day {
+  min-height: 40px;
+  padding: 5px 0;
+  gap: 4px;
+}
+
+.calendar-right-column .planner-field {
+  gap: 6px;
+}
+
+.calendar-right-column input {
+  min-height: 38px;
+  padding: 8px 11px;
+}
+
+.calendar-right-column textarea {
+  min-height: 56px;
+  padding: 9px 11px;
+}
+
+.calendar-right-column .planner-steps {
+  padding: 5px;
+}
+
+.calendar-right-column .planner-step {
+  padding: 6px 2px;
+  gap: 4px;
+}
+
+.calendar-right-column .planner-primary,
+.calendar-right-column .planner-secondary {
+  min-height: 40px;
+  padding: 9px 12px;
+}
+
+/* 노트북 화면에서도 좌우 배치를 유지 */
+@media (min-width: 1024px) and (max-width: 1180px) {
+  .calendar-page {
+    width: calc(100% - 40px);
+  }
+
+  .calendar-layout--planning {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+
+/* 작은 화면과 높이가 낮은 화면에서는 페이지 스크롤 사용 */
+@media (max-width: 1023px), (max-height: 700px) {
+  .calendar-layout--planning {
+    height: auto;
+  }
+
+  .calendar-right-column {
+    grid-template-rows: 330px 520px;
+    overflow: hidden;
+  }
+
+  .calendar-layout--planning .calendar-grid {
+    flex: none;
+    min-height: 0;
+    grid-template-rows: 30px repeat(6, minmax(82px, 1fr));
+  }
+
+  .calendar-layout--planning .calendar-cell {
+    min-height: 82px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .calendar-layout--planning {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.planner-funding {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e0e7f0;
+  border-radius: 12px;
+  background: #f7f9fc;
+}
+
+.planner-funding-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #46546b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.preparation-planner--design
+.planner-funding-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  accent-color: #0f8a5f;
+}
+
+.planner-funding-result {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #cce8da;
+  border-radius: 12px;
+  background: #f4fbf7;
+}
+
+.planner-funding-result h3 {
+  margin: 0 0 12px;
+  color: #0f8a5f;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.planner-funding-result dl {
+  margin: 0;
+}
+
+.planner-funding-result dl > div {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.planner-funding-result dt {
+  color: #66758b;
+}
+
+.planner-funding-result dd {
+  margin: 0;
+  color: #344054;
+  font-weight: 700;
+}
+
+.planner-funding-result ul {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: #b54708;
+  font-size: 12px;
+  line-height: 1.8;
+}

@@ -36,7 +36,7 @@ export interface DashboardSummary {
   totalContractCount: number;
   totalLentAmount: number;
   totalBorrowedAmount: number;
-  thisMonthDueAmount: number;
+  payableThisMonthAmount: number;
 }
 
 export interface DashboardResponse {
