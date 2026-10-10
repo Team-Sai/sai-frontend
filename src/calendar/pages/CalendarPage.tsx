@@ -295,6 +295,11 @@ function CalendarPageContent({ initialDate }: { initialDate: Date }) {
     setPreparationVersion((value) => value + 1);
   }
 
+  function handlePreparationRegistered() {
+    setRescheduleEvent(null);
+    refreshPreparationEvents();
+  }
+
   function changeMonth(offset: number) {
     if (plannerInteractionLocked) return;
 
@@ -647,8 +652,7 @@ function CalendarPageContent({ initialDate }: { initialDate: Date }) {
 
                           <span className="calendar-item-amount">
                             {preparationTime(event.startsAt)}
-                            {" ~ "}
-                            {preparationTime(event.endsAt)}
+                            {" 확인 알림"}
                           </span>
 
                           <span className="calendar-item-meta">
@@ -717,7 +721,7 @@ function CalendarPageContent({ initialDate }: { initialDate: Date }) {
               rescheduleEvent={rescheduleEvent}
               onRescheduleCancel={() => setRescheduleEvent(null)}
               onInteractionLockChange={setPlannerInteractionLocked}
-              onRegistered={refreshPreparationEvents}
+              onRegistered={handlePreparationRegistered}
           />
         </div>
       </div>

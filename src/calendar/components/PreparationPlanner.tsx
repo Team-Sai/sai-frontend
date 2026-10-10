@@ -23,6 +23,7 @@ const DAYS: { value: Weekday; label: string }[] = [
     { value: "SUNDAY", label: "일" },
 ];
 const DEFAULT_DAYS: Weekday[] = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY"];
+const REMINDER_DURATION_MINUTES = 1;
 
 const PREFERENCE_EXAMPLES = [
     "가능하면 여러 회차를 같은 날 같은 시각에 모아줘.",
@@ -79,7 +80,12 @@ export default function PreparationPlanner({
     const runningRef = useRef(false);
     const preferencesRef = useRef<HTMLTextAreaElement | null>(null);
 
-    useEffect(() => () => controllerRef.current?.abort(), []);
+    useEffect(() => {
+        return () => {
+            controllerRef.current?.abort();
+            onInteractionLockChange(false);
+        };
+    }, [onInteractionLockChange]);
 
     function invalidateProposal() {
         setProposal(null); setError(null); setNotice(null); setRegistered(false);
@@ -180,7 +186,7 @@ export default function PreparationPlanner({
                 allowedDays,
                 windowStart,
                 windowEnd,
-                durationMinutes: 1,
+                durationMinutes: REMINDER_DURATION_MINUTES,
                 leadDays,
                 preferences,
                 funding,
