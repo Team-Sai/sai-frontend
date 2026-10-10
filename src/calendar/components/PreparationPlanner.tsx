@@ -90,6 +90,20 @@ export default function PreparationPlanner({
     function invalidateProposal() {
         setProposal(null); setError(null); setNotice(null); setRegistered(false);
     }
+
+    function returnToNewProposal() {
+        // 승인 결과가 불확실하거나 요청 중이면 기존 제안을 유지합니다.
+        if (runningRef.current || confirmationUncertain || !registered) {
+            return;
+        }
+
+        // 신규 등록도 재마운트 없이 입력 폼으로 돌아갈 수 있게 합니다.
+        invalidateProposal();
+
+        if (rescheduleEvent) {
+            onRescheduleCancel();
+        }
+    }
     function toggleDay(day: Weekday) {
         invalidateProposal();
         setAllowedDays((days) => days.includes(day) ? days.filter((d) => d !== day) : [...days, day]);
@@ -459,7 +473,6 @@ export default function PreparationPlanner({
                     <button
                         className="planner-primary"
                         type="submit"
-                        disabled={registered && rescheduleEvent !== null}
                     >
                         {busy
                             ? "처리 중…"
@@ -638,11 +651,11 @@ export default function PreparationPlanner({
                                     : `회차 ${proposal.items.length}건 확인 일정 등록하기`}
                     </button>
 
-                    {registered && rescheduleEvent && (
+                    {registered && (
                         <button
                             type="button"
                             className="planner-secondary"
-                            onClick={onRescheduleCancel}
+                            onClick={returnToNewProposal}
                         >
                             새 일정 제안으로 돌아가기
                         </button>
