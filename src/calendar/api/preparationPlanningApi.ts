@@ -110,11 +110,17 @@ export interface ConfirmationResponse {
 
 export class PlanningApiError extends Error {
     readonly status: number;
+    readonly code: string | null;
 
-    constructor(message: string, status: number) {
+    constructor(
+        message: string,
+        status: number,
+        code: string | null = null,
+    ) {
         super(message);
         this.name = "PlanningApiError";
         this.status = status;
+        this.code = code;
     }
 }
 
@@ -325,6 +331,9 @@ async function readResponse<T>(
                 ? body.message
                 : `요청에 실패했습니다. (HTTP ${response.status})`,
             response.status,
+            isObject(body) && typeof body.code === "string"
+                ? body.code
+                : null,
         );
     }
 

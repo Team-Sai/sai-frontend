@@ -272,7 +272,14 @@ export default function PreparationPlanner({
 
             if (
                 cause instanceof PlanningApiError &&
-                [404, 409, 410].includes(cause.status)
+                (
+                    (cause.status === 404 &&
+                        cause.code === "PROPOSAL_NOT_FOUND") ||
+                    (cause.status === 409 &&
+                        cause.code === "PROPOSAL_CHANGED") ||
+                    (cause.status === 410 &&
+                        cause.code === "PROPOSAL_EXPIRED")
+                )
             ) {
                 setProposal(null);
                 setConfirmationUncertain(false);
@@ -338,7 +345,7 @@ export default function PreparationPlanner({
                 <span className="planner-badge">AI 일정 조율</span>
             </div>
             <p className="planner-callout">확인 알림을 제안합니다. 승인 전에는 등록되지 않으며 실제 상환이나 계약 납기를 변경하지 않습니다.</p>
-            {rescheduleEvent && (
+            {rescheduleEvent && !registered && (
                 <div className="planner-callout">
                     <p>{rescheduleEvent.title}</p>
 
@@ -369,7 +376,7 @@ export default function PreparationPlanner({
                         : " 이번 달로 이동한 뒤 제안받아 주세요."}
                 </p>
             )}
-            {yearMonth === seoulDate().slice(0, 7) && (
+            {!registered && yearMonth === seoulDate().slice(0, 7) && (
             <form onSubmit={(event) => { event.preventDefault(); void generate(); }}>
                 <fieldset className="planner-fields" disabled={busy || confirmationUncertain}>
                     <legend className="planner-sr-only">상환 확인 일정 조건</legend>
@@ -387,10 +394,10 @@ export default function PreparationPlanner({
                     </div>
                     <div className="planner-preferences">
                         <label className="planner-field">
-        <span className="planner-field__label">
-            어떻게 일정을 조율할까요?
-            <span className="planner-optional">선택</span>
-        </span>
+                            <span className="planner-field__label">
+                                어떻게 일정을 조율할까요?
+                                <span className="planner-optional">선택</span>
+                            </span>
 
                             <textarea
                                 ref={preferencesRef}
@@ -630,6 +637,16 @@ export default function PreparationPlanner({
                                     ? "기존 확인 일정 변경 승인"
                                     : `회차 ${proposal.items.length}건 확인 일정 등록하기`}
                     </button>
+
+                    {registered && rescheduleEvent && (
+                        <button
+                            type="button"
+                            className="planner-secondary"
+                            onClick={onRescheduleCancel}
+                        >
+                            새 일정 제안으로 돌아가기
+                        </button>
+                    )}
                 </>}
             </div>}
         </section>

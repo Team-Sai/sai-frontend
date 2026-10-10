@@ -296,7 +296,6 @@ function CalendarPageContent({ initialDate }: { initialDate: Date }) {
   }
 
   function handlePreparationRegistered() {
-    setRescheduleEvent(null);
     refreshPreparationEvents();
   }
 
