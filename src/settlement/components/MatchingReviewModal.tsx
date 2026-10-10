@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import LoadingSkeleton from '../../common/components/LoadingSkeleton';
 import { authFetch } from '../../auth/authFetch';
+import { notifyRepaymentChanged } from '../../contract/repaymentRefresh';
 import './matching-review-modal.css';
 
 type Options = { reviewChannel: string; targetType?: string | null; aggregateId?: string | number | null };
@@ -60,6 +61,7 @@ export default function MatchingReviewModal({ open, onClose, options }: Props) {
     try{
       const r=await authFetch(`/api/linked-accounts/${review.transaction.linkedAccountId}/transactions/${id}/matching-review/apply`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({matchCandidateId:cid})});
       const b=await r.json().catch(()=>null); if(!r.ok) throw new Error(b?.message||'선택한 후보를 반영하지 못했습니다.');
+      notifyRepaymentChanged();
       setChanged(true); setResults(v=>({...v,[id]:{type:'APPLIED',message:b?.message||'선택한 거래를 반영했습니다.'}}));
     }catch(e){setMessage(e instanceof Error?e.message:'반영 실패')}
   }

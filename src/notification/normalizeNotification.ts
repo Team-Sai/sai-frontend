@@ -18,6 +18,18 @@ export function formatNotificationTime(dateString: string | null, now: number): 
 export function getNotificationDestination(n: NotificationResponse): NotificationDestination | null {
   if (!isNotificationId(n.notificationId)) return null;
   const destination = (url: string, label: string): NotificationDestination => ({ url, label, available: true });
+  if (n.notificationType === 'REPAYMENT_PREPARATION_REMINDER') {
+    const key = n.secondaryReferenceId;
+    if (!Number.isSafeInteger(key) || key == null) {
+      return destination('/calendar', '캘린더 확인하기');
+    }
+    const raw = String(key);
+    if (!/^\d{8}$/.test(raw)) {
+      return destination('/calendar', '캘린더 확인하기');
+    }
+    const date = `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`;
+    return destination(`/calendar?date=${date}`, '상환 확인 일정 보기');
+  }
   if (n.notificationType === 'CONTRACT_REQUESTED' && isNotificationId(n.referenceId)) {
     return { ...destination(`/contracts/${n.referenceId}/approve`, '서명하러 가기'), contractId: n.referenceId };
   }

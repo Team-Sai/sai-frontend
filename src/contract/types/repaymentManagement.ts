@@ -28,6 +28,17 @@ export interface RepaymentPlanItem {
     reason: string;
 }
 
+export type RepaymentFallbackReason =
+    | 'ANALYSIS_IN_PROGRESS'
+    | 'WAIT_TIMEOUT'
+    | 'COOLDOWN'
+    | 'AI_UNAVAILABLE'
+    | 'REDIS_UNAVAILABLE'
+    | 'RESULT_NOT_SAVED'
+    | 'SERVICE_BUSY'
+    | 'INTERRUPTED'
+    | 'JOB_FAILURE';
+
 export interface RepaymentManagementResponse {
     context: RepaymentAnalysisContext;
     agentAnalysis: {
@@ -36,5 +47,18 @@ export interface RepaymentManagementResponse {
         summary: string;
         plans: RepaymentPlanItem[];
         recommendation: string;
+    };
+    metadata: {
+        analyzedAt: string | null;
+        checkedAt: string;
+        reused: boolean;
+        delivery:
+            | 'GENERATED'
+            | 'CACHE'
+            | 'SHARED'
+            | 'FALLBACK'
+            | 'EMPTY';
+        fallbackReason: RepaymentFallbackReason | null;
+        retryAfterSeconds: number | null;
     };
 }

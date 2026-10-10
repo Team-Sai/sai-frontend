@@ -45,6 +45,32 @@ function isPlanItem(value: unknown): boolean {
     );
 }
 
+function isFallbackReason(value: unknown): boolean {
+    return (
+        value === null ||
+        value === 'ANALYSIS_IN_PROGRESS' ||
+        value === 'WAIT_TIMEOUT' ||
+        value === 'COOLDOWN' ||
+        value === 'AI_UNAVAILABLE' ||
+        value === 'REDIS_UNAVAILABLE' ||
+        value === 'RESULT_NOT_SAVED' ||
+        value === 'SERVICE_BUSY' ||
+        value === 'INTERRUPTED' ||
+        value === 'JOB_FAILURE'
+    );
+}
+
+function isRetryAfterSeconds(value: unknown): boolean {
+    return (
+        value === null ||
+        (
+            typeof value === 'number' &&
+            Number.isInteger(value) &&
+            value > 0
+        )
+    );
+}
+
 function isResponse(
     value: unknown,
 ): value is RepaymentManagementResponse {
@@ -52,8 +78,13 @@ function isResponse(
 
     const context = value.context;
     const analysis = value.agentAnalysis;
+    const metadata = value.metadata;
 
-    if (!isObject(context) || !isObject(analysis)) {
+    if (
+        !isObject(context) ||
+        !isObject(analysis) ||
+        !isObject(metadata)
+    ) {
         return false;
     }
 
@@ -77,6 +108,33 @@ function isResponse(
         typeof analysis.recommendation === 'string' &&
         Array.isArray(analysis.plans) &&
         analysis.plans.every(isPlanItem)
+        && (
+            metadata.analyzedAt === null ||
+            (
+                typeof metadata.analyzedAt === 'string' &&
+                Number.isFinite(Date.parse(metadata.analyzedAt))
+            )
+        )
+        && typeof metadata.checkedAt === 'string'
+        && Number.isFinite(Date.parse(metadata.checkedAt))
+        && typeof metadata.reused === 'boolean'
+        && (
+            metadata.delivery === 'GENERATED' ||
+            metadata.delivery === 'CACHE' ||
+            metadata.delivery === 'SHARED' ||
+            metadata.delivery === 'FALLBACK' ||
+            metadata.delivery === 'EMPTY'
+        )
+        && isFallbackReason(metadata.fallbackReason)
+        && isRetryAfterSeconds(metadata.retryAfterSeconds)
+        && (
+            metadata.delivery === 'FALLBACK'
+                ? metadata.fallbackReason !== null
+                : (
+                    metadata.fallbackReason === null &&
+                    metadata.retryAfterSeconds === null
+                )
+        )
     );
 }
 

@@ -7,8 +7,6 @@ import {
 import type { CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingSkeleton from '../../common/components/LoadingSkeleton';
-import RepaymentManagementCard from '../../contract/components/RepaymentManagementCard';
-
 import { dashboardApi } from '../api/dashboardApi';
 
 import type {
@@ -114,6 +112,12 @@ function getCalendarDates(
 function getAttentionMessage(
   item: DashboardAttentionItem,
 ): string {
+  if (
+      item.type ===
+      'REPAYMENT_PREPARATION_REMINDER'
+  ) {
+    return '상환 확인 시간이에요. 미상환 내역을 확인하세요.';
+  }
   if (
     item.type ===
     'LOAN_DUE_SOON'
@@ -670,7 +674,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </section>
-      <RepaymentManagementCard />
       <section
         className="dashboard-grid"
         aria-label="월별 현황과 확인 필요 내역"
@@ -885,16 +888,17 @@ export default function DashboardPage() {
                     index,
                   ) => (
                     <div
-                      key={
-                        item.id ??
-                        `${item.type}-${index}`
-                      }
+                      key={`${item.type}-${item.id ?? index}`}
                       className="attention-item"
                     >
-                      <span>
-                        {getAttentionMessage(
-                          item,
-                        )}
+                      <span
+                          className={
+                            item.type === 'REPAYMENT_PREPARATION_REMINDER'
+                                ? 'attention-reminder-message'
+                                : undefined
+                          }
+                      >
+                        {getAttentionMessage(item)}
                       </span>
 
                       <button
