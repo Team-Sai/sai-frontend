@@ -1,47 +1,46 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import GuestLayout from './common/layouts/GuestLayout';
-import IntroPage from './guest/IntroPage';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import GuestLayout from "./common/layouts/GuestLayout";
+import IntroPage from "./guest/IntroPage";
 
-import { AuthProvider } from './auth/AuthProvider';
-import { ProtectedRoute } from './auth/ProtectedRoute';
-import AppLayout from './common/layouts/AppLayout';
-import MinimalLayout from './common/layouts/MinimalLayout';
+import { AuthProvider } from "./auth/AuthProvider";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
+import AppLayout from "./common/layouts/AppLayout";
+import MinimalLayout from "./common/layouts/MinimalLayout";
 
-import LoginPage from './users/pages/LoginPage';
-import SignupPage from './users/pages/SignupPage';
-import MyPage from './users/pages/MyPage';
-import IntegratedTransactionPage from './transaction/pages/IntegratedTransactionPage';
-import IdentityTestPage from './identity/pages/IdentityTestPage';
-import LinkCompletePage from './link/pages/LinkCompletePage';
+import LoginPage from "./users/pages/LoginPage";
+import SignupPage from "./users/pages/SignupPage";
+import MyPage from "./users/pages/MyPage";
+import IntegratedTransactionPage from "./transaction/pages/IntegratedTransactionPage";
+import IdentityTestPage from "./identity/pages/IdentityTestPage";
+import LinkCompletePage from "./link/pages/LinkCompletePage";
 
-import DashboardPage from './integration/pages/DashboardPage';
+import DashboardPage from "./integration/pages/DashboardPage";
 
-import ContractDashboardPage from './contract/pages/ContractDashboardPage';
-import ContractDocumentPage from './contract/pages/ContractDocumentPage';
-import ContractFormPage from './contract/pages/ContractFormPage';
-import ContractSignaturePage from './contract/pages/ContractSignaturePage';
-import ContractCompletePage from './contract/pages/ContractCompletePage';
-import SchedulePage from './contract/pages/SchedulePage';
-import ContractChangeFormPage from './contract/pages/ContractChangeFormPage';
-import ContractChangeRequestDetailPage from './contract/pages/ContractChangeRequestDetailPage';
-import ContractChangeApprovalFormPage from './contract/pages/ContractChangeApprovalFormPage';
-import ContractChangeApprovalSignaturePage from './contract/pages/ContractChangeApprovalSignaturePage';
-import ContractChangeRequestSentPage from './contract/pages/ContractChangeRequestSentPage';
-import ContractChangeSignaturePage from './contract/pages/ContractChangeSignaturePage';
-import DebtorContractFormPage from './contract/pages/DebtorContractFormPage';
-import DebtorSignaturePage from './contract/pages/DebtorSignaturePage';
-import DebtorApprovalIdentityGuard from './contract/components/DebtorApprovalIdentityGuard';
+import ContractDashboardPage from "./contract/pages/ContractDashboardPage";
+import ContractDocumentPage from "./contract/pages/ContractDocumentPage";
+import ContractFormPage from "./contract/pages/ContractFormPage";
+import ContractSignaturePage from "./contract/pages/ContractSignaturePage";
+import ContractCompletePage from "./contract/pages/ContractCompletePage";
+import SchedulePage from "./contract/pages/SchedulePage";
+import ContractChangeFormPage from "./contract/pages/ContractChangeFormPage";
+import ContractChangeRequestDetailPage from "./contract/pages/ContractChangeRequestDetailPage";
+import ContractChangeApprovalFormPage from "./contract/pages/ContractChangeApprovalFormPage";
+import ContractChangeApprovalSignaturePage from "./contract/pages/ContractChangeApprovalSignaturePage";
+import ContractChangeRequestSentPage from "./contract/pages/ContractChangeRequestSentPage";
+import ContractChangeSignaturePage from "./contract/pages/ContractChangeSignaturePage";
+import DebtorContractFormPage from "./contract/pages/DebtorContractFormPage";
+import DebtorSignaturePage from "./contract/pages/DebtorSignaturePage";
+import DebtorApprovalIdentityGuard from "./contract/components/DebtorApprovalIdentityGuard";
+import NotificationCenter from "./notification/NotificationCenter";
 
-import NotificationCenter from './notification/NotificationCenter';
+import ArchivePage from "./archive/ArchivePage";
+import SettlementArchivePreviewPage from "./archive/pages/SettlementArchivePreviewPage";
+import ContractArchivePreviewPage from "./archive/pages/ContractArchivePreviewPage";
 
-import ArchivePage from './archive/ArchivePage';
-import SettlementArchivePreviewPage from './archive/pages/SettlementArchivePreviewPage';
-import ContractArchivePreviewPage from './archive/pages/ContractArchivePreviewPage';
-
-import SettlementListPage from './settlement/pages/SettlementListPage';
-import SettlementCreatePage from './settlement/pages/SettlementCreatePage';
-import SettlementDetailPage from './settlement/pages/SettlementDetailPage';
-import CalendarPage from './calendar/pages/CalendarPage';
+import SettlementListPage from "./settlement/pages/SettlementListPage";
+import SettlementCreatePage from "./settlement/pages/SettlementCreatePage";
+import SettlementDetailPage from "./settlement/pages/SettlementDetailPage";
+import CalendarPage from "./calendar/pages/CalendarPage";
 
 function App() {
   return (
@@ -179,7 +178,7 @@ function App() {
               }
             />
 
-                        <Route
+            <Route
               path="/contracts/:contractId/change-requests/:changeRequestId"
               element={
                 <ProtectedRoute>
@@ -221,7 +220,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/settlements"
               element={
@@ -254,7 +252,7 @@ function App() {
                   <CalendarPage />
                 </ProtectedRoute>
               }
-            />    
+            />
 
             <Route
               path="/archive"

@@ -1,0 +1,774 @@
+/* =========================================================
+   ROOT
+========================================================= */
+
+.clause-reason-root {
+  position: fixed;
+  z-index: 9500;
+  inset: 0;
+}
+
+.clause-reason-backdrop {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 0;
+
+  background: rgba(15, 23, 42, 0.3);
+
+  border: 0;
+
+  backdrop-filter: blur(2px);
+}
+
+/* =========================================================
+   DRAWER
+========================================================= */
+
+.clause-reason {
+  position: absolute;
+
+  top: 0;
+  right: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  width: min(820px, 94vw);
+
+  height: 100%;
+
+  background: #f8fafc;
+
+  box-shadow: -25px 0 70px rgba(15, 23, 42, 0.18);
+
+  animation: clause-reason-enter 0.24s ease-out;
+}
+
+@keyframes clause-reason-enter {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.clause-reason__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  padding: 30px 34px 27px;
+
+  color: #ffffff;
+
+  background: #172438;
+}
+
+.clause-reason__header-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #a8b6c6;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.05em;
+}
+
+.clause-reason__header h2 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 27px;
+
+  font-weight: 700;
+
+  line-height: 1.4;
+}
+
+.clause-reason__header p {
+  max-width: 620px;
+
+  margin: 10px 0 0;
+
+  color: #c1cad5;
+
+  font-size: 14px;
+
+  line-height: 1.65;
+}
+
+.clause-reason__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 42px;
+
+  height: 42px;
+
+  color: #d1dae5;
+
+  background: transparent;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  border-radius: 3px;
+
+  cursor: pointer;
+
+  font-size: 26px;
+}
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.clause-reason__body {
+  flex: 1;
+  min-height: 0;
+
+  padding: 30px 34px 48px;
+
+  overflow-y: auto;
+}
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.clause-reason-section {
+  padding: 0 0 28px;
+
+  margin-bottom: 28px;
+
+  border-bottom: 1px solid #dde4ea;
+}
+
+.clause-reason-section:last-of-type {
+  border-bottom: 0;
+}
+
+.clause-reason-section__title {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  margin-bottom: 16px;
+}
+
+.clause-reason-section__title > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 38px;
+
+  height: 38px;
+
+  color: #ffffff;
+
+  background: #416687;
+
+  border-radius: 50%;
+
+  font-size: 14px;
+
+  font-weight: 900;
+}
+
+.clause-reason-section__title strong {
+  display: block;
+
+  color: #263647;
+
+  font-size: 17px;
+
+  line-height: 1.4;
+}
+
+.clause-reason-section__title small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #8793a0;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   JUDGEMENT
+========================================================= */
+
+.clause-reason-judgement {
+  margin-left: 51px;
+}
+
+.clause-reason-issues {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-bottom: 12px;
+}
+
+.clause-reason-issues span {
+  padding: 6px 9px;
+
+  color: #3b5d79;
+
+  background: #eaf0f5;
+
+  font-size: 11px;
+
+  font-weight: 800;
+}
+
+.clause-reason-judgement > p {
+  margin: 0;
+
+  padding: 15px 17px;
+
+  color: #47596b;
+
+  background: #ffffff;
+
+  border-left: 4px solid #507394;
+
+  font-size: 15px;
+
+  line-height: 1.8;
+
+  word-break: keep-all;
+}
+
+/* =========================================================
+   PRIMARY LAW
+========================================================= */
+
+.clause-primary-law {
+  margin-left: 51px;
+
+  padding: 22px;
+
+  background: #ffffff;
+
+  border: 1px solid #d9e1e8;
+}
+
+.clause-primary-law__heading {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 13px;
+}
+
+/* 핵심 근거 badge */
+
+.clause-primary-law__badge {
+  flex: 0 0 auto;
+
+  padding: 6px 8px;
+
+  color: #2f5f83;
+
+  background: #e8f0f6;
+
+  font-size: 10px;
+
+  font-weight: 900;
+}
+
+/*
+ * '민법'
+ *
+ * 기존 small 같은 느낌 제거.
+ * 본문 계열 폰트 + bold.
+ */
+.clause-primary-law__law-name {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #526273;
+
+  font-family: "Noto Sans KR", Arial, sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 800;
+
+  line-height: 1.4;
+}
+
+.clause-primary-law__heading h3 {
+  margin: 0;
+
+  color: #1d2c3c;
+
+  font-family: "Noto Sans KR", Arial, sans-serif;
+
+  font-size: 22px;
+
+  font-weight: 800;
+
+  line-height: 1.45;
+}
+
+/* =========================================================
+   LAW MEANING
+========================================================= */
+
+.clause-primary-law__meaning {
+  margin-top: 20px;
+
+  padding: 16px 17px;
+
+  background: #f5f8fa;
+}
+
+.clause-primary-law__meaning strong {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #42566a;
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+.clause-primary-law__meaning p {
+  margin: 0;
+
+  color: #536577;
+
+  font-size: 14px;
+
+  line-height: 1.8;
+}
+
+.clause-primary-law__meaning b {
+  color: #2f5d7d;
+
+  font-weight: 800;
+}
+
+/* =========================================================
+   LAW ORIGINAL
+========================================================= */
+
+.clause-primary-law__original {
+  margin-top: 20px;
+
+  padding-top: 18px;
+
+  border-top: 1px solid #dfe5eb;
+}
+
+.clause-primary-law__original-title {
+  margin-bottom: 12px;
+}
+
+.clause-primary-law__original-title strong {
+  display: block;
+
+  color: #33475b;
+
+  font-size: 14px;
+
+  font-weight: 800;
+}
+
+/*
+ * 원문은 처음부터 그대로 보임.
+ * toggle 없음.
+ */
+.clause-primary-law__original pre {
+  margin: 0;
+
+  color: #2f3e4c;
+
+  white-space: pre-wrap;
+
+  word-break: keep-all;
+
+  font-family: "Noto Serif KR", "Nanum Myeongjo", serif;
+
+  font-size: 15px;
+
+  font-weight: 400;
+
+  line-height: 1.95;
+}
+
+/* =========================================================
+   SECONDARY LAWS
+========================================================= */
+
+.clause-secondary-laws {
+  margin: 14px 0 0 51px;
+}
+
+.clause-secondary-laws__toggle {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+
+  padding: 13px 14px;
+
+  color: #526374;
+
+  background: #ffffff;
+
+  border: 1px solid #dce3e9;
+
+  cursor: pointer;
+
+  font-size: 13px;
+
+  text-align: left;
+}
+
+.clause-secondary-laws__toggle span {
+  font-weight: 700;
+}
+
+.clause-secondary-laws__toggle b {
+  color: #386180;
+
+  font-size: 12px;
+
+  font-weight: 800;
+}
+
+.clause-secondary-laws__list {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+
+  margin-top: 9px;
+}
+
+.clause-secondary-laws__list button {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+
+  padding: 12px;
+
+  color: #5e6a77;
+
+  background: #ffffff;
+
+  border: 1px solid #dce2e8;
+
+  cursor: pointer;
+
+  text-align: left;
+}
+
+.clause-secondary-laws__list button.is-selected {
+  background: #edf3f7;
+
+  border-color: #7d99af;
+
+  box-shadow: inset 3px 0 0 #486887;
+}
+
+.clause-secondary-laws__list button > span {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 30px;
+
+  height: 30px;
+
+  color: #41617d;
+
+  background: #edf2f6;
+
+  border-radius: 50%;
+
+  font-size: 10px;
+
+  font-weight: 900;
+}
+
+/* 보조 법령의 민법 */
+
+.clause-secondary-laws__law-name {
+  display: block;
+
+  color: #697988;
+
+  font-family: "Noto Sans KR", Arial, sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+.clause-secondary-laws__list strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #354556;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+/* =========================================================
+   SECONDARY DETAIL
+========================================================= */
+
+.clause-secondary-detail {
+  margin-top: 10px;
+
+  padding: 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #dce3e9;
+}
+
+.clause-secondary-detail__law-name {
+  display: block;
+
+  color: #627485;
+
+  font-family: "Noto Sans KR", Arial, sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+.clause-secondary-detail h4 {
+  margin: 5px 0 0;
+
+  color: #263748;
+
+  font-size: 17px;
+
+  font-weight: 800;
+}
+
+.clause-secondary-detail__reason {
+  margin: 10px 0 0;
+
+  color: #607080;
+
+  font-size: 13px;
+
+  line-height: 1.7;
+}
+
+.clause-secondary-detail > button {
+  margin-top: 11px;
+
+  padding: 0;
+
+  color: #356385;
+
+  background: transparent;
+
+  border: 0;
+
+  cursor: pointer;
+
+  font-size: 12px;
+
+  font-weight: 800;
+}
+
+.clause-secondary-detail pre {
+  margin: 14px 0 0;
+
+  padding-top: 14px;
+
+  color: #354352;
+
+  border-top: 1px solid #e1e5ea;
+
+  white-space: pre-wrap;
+
+  word-break: keep-all;
+
+  font-family: "Noto Serif KR", serif;
+
+  font-size: 14px;
+
+  line-height: 1.9;
+}
+
+/* =========================================================
+   CONTRACT RESULT
+========================================================= */
+
+.clause-contract-result {
+  margin-left: 51px;
+
+  padding: 18px 19px;
+
+  background: #ffffff;
+
+  border-left: 4px solid #426789;
+}
+
+.clause-contract-result strong {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #24364a;
+
+  font-size: 15px;
+
+  font-weight: 800;
+}
+
+.clause-contract-result p {
+  margin: 0;
+
+  color: #303e4e;
+
+  font-family: "Noto Serif KR", "Nanum Myeongjo", serif;
+
+  font-size: 15px;
+
+  line-height: 1.95;
+
+  word-break: keep-all;
+}
+
+/* =========================================================
+   WARNING
+========================================================= */
+
+.clause-reason-warning {
+  margin-top: 4px;
+
+  padding: 17px 18px;
+
+  color: #715629;
+
+  background: #fff9ed;
+
+  border-left: 4px solid #c48b3c;
+}
+
+.clause-reason-warning strong {
+  display: block;
+
+  margin-bottom: 9px;
+
+  font-size: 14px;
+
+  font-weight: 800;
+}
+
+.clause-reason-warning p {
+  position: relative;
+
+  margin: 7px 0 0;
+
+  padding-left: 16px;
+
+  font-size: 12px;
+
+  line-height: 1.7;
+}
+
+.clause-reason-warning p::before {
+  position: absolute;
+
+  left: 2px;
+
+  content: "•";
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 760px) {
+  .clause-reason {
+    width: 100%;
+  }
+
+  .clause-reason__header,
+  .clause-reason__body {
+    padding-left: 20px;
+
+    padding-right: 20px;
+  }
+
+  .clause-reason__header h2 {
+    font-size: 22px;
+  }
+
+  .clause-reason-judgement,
+  .clause-primary-law,
+  .clause-secondary-laws,
+  .clause-contract-result {
+    margin-left: 0;
+  }
+
+  .clause-secondary-laws__list {
+    grid-template-columns: 1fr;
+  }
+}

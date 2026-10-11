@@ -1,0 +1,965 @@
+/* =========================================
+   PANEL
+========================================= */
+
+.sai-panel {
+  position: sticky;
+  top: 20px;
+
+  display: flex;
+  flex-direction: column;
+
+  height: calc(100vh - 40px);
+  min-height: 760px;
+
+  color: #26342e;
+  background: #ffffff;
+
+  border: 0;
+
+  border-radius: 4px;
+
+  box-shadow: 0 4px 18px rgba(24, 62, 47, 0.05);
+
+  overflow: hidden;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.sai-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding: 20px 24px;
+
+  color: #ffffff;
+
+  background: #174b3c;
+
+  border: 0;
+  border-radius: 0;
+
+  box-shadow: none;
+}
+
+.sai-panel__identity {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  min-width: 0;
+}
+
+/*
+ * 헤더에서는 이미지 사용 X
+ * S-AI 텍스트만 표시
+ */
+.sai-panel__profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: auto;
+  height: auto;
+
+  padding: 0;
+
+  color: #72ddb5;
+  background: transparent;
+
+  border: 0;
+  border-radius: 0;
+
+  box-shadow: none;
+
+  font-size: 15px;
+  font-weight: 900;
+
+  letter-spacing: -0.03em;
+}
+
+.sai-panel__identity strong {
+  display: block;
+
+  color: #ffffff;
+
+  font-size: 17px;
+
+  line-height: 1.35;
+}
+
+.sai-panel__identity p {
+  margin: 4px 0 0;
+
+  color: #afd1c4;
+
+  font-size: 11px;
+
+  line-height: 1.45;
+}
+
+/*
+ * 우측은 텍스트 없이 점 하나
+ */
+.sai-panel__state-dot {
+  flex: 0 0 auto;
+
+  width: 9px;
+  height: 9px;
+
+  background: #5cd5a4;
+
+  border-radius: 50%;
+
+  box-shadow: 0 0 0 4px rgba(92, 213, 164, 0.08);
+}
+
+.sai-panel__state-dot.is-warning {
+  background: #dfaf56;
+
+  box-shadow: 0 0 0 4px rgba(223, 175, 86, 0.09);
+}
+
+/* =========================================
+   BODY
+========================================= */
+
+.sai-panel__body {
+  flex: 1;
+  min-height: 0;
+
+  padding: 18px 22px 28px;
+
+  background: #fbfdfc;
+
+  overflow-y: auto;
+}
+
+/* =========================================
+   CONTRACT SUMMARY
+========================================= */
+
+.sai-contract-summary {
+  display: flex;
+  align-items: center;
+
+  gap: 22px;
+
+  padding: 2px 0 15px;
+
+  color: #7d8c84;
+
+  border-bottom: 1px solid #e2eae6;
+
+  font-size: 11px;
+}
+
+.sai-contract-summary span {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+.sai-contract-summary b {
+  color: #34594a;
+
+  font-size: 13px;
+}
+
+.sai-contract-summary .has-warning {
+  color: #96702d;
+}
+
+/* =========================================
+   WELCOME
+========================================= */
+
+.sai-welcome {
+  padding: 22px 0 18px;
+}
+
+.sai-welcome__visual {
+  position: relative;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  width: 100%;
+  height: 255px;
+
+  margin: 0 0 20px;
+
+  overflow: hidden;
+
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.sai-welcome__visual::after {
+  display: none;
+}
+.sai-welcome__visual img {
+  display: block;
+
+  width: auto;
+  max-width: 82%;
+  height: 245px;
+
+  object-fit: contain;
+  object-position: center bottom;
+
+  background: transparent;
+
+  border: 0;
+
+  outline: 0;
+
+  box-shadow: none;
+
+  filter: none;
+}
+
+.sai-welcome__placeholder {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 220px;
+  height: 200px;
+
+  color: #699080;
+  background: #f1f8f5;
+
+  border: 1px dashed #b7d7ca;
+
+  border-radius: 16px;
+}
+
+.sai-welcome__placeholder strong {
+  color: #248160;
+
+  font-size: 18px;
+}
+
+.sai-welcome__placeholder span {
+  margin-top: 7px;
+
+  font-size: 10px;
+}
+
+/* =========================================
+   CHAT AVATAR
+========================================= */
+
+/*
+ * 여기에서는 머리 이미지 사용
+ */
+.sai-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 42px;
+  height: 42px;
+
+  overflow: hidden;
+
+  color: #16815f;
+  background: #e8f6f0;
+
+  border: 1px solid #cce8dc;
+
+  border-radius: 50%;
+}
+
+.sai-avatar img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  /*
+   * 머리 이미지를 따로 잘라놨다면
+   * center가 제일 자연스러움
+   */
+  object-position: center;
+}
+
+.sai-avatar span {
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+/* =========================================
+   CHAT
+========================================= */
+
+.sai-chat-row {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 10px;
+}
+
+.sai-user-row {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: 20px;
+}
+
+.sai-chat-bubble {
+  max-width: calc(100% - 52px);
+
+  padding: 13px 15px;
+
+  font-size: 12px;
+
+  line-height: 1.7;
+}
+
+.sai-chat-bubble--assistant {
+  color: #31493e;
+
+  background: #edf8f3;
+
+  border: 1px solid #d7eae1;
+
+  border-radius: 5px 17px 17px 17px;
+}
+
+.sai-chat-bubble--assistant strong {
+  display: block;
+
+  color: #244b3b;
+
+  font-size: 14px;
+}
+
+.sai-chat-bubble--assistant p {
+  margin: 5px 0 0;
+
+  color: #62786e;
+
+  font-size: 12px;
+}
+
+.sai-chat-bubble--assistant small {
+  display: block;
+
+  margin-top: 6px;
+
+  color: #81938b;
+
+  font-size: 10px;
+}
+
+.sai-chat-bubble--user {
+  max-width: 84%;
+
+  color: #ffffff;
+  background: #16815f;
+
+  border-radius: 17px 17px 4px 17px;
+
+  box-shadow: 0 3px 9px rgba(22, 129, 95, 0.1);
+}
+
+/* =========================================
+   QUICK QUESTIONS
+========================================= */
+
+.sai-quick-questions {
+  margin: 18px 0 0 52px;
+}
+
+.sai-quick-questions > span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #83938b;
+
+  font-size: 10px;
+}
+
+.sai-quick-questions > div {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px;
+}
+
+.sai-quick-questions button {
+  padding: 8px 12px;
+
+  color: #326a56;
+  background: #ffffff;
+
+  border: 1px solid #c8e1d7;
+
+  border-radius: 999px;
+
+  cursor: pointer;
+
+  font-size: 10px;
+}
+
+.sai-quick-questions button:hover {
+  background: #edf8f3;
+
+  border-color: #94cab5;
+}
+
+/* =========================================
+   WORKING
+========================================= */
+
+.sai-working {
+  margin-top: 18px;
+}
+
+.sai-working__content {
+  flex: 1;
+
+  padding: 13px 15px;
+
+  background: #f0f8f4;
+
+  border-radius: 5px 16px 16px 16px;
+}
+
+.sai-working__content > strong {
+  color: #315545;
+
+  font-size: 13px;
+}
+
+.sai-working__steps {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 12px;
+}
+
+.sai-working__steps > div {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: #95a59d;
+
+  font-size: 10px;
+}
+
+.sai-working__steps i {
+  width: 6px;
+  height: 6px;
+
+  background: #cad9d2;
+
+  border-radius: 50%;
+}
+
+.sai-working__steps .is-active {
+  color: #2d7257;
+
+  font-weight: 800;
+}
+
+.sai-working__steps .is-active i {
+  background: #2ca678;
+
+  animation: sai-dot-pulse 0.8s infinite;
+}
+
+.sai-working__steps .is-done {
+  color: #62796f;
+}
+
+.sai-working__steps .is-done i {
+  background: #73ae96;
+}
+
+@keyframes sai-dot-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* =========================================
+   RESULT
+========================================= */
+
+.sai-result {
+  margin-top: 20px;
+}
+
+.sai-result__intro {
+  display: grid;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  align-items: flex-start;
+
+  gap: 10px;
+}
+
+.sai-result__intro > div:nth-child(2) > span {
+  display: block;
+
+  color: #84958c;
+
+  font-size: 10px;
+}
+
+.sai-result__intro h3 {
+  margin: 4px 0 0;
+
+  color: #263b32;
+
+  font-size: 18px;
+
+  line-height: 1.45;
+}
+
+.sai-result__status {
+  padding: 5px 8px;
+
+  border-radius: 5px;
+
+  font-size: 9px;
+
+  font-weight: 800;
+}
+
+.sai-result__status.is-pass {
+  color: #347155;
+
+  background: #e7f5ee;
+}
+
+.sai-result__status.is-review {
+  color: #8b6420;
+
+  background: #fff3d9;
+}
+
+.sai-result__status.is-warning {
+  color: #a14444;
+
+  background: #fbe9e9;
+}
+
+.sai-result__issues {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin: 11px 0 0 52px;
+}
+
+.sai-result__issues span {
+  padding: 4px 7px;
+
+  color: #537064;
+
+  background: #edf4f1;
+
+  border-radius: 4px;
+
+  font-size: 9px;
+}
+
+/* =========================================
+   EXPLANATION
+========================================= */
+
+.sai-explanation,
+.sai-law-summary,
+.sai-drafting,
+.sai-warning {
+  margin-top: 18px;
+}
+
+.sai-explanation > span,
+.sai-law-summary header strong {
+  color: #40564c;
+
+  font-size: 11px;
+
+  font-weight: 800;
+}
+
+.sai-explanation p {
+  margin: 7px 0 0;
+
+  padding: 13px 14px;
+
+  color: #596a62;
+  background: #f6faf8;
+
+  border-left: 3px solid #64a88e;
+
+  font-size: 12px;
+
+  line-height: 1.75;
+}
+
+/* =========================================
+   LAW
+========================================= */
+
+.sai-law-summary header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 7px;
+}
+
+.sai-law-summary header span {
+  color: #8a978f;
+
+  font-size: 9px;
+}
+
+.sai-law-summary > div {
+  display: grid;
+
+  grid-template-columns: 48px 1fr;
+
+  gap: 8px;
+
+  padding: 9px 0;
+
+  border-top: 1px solid #e3eae6;
+}
+
+.sai-law-summary > div > span {
+  width: fit-content;
+
+  padding: 3px 6px;
+
+  color: #2d7257;
+  background: #e6f4ed;
+
+  border-radius: 3px;
+
+  font-size: 8px;
+
+  font-weight: 800;
+}
+
+.sai-law-summary p {
+  margin: 0;
+}
+
+.sai-law-summary p strong {
+  display: block;
+
+  color: #3c4e46;
+
+  font-size: 10px;
+}
+
+.sai-law-summary p small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #829088;
+
+  font-size: 9px;
+}
+
+.sai-law-summary__hint {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #829088;
+
+  font-size: 9px;
+
+  line-height: 1.55;
+}
+
+/* =========================================
+   DRAFT STATE
+========================================= */
+
+.sai-drafting {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 11px 13px;
+
+  background: #f1f8f5;
+
+  border-left: 3px solid #55a786;
+}
+
+.sai-drafting > span {
+  width: 8px;
+  height: 8px;
+
+  background: #42a57e;
+
+  border-radius: 50%;
+}
+
+.sai-drafting > span.is-working {
+  animation: sai-dot-pulse 0.8s infinite;
+}
+
+.sai-drafting strong {
+  display: block;
+
+  color: #355c4c;
+
+  font-size: 11px;
+}
+
+.sai-drafting p {
+  margin: 3px 0 0;
+
+  color: #779087;
+
+  font-size: 9px;
+}
+
+/* =========================================
+   WARNING
+========================================= */
+
+.sai-warning {
+  padding: 12px 13px;
+
+  color: #715629;
+  background: #fff9ed;
+
+  border-left: 3px solid #ca903d;
+}
+
+.sai-warning strong {
+  display: block;
+
+  font-size: 11px;
+}
+
+.sai-warning p {
+  position: relative;
+
+  margin: 7px 0 0;
+
+  padding-left: 13px;
+
+  font-size: 10px;
+
+  line-height: 1.65;
+}
+
+.sai-warning p::before {
+  position: absolute;
+
+  left: 1px;
+
+  content: "•";
+}
+
+/* =========================================
+   ERROR
+========================================= */
+
+.sai-error {
+  margin-top: 16px;
+
+  padding: 12px 13px;
+
+  color: #913e3e;
+  background: #fff1f1;
+
+  border-left: 3px solid #bb5c5c;
+}
+
+.sai-error strong {
+  font-size: 11px;
+}
+
+.sai-error p {
+  margin: 4px 0 0;
+
+  font-size: 9px;
+}
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+.sai-result__actions {
+  display: grid;
+
+  grid-template-columns: 0.75fr 1.25fr;
+
+  gap: 8px;
+
+  margin-top: 18px;
+}
+
+/* =========================================
+   COMPOSER
+========================================= */
+
+.sai-composer {
+  position: relative;
+
+  flex: 0 0 auto;
+
+  padding: 13px;
+
+  background: #ffffff;
+
+  border-top: 1px solid #dce6e1;
+}
+
+.sai-composer textarea {
+  width: 100%;
+  min-height: 92px;
+
+  box-sizing: border-box;
+
+  padding: 13px 54px 13px 14px;
+
+  resize: none;
+
+  color: #34443d;
+  background: #f9fcfa;
+
+  border: 1px solid #ccddd5;
+
+  border-radius: 14px;
+
+  outline: none;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  line-height: 1.65;
+}
+
+.sai-composer textarea:focus {
+  background: #ffffff;
+
+  border-color: #54ad8a;
+
+  box-shadow: 0 0 0 3px rgba(39, 156, 112, 0.08);
+}
+
+.sai-composer > button {
+  position: absolute;
+
+  right: 25px;
+  bottom: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  color: #ffffff;
+  background: #16815f;
+
+  border: 0;
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-size: 17px;
+
+  font-weight: 900;
+}
+
+.sai-composer > button:hover:not(:disabled) {
+  background: #0f6e50;
+}
+
+.sai-composer > button:disabled {
+  opacity: 0.32;
+
+  cursor: default;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1240px) {
+  .sai-panel {
+    position: static;
+
+    height: 820px;
+  }
+}
+
+@media (max-width: 700px) {
+  .sai-panel__header {
+    padding: 16px;
+  }
+
+  .sai-panel__profile {
+    width: 48px;
+    height: 48px;
+
+    font-size: 12px;
+  }
+
+  .sai-panel__identity strong {
+    font-size: 15px;
+  }
+
+  .sai-panel__body {
+    padding: 15px;
+  }
+
+  .sai-welcome__visual {
+    height: 210px;
+  }
+
+  .sai-welcome__visual img {
+    height: 200px;
+  }
+
+  .sai-result__actions {
+    grid-template-columns: 1fr;
+  }
+}
