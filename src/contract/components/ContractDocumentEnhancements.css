@@ -20,16 +20,13 @@
 .document-clause__generated-head {
   display: flex;
 
-  align-items: flex-start;
+  align-items: center;
 
   justify-content: space-between;
 
-  gap: 20px;
+  gap: 18px;
 
-  /*
-   * 우측 위 hover X 공간.
-   */
-  padding-right: 34px;
+  padding-right: 0;
 }
 
 .document-clause__generated-head h2 {
@@ -50,6 +47,8 @@
   gap: 8px;
 
   flex: 0 0 auto;
+
+  margin-top: 0;
 }
 
 /* =========================================================
@@ -171,15 +170,22 @@
 }
 
 /* =========================================================
-   HOVER REMOVE X
+   HOVER REMOVE RAIL
 ========================================================= */
 
-.document-clause__remove-hover {
+/*
+ * 삭제 컨트롤을 제목 우측에서 제거하고 조항 하단 중앙에 둔다.
+ * 평소에는 보이지 않고, 적용된 조항에 마우스를 올렸을 때만
+ * 얇은 삭제 핸들이 나타난다.
+ *
+ * 제목 우측의 "입력 필요 / 왜 이 조항인가요?"와 위치가 충돌하지 않는다.
+ */
+.document-clause__remove-rail {
   position: absolute;
 
-  top: 11px;
+  left: 50%;
 
-  right: 8px;
+  bottom: -11px;
 
   display: flex;
 
@@ -187,19 +193,19 @@
 
   justify-content: center;
 
-  width: 28px;
+  width: 118px;
 
-  height: 28px;
+  height: 24px;
 
   padding: 0;
 
-  color: #9ba49f;
+  color: #9aa49f;
 
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.98);
 
-  border: 1px solid #e0e7e3;
+  border: 1px solid #dfe6e2;
 
-  border-radius: 50%;
+  border-radius: 999px;
 
   opacity: 0;
 
@@ -207,72 +213,83 @@
 
   cursor: pointer;
 
+  transform: translate(-50%, 4px);
+
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease,
+    background 0.16s ease,
+    box-shadow 0.16s ease;
+
+  z-index: 12;
+}
+
+.document-clause__remove-rail span {
+  display: block;
+
+  margin-top: -2px;
+
   font-family: Arial, sans-serif;
 
-  font-size: 19px;
+  font-size: 18px;
 
   font-weight: 400;
 
   line-height: 1;
-
-  transform: translateY(-4px);
-
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease,
-    color 0.15s ease,
-    border-color 0.15s ease,
-    background 0.15s ease,
-    box-shadow 0.15s ease;
-
-  z-index: 10;
 }
 
-.document-clause--generated:hover .document-clause__remove-hover {
-  opacity: 1;
+.document-clause--generated:not(.is-draft):hover
+.document-clause__remove-rail {
+  opacity: 0.72;
 
   pointer-events: auto;
 
-  transform: translateY(0);
+  transform: translate(-50%, 0);
 }
 
-.document-clause__remove-hover:focus-visible {
-  opacity: 1;
+.document-clause__remove-rail:hover:not(:disabled) {
+  color: #9f4f49;
 
-  pointer-events: auto;
+  background: #fff9f8;
 
-  transform: translateY(0);
+  border-color: #d9b2ae;
 
-  outline: 2px solid rgba(60, 142, 111, 0.25);
-
-  outline-offset: 2px;
-}
-
-.document-clause__remove-hover:hover:not(:disabled) {
-  color: #a6534c;
-
-  background: #fff8f7;
-
-  border-color: #dcb7b3;
+  opacity: 1 !important;
 
   box-shadow: 0 3px 10px rgba(125, 61, 55, 0.08);
 }
 
-.document-clause__remove-hover:disabled {
+.document-clause__remove-rail:focus-visible {
+  opacity: 1;
+
+  pointer-events: auto;
+
+  transform: translate(-50%, 0);
+
+  outline: 2px solid rgba(159, 79, 73, 0.18);
+
+  outline-offset: 2px;
+}
+
+.document-clause__remove-rail:disabled {
   display: none;
 }
 
-/*
- * 모바일/터치 환경에서는 hover가 없기 때문에
- * 너무 강하지 않게 항상 노출.
- */
+/* Draft에는 삭제 핸들이 필요 없다. */
+.document-clause--generated.is-draft
+.document-clause__remove-rail {
+  display: none;
+}
+
 @media (hover: none) {
-  .document-clause__remove-hover {
-    opacity: 0.55;
+  .document-clause__remove-rail {
+    opacity: 0.45;
 
     pointer-events: auto;
 
-    transform: none;
+    transform: translate(-50%, 0);
   }
 }
 
@@ -289,7 +306,15 @@
 
   font-size: 15px;
 
+  /*
+   * 일반 조항 본문과 동일하게 명조체를 유지하면서
+   * 얇게 보이는 문제만 보정.
+   */
+  font-weight: 500;
+
   line-height: 2.15;
+
+  letter-spacing: -0.005em;
 
   word-break: keep-all;
 }
@@ -468,11 +493,6 @@
   box-sizing: border-box;
 }
 
-/* Draft에서는 삭제 X가 나오면 안 됨 */
-.document-clause--generated.is-draft .document-clause__remove-hover {
-  display: none;
-}
-
 /* =========================================================
    AGENT WRITING
 ========================================================= */
@@ -606,6 +626,23 @@
     opacity: 0.25;
   }
 }
+
+/* =========================================================
+   TYPEWRITER
+========================================================= */
+
+.document-typewriter {
+  white-space: pre-wrap;
+}
+
+.document-typewriter-text {
+  white-space: pre-wrap;
+}
+
+
+/* =========================================================
+   WRITING CARET PREP
+========================================================= */
 
 /* =========================================================
    WRITING CARET
@@ -770,5 +807,52 @@
     align-items: flex-start;
 
     flex-direction: column;
+  }
+}
+
+
+/* =========================================================
+   HEADER CONTROL ALIGNMENT
+========================================================= */
+
+.document-clause__generated-head .document-draft-badge {
+  align-self: center;
+
+  margin-top: 0;
+}
+
+.document-clause__generated-head
+.document-clause__complete-button,
+
+.document-clause__generated-head
+.document-clause__evidence-button {
+  align-self: center;
+}
+
+/*
+ * 삭제 핸들이 하단에 살짝 걸치므로 적용된 조항에만
+ * 아주 작은 하단 여유를 둔다.
+ */
+.document-clause--generated:not(.is-draft) {
+  padding-bottom: max(26px, calc(1em + 18px));
+}
+
+@media (max-width: 820px) {
+  .document-clause__generated-head {
+    display: flex;
+
+    align-items: flex-start;
+
+    padding-right: 0;
+  }
+
+  .document-clause__tools {
+    justify-content: flex-end;
+
+    margin-top: 0;
+  }
+
+  .document-clause__remove-rail {
+    width: 94px;
   }
 }

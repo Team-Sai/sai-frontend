@@ -11,7 +11,16 @@
 
   font-family: "Noto Serif KR", "Nanum Myeongjo", serif;
 
-  font-size: 10px;
+  /*
+   * 본문과 같은 명조 계열을 유지하되 값 영역이 너무 가늘어 보이지 않게.
+   */
+  font-weight: 500;
+
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  -webkit-font-smoothing: auto;
+
+  font-size: 11px;
 }
 
 .parties th,

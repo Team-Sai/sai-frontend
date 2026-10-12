@@ -20,6 +20,14 @@
   box-shadow: 0 5px 20px rgba(15, 23, 42, 0.035);
 
   font-family: "Noto Serif KR", "Nanum Myeongjo", serif;
+
+  /*
+   * 기존 명조 계열 느낌은 유지하되
+   * 한글 획이 너무 가늘고 거칠게 보이지 않도록 렌더링을 안정화한다.
+   */
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  -webkit-font-smoothing: auto;
 }
 
 /* =========================================================
@@ -159,7 +167,7 @@
 
   color: #132035;
 
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 800;
 
   line-height: 1.55;
@@ -168,7 +176,7 @@
 .document-clause h2 span {
   margin-left: 4px;
 
-  font-size: 15px;
+  font-size: 18px;
 }
 
 /*
@@ -182,9 +190,18 @@
 
   color: #303a48;
 
-  font-size: 15px;
+  font-size: 17px;
 
-  line-height: 2.15;
+  /*
+   * 브라우저 100% 배율에서도 기존 120% 배율에서 보이던
+   * 명조체의 안정적인 획 두께와 크기에 가깝게 보이도록 한다.
+   * 폰트 자체는 바꾸지 않는다.
+   */
+  font-weight: 500;
+
+  line-height: 2.05;
+
+  letter-spacing: -0.004em;
 
   word-break: keep-all;
 
@@ -238,7 +255,7 @@
 
   font-family: "Noto Serif KR", "Nanum Myeongjo", serif !important;
 
-  font-size: 15px !important;
+  font-size: 17px !important;
 
   font-weight: 700 !important;
 
@@ -319,7 +336,7 @@
 
   font-family: "Noto Serif KR", "Nanum Myeongjo", serif !important;
 
-  font-size: 13px !important;
+  font-size: 15px !important;
 
   font-weight: 700 !important;
 }
@@ -626,7 +643,7 @@
 
   .document-clause > p,
   .smart-clause-sentence {
-    font-size: 13px;
+    font-size: 14px;
 
     line-height: 2;
   }

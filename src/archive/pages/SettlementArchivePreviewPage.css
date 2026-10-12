@@ -1,72 +1,986 @@
+/* =========================================================
+   공통 Preview Page
+========================================================= */
+
 .preview-page {
-  max-width: 900px;
+  box-sizing: border-box;
+
+  width: min(
+    1440px,
+    calc(100% - 80px)
+  );
+
+  max-width: none;
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
+
+  /*
+   * 정산 PDFViewer가 height="100%"를 사용하므로
+   * 부모 높이를 명시적으로 잡아준다.
+   */
   height: calc(100vh - 48px);
+  min-height: 720px;
+
+  margin: 0 auto;
+
+  padding:
+    28px 0
+    28px;
 }
+
+
+/* =========================================================
+   Toolbar
+========================================================= */
 
 .preview-toolbar {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
-  margin-bottom: 16px;
+
+  gap: 16px;
+
+  margin-bottom: 20px;
 }
+
 
 .preview-toolbar .btn {
   min-height: 40px;
+
   padding: 0 20px;
-  border-radius: var(--radius-md);
+
+  border:
+    1.5px solid
+    transparent;
+
+  border-radius:
+    var(--radius-md);
+
   font-size: 13px;
+
   font-weight: 700;
+
   cursor: pointer;
-  border: 1.5px solid transparent;
-  transition: opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
+
 
 .preview-toolbar .btn--ghost {
-  background: var(--surface);
-  border-color: var(--line);
-  color: var(--muted);
+  background:
+    var(--surface);
+
+  border-color:
+    var(--line);
+
+  color:
+    var(--muted);
 }
+
 
 .preview-toolbar .btn--ghost:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color:
+    var(--primary);
+
+  color:
+    var(--primary);
 }
+
 
 .preview-toolbar .btn--primary {
-  background: var(--primary);
-  color: #ffffff;
+  background:
+    var(--primary);
+
+  color:
+    #ffffff;
 }
+
 
 .preview-toolbar .btn--primary:hover:not(:disabled) {
-  opacity: 0.9;
+  opacity:
+    0.9;
 }
+
 
 .preview-toolbar .btn--primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  opacity:
+    0.5;
+
+  cursor:
+    not-allowed;
 }
+
+
+/* =========================================================
+   Status
+========================================================= */
 
 .preview-status {
-  background: var(--surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
-  padding: 24px;
-  color: var(--muted);
-  font-size: 13px;
+  box-sizing:
+    border-box;
+
+  width:
+    100%;
+
+  padding:
+    24px;
+
+  border-radius:
+    var(--radius-md);
+
+  background:
+    var(--surface);
+
+  box-shadow:
+    var(--shadow-card);
+
+  color:
+    var(--muted);
+
+  font-size:
+    13px;
 }
+
+
+/* =========================================================
+   기존 PDF Viewer
+   정산 Archive에서 사용
+========================================================= */
 
 .pdf-preview {
-  flex: 1;
-  min-height: 480px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
+  flex:
+    1 1 auto;
+
+  width:
+    100%;
+
+  min-height:
+    0;
+
+  border-radius:
+    var(--radius-md);
+
+  overflow:
+    hidden;
+
+  background:
+    #262626;
+
+  box-shadow:
+    var(--shadow-card);
 }
 
-@media (max-width: 620px) {
+
+/*
+ * @react-pdf/renderer PDFViewer는 내부적으로 iframe을 만든다.
+ * 부모의 전체 높이를 그대로 사용하게 강제한다.
+ */
+.pdf-preview > iframe {
+  display:
+    block;
+
+  width:
+    100% !important;
+
+  height:
+    100% !important;
+
+  min-height:
+    0;
+
+  border:
+    0;
+}
+
+
+/* =========================================================
+   차용증 Archive
+========================================================= */
+
+.archive-contract-preview {
+  /*
+   * 차용증 상세는 PDFViewer가 아니라 HTML 문서이므로
+   * 공통 preview-page의 고정 높이를 해제한다.
+   */
+  height:
+    auto;
+
+  min-height:
+    0;
+}
+
+
+/*
+ * ContractDocument
+ * +
+ * PartiesInfo
+ * +
+ * 전자서명
+ * +
+ * 수취 계좌
+ *
+ * 를 하나의 계약서 Sheet로 묶는다.
+ */
+
+.archive-contract-sheet {
+  box-sizing:
+    border-box;
+
+  width:
+    min(
+      1180px,
+      100%
+    );
+
+  min-width:
+    0;
+
+  margin:
+    0 auto;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid
+    #d8e0ea;
+
+  border-radius:
+    10px;
+
+  background:
+    #ffffff;
+
+  box-shadow:
+    0 8px 26px
+    rgba(
+      22,
+      42,
+      66,
+      0.05
+    );
+}
+
+
+/* =========================================================
+   ContractDocument
+========================================================= */
+
+.archive-contract-sheet__body {
+  box-sizing:
+    border-box;
+
+  width:
+    100%;
+
+  min-width:
+    0;
+}
+
+
+/*
+ * ContractDocument는 작성 화면에서
+ * 자체 .contract-paper를 가지고 있다.
+ *
+ * Archive에서는 바깥
+ * .archive-contract-sheet가
+ * 전체 계약서 종이 역할을 하므로
+ * 내부 테두리만 제거한다.
+ */
+
+.archive-contract-sheet__body
+.contract-paper {
+  box-sizing:
+    border-box;
+
+  width:
+    100%;
+
+  max-width:
+    none;
+
+  min-width:
+    0;
+
+  margin:
+    0;
+
+  border:
+    0;
+
+  border-radius:
+    0;
+
+  box-shadow:
+    none;
+
+  background:
+    transparent;
+}
+
+
+/*
+ * 기존 작성 화면 패딩/본문 폭은 최대한 유지.
+ */
+
+.archive-contract-sheet__body
+.contract-paper__header,
+
+.archive-contract-sheet__body
+.document-clause {
+  box-sizing:
+    border-box;
+}
+
+
+/* =========================================================
+   Read Only
+========================================================= */
+
+.archive-contract-sheet
+.document-clause__remove-hover,
+
+.archive-contract-sheet
+.document-clause__remove-rail,
+
+.archive-contract-sheet
+.document-clause__complete-button,
+
+.archive-contract-sheet
+.document-clause__evidence-button,
+
+.archive-contract-sheet
+.document-clause__slot-notice,
+
+.archive-contract-sheet
+.document-draft-badge,
+
+.archive-contract-sheet
+.document-pending {
+  display:
+    none !important;
+}
+
+
+/* =========================================================
+   PartiesInfo
+========================================================= */
+
+.archive-contract-sheet__parties {
+  box-sizing:
+    border-box;
+
+  width:
+    100%;
+
+  min-width:
+    0;
+
+  padding:
+    0 48px
+    38px;
+
+  background:
+    #ffffff;
+}
+
+
+/*
+ * 기타사항 직후 같은 계약서 안에서
+ * 자연스럽게 이어지도록 한다.
+ */
+
+.archive-contract-sheet__parties
+.doc__closing {
+  box-sizing:
+    border-box;
+
+  width:
+    100%;
+
+  margin:
+    0;
+
+  padding:
+    26px 0
+    14px;
+
+  border-top:
+    1px solid
+    #dfe5ec;
+
+  color:
+    #25364c;
+
+  font-size:
+    16px;
+
+  line-height:
+    1.75;
+
+  word-break:
+    keep-all;
+}
+
+
+/* =========================================================
+   Parties Table
+========================================================= */
+
+.archive-contract-sheet__parties
+.parties {
+  box-sizing:
+    border-box;
+
+  width:
+    100%;
+
+  max-width:
+    none;
+
+  min-width:
+    0;
+
+  margin:
+    0;
+
+  table-layout:
+    fixed;
+
+  border-collapse:
+    collapse;
+
+  border-top:
+    2px solid
+    #2a3c55;
+
+  border-bottom:
+    2px solid
+    #2a3c55;
+
+  background:
+    #ffffff;
+}
+
+
+.archive-contract-sheet__parties
+.parties th,
+
+.archive-contract-sheet__parties
+.parties td {
+  box-sizing:
+    border-box;
+
+  min-width:
+    0;
+
+  padding:
+    12px 13px;
+
+  border:
+    1px solid
+    #dbe2ea;
+
+  vertical-align:
+    middle;
+}
+
+
+.archive-contract-sheet__parties
+.parties__role {
+  background:
+    #f7f9fb;
+
+  color:
+    #27384e;
+
+  text-align:
+    center;
+
+  font-size:
+    13px;
+
+  font-weight:
+    800;
+}
+
+
+.archive-contract-sheet__parties
+.parties__label {
+  background:
+    #fafbfd;
+
+  color:
+    #788397;
+
+  text-align:
+    center;
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.08em;
+}
+
+
+.archive-contract-sheet__parties
+.parties__value {
+  min-width:
+    0;
+
+  overflow-wrap:
+    anywhere;
+
+  color:
+    #233247;
+
+  font-size:
+    13px;
+}
+
+
+.archive-contract-sheet__parties
+.doc__readonly {
+  display:
+    block;
+
+  min-width:
+    0;
+
+  overflow-wrap:
+    anywhere;
+
+  color:
+    #17283f;
+
+  font-size:
+    13px;
+
+  font-weight:
+    700;
+}
+
+
+.archive-contract-sheet__parties
+.doc__hint {
+  margin:
+    12px 0
+    0;
+
+  color:
+    #788391;
+
+  font-size:
+    12px;
+
+  line-height:
+    1.6;
+}
+
+
+/* =========================================================
+   전자서명
+========================================================= */
+
+.archive-contract-signatures {
+  box-sizing:
+    border-box;
+
+  width:
+    calc(
+      100% - 96px
+    );
+
+  margin:
+    0 48px;
+
+  padding:
+    28px 0
+    36px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap:
+    32px;
+
+  border-top:
+    1px solid
+    #dfe5ec;
+}
+
+
+.archive-contract-signatures__item {
+  min-width:
+    0;
+
+  min-height:
+    120px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    10px;
+}
+
+
+.archive-contract-signatures__item span {
+  color:
+    #7a8697;
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+}
+
+
+.archive-contract-signatures__item strong {
+  color:
+    #1f3046;
+
+  font-size:
+    14px;
+}
+
+
+.archive-contract-signatures__item img {
+  display:
+    block;
+
+  max-width:
+    180px;
+
+  max-height:
+    82px;
+
+  object-fit:
+    contain;
+}
+
+
+/* =========================================================
+   수취 계좌
+========================================================= */
+
+.archive-contract-account {
+  box-sizing:
+    border-box;
+
+  width:
+    calc(
+      100% - 96px
+    );
+
+  margin:
+    0 48px
+    38px;
+
+  padding:
+    16px 18px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    14px;
+
+  border:
+    1px solid
+    #e1e8e4;
+
+  border-radius:
+    6px;
+
+  background:
+    #f8fbf9;
+}
+
+
+.archive-contract-account > span {
+  flex:
+    0 0 auto;
+
+  color:
+    #78877e;
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+}
+
+
+.archive-contract-account > strong {
+  min-width:
+    0;
+
+  color:
+    #18372d;
+
+  font-size:
+    14px;
+
+  font-weight:
+    800;
+}
+
+
+.archive-contract-account > small {
+  margin-left:
+    auto;
+
+  color:
+    #6e7d74;
+
+  font-size:
+    12px;
+}
+
+
+/* =========================================================
+   Disclaimer
+========================================================= */
+
+.archive-contract-disclaimer {
+  box-sizing:
+    border-box;
+
+  width:
+    min(
+      1180px,
+      100%
+    );
+
+  margin:
+    18px auto
+    0;
+
+  color:
+    #737d8c;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.7;
+
+  word-break:
+    keep-all;
+}
+
+
+/* =========================================================
+   Tablet
+========================================================= */
+
+@media (
+  max-width:
+    1000px
+) {
   .preview-page {
-    padding: 0 4px;
+    width:
+      calc(
+        100% - 40px
+      );
+  }
+
+
+  .archive-contract-sheet__parties {
+    padding:
+      0 28px
+      32px;
+  }
+
+
+  .archive-contract-signatures {
+    width:
+      calc(
+        100% - 56px
+      );
+
+    margin:
+      0 28px;
+  }
+
+
+  .archive-contract-account {
+    width:
+      calc(
+        100% - 56px
+      );
+
+    margin:
+      0 28px
+      32px;
+  }
+}
+
+
+/* =========================================================
+   Mobile
+========================================================= */
+
+@media (
+  max-width:
+    700px
+) {
+  .preview-page {
+    width:
+      calc(
+        100% - 24px
+      );
+
+    height:
+      calc(
+        100vh - 24px
+      );
+
+    min-height:
+      620px;
+
+    padding:
+      16px 0
+      16px;
+  }
+
+
+  .archive-contract-preview {
+    height:
+      auto;
+
+    min-height:
+      0;
+
+    padding-bottom:
+      56px;
+  }
+
+
+  .preview-toolbar {
+    gap:
+      10px;
+  }
+
+
+  .preview-toolbar .btn {
+    flex:
+      1;
+
+    padding:
+      0 12px;
+  }
+
+
+  .archive-contract-sheet {
+    width:
+      100%;
+  }
+
+
+  .archive-contract-sheet__parties {
+    padding:
+      0 16px
+      24px;
+
+    overflow-x:
+      auto;
+  }
+
+
+  /*
+   * 7열 표는 모바일에서 억지로 찌그러뜨리면
+   * 읽기 어려우므로 내부 가로 스크롤을 허용한다.
+   */
+  .archive-contract-sheet__parties
+  .parties {
+    min-width:
+      760px;
+  }
+
+
+  .archive-contract-signatures {
+    width:
+      calc(
+        100% - 32px
+      );
+
+    margin:
+      0 16px;
+
+    grid-template-columns:
+      1fr;
+
+    gap:
+      20px;
+  }
+
+
+  .archive-contract-account {
+    width:
+      calc(
+        100% - 32px
+      );
+
+    margin:
+      0 16px
+      24px;
+
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap:
+      6px;
+  }
+
+
+  .archive-contract-account > small {
+    margin-left:
+      0;
+  }
+
+
+  .archive-contract-disclaimer {
+    width:
+      100%;
   }
 }
