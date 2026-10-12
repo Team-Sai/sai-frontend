@@ -16,19 +16,46 @@ jobs:
 
     steps:
       - name: Check out source code
-        uses: actions/checkout@v6
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Configure AWS credentials with OIDC
-        uses: aws-actions/configure-aws-credentials@v6.3.0
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ap-northeast-2
 
       - name: Log in to Amazon ECR
         id: ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 # v2.0.1
+
+      - name: Check whether image already exists
+        id: image
+        env:
+          ECR_REPOSITORY: sai-frontend
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if aws ecr describe-images \
+            --repository-name "$ECR_REPOSITORY" \
+            --image-ids "imageTag=$IMAGE_TAG" >/dev/null 2>ecr-error.log; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "uri=${{ steps.ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+            echo "Image already exists; skipping immutable-tag push."
+          else
+            status=$?
+            if grep -q 'ImageNotFoundException' ecr-error.log; then
+              echo "exists=false" >> "$GITHUB_OUTPUT"
+              echo "uri=${{ steps.ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+              echo "Image tag does not exist; building and pushing."
+            else
+              cat ecr-error.log >&2
+              exit "$status"
+            fi
+          fi
 
       - name: Build and push image
+        id: push
+        if: steps.image.outputs.exists != 'true'
         env:
           ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
           ECR_REPOSITORY: sai-frontend
@@ -36,3 +63,25 @@ jobs:
         run: |
           docker build -f Dockerfile -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" .
           docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Add image reference to workflow summary
+        if: always()
+        env:
+          IMAGE_URI: ${{ steps.image.outputs.uri }}
+          IMAGE_EXISTS: ${{ steps.image.outputs.exists }}
+          PUSH_OUTCOME: ${{ steps.push.outcome }}
+        run: |
+          if [ "$IMAGE_EXISTS" = "true" ]; then
+            result="이미 존재하여 push를 건너뜀"
+          elif [ "$PUSH_OUTCOME" = "success" ]; then
+            result="빌드 및 push 완료"
+          else
+            result="이미지 push 실패 또는 확인 필요"
+          fi
+          {
+            echo "## Frontend ECR image"
+            echo
+            echo "- 결과: $result"
+            echo "- 이미지: \`$IMAGE_URI\`"
+            echo "- 오버레이 설정: \`kubernetes/overlays/demo\`의 \`newTag\`에 커밋 SHA를 사용"
+          } >> "$GITHUB_STEP_SUMMARY"
