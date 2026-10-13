@@ -1,0 +1,43 @@
+.contract-schedule-page .schedule-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px 18px 20px;
+}
+
+.contract-schedule-page .schedule-pagination button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--gray-350, #d9dee8);
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #151922;
+}
+
+.contract-schedule-page .schedule-pagination button.is-active {
+  background: #0f8a5f;
+  border-color: #0f8a5f;
+  color: #fff;
+}
+
+.contract-schedule-page .local-data-note {
+  margin: 20px 0 0;
+  color: var(--gray-500, #8e99a5);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.contract-schedule-page .panel > .empty-state {
+  padding: 32px 22px;
+  font-size: 13px;
+}
+
+.contract-schedule-page .schedule-sync-info {
+  padding-top: 0;
+}
+
+.contract-schedule-page .participant-avatar-list--pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}

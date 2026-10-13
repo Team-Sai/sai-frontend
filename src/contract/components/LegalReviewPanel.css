@@ -1,0 +1,488 @@
+.legal-review-panel {
+  width: 100%;
+  position: sticky;
+  top: 24px;
+
+  padding: 20px;
+
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.legal-review-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.legal-review-panel__eyebrow {
+  margin-bottom: 4px;
+
+  color: #9097a3;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.legal-review-panel__title {
+  margin: 0;
+
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.legal-review-panel__intro {
+  margin: 8px 0 16px;
+
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.legal-review-panel__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  flex-shrink: 0;
+
+  padding: 5px 8px;
+
+  color: var(--primary);
+  background: #eef9f5;
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.legal-review-panel__status-dot {
+  width: 6px;
+  height: 6px;
+
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+.legal-review-panel__status--loading
+  .legal-review-panel__status-dot {
+  animation: legal-review-pulse
+    1s ease-in-out infinite;
+}
+
+.legal-review-summary {
+  padding: 14px;
+
+  background: #f8faf9;
+  border: 1px solid #e2e8e5;
+  border-radius: 7px;
+}
+
+.legal-review-summary__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.legal-review-summary__top strong {
+  color: var(--text);
+  font-size: 10px;
+}
+
+.legal-review-summary__message {
+  margin: 9px 0 0;
+
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.55;
+  font-weight: 800;
+}
+
+.legal-review-summary__description {
+  margin: 5px 0 0;
+
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.legal-review-summary__counts {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  margin-top: 12px;
+
+  background: #ffffff;
+  border: 1px solid #e3e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.legal-review-summary__count {
+  display: grid;
+  grid-template-columns:
+    auto 1fr;
+  align-items: center;
+  column-gap: 5px;
+  row-gap: 1px;
+
+  min-width: 0;
+
+  padding: 7px;
+
+  border-right:
+    1px solid #e3e7eb;
+
+  color: var(--muted);
+  font-size: 8.5px;
+}
+
+.legal-review-summary__count:last-child {
+  border-right: none;
+}
+
+.legal-review-summary__count strong {
+  grid-column: 2;
+
+  color: var(--text);
+  font-size: 11px;
+}
+
+.legal-review-summary__dot {
+  grid-row: 1 / span 2;
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+}
+
+.legal-review-summary__dot--pass {
+  background: #0f8a5f;
+}
+
+.legal-review-summary__dot--warning {
+  background: #d78d00;
+}
+
+.legal-review-summary__dot--review {
+  background: #d6a536;
+}
+
+.legal-review-summary__dot--error {
+  background: #d94c4c;
+}
+
+.legal-review-panel__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  margin-top: 12px;
+}
+
+.legal-review-card {
+  padding: 13px;
+
+  background: #ffffff;
+  border: 1px solid #e0e4e9;
+  border-radius: 7px;
+}
+
+.legal-review-card--pass {
+  background: #f7fcfa;
+  border-color: #cce7dc;
+}
+
+.legal-review-card--warning,
+.legal-review-card--review {
+  background: #fffaf0;
+  border-color: #edd9a7;
+}
+
+.legal-review-card--error {
+  background: #fff7f7;
+  border-color: #efc9c9;
+}
+
+.legal-review-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.legal-review-card__title-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+
+  min-width: 0;
+}
+
+.legal-review-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+
+  border: 1px solid currentColor;
+  border-radius: 50%;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.legal-review-card__icon--pass {
+  color: #0f8a5f;
+}
+
+.legal-review-card__icon--warning,
+.legal-review-card__icon--review {
+  color: #c37c00;
+}
+
+.legal-review-card__icon--error {
+  color: #d94c4c;
+}
+
+.legal-review-card__title {
+  margin: 0;
+
+  color: #272b31;
+  font-size: 11px;
+  line-height: 1.55;
+  font-weight: 800;
+}
+
+.legal-review-card__badge {
+  flex-shrink: 0;
+
+  padding: 3px 6px;
+
+  border-radius: 4px;
+
+  font-size: 8px;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.legal-review-card__badge--pass {
+  color: #0f8a5f;
+  background: #e9f7f1;
+}
+
+.legal-review-card__badge--warning,
+.legal-review-card__badge--review {
+  color: #a96c00;
+  background: #fff0c9;
+}
+
+.legal-review-card__badge--error {
+  color: #c33c3c;
+  background: #fde8e8;
+}
+
+.legal-review-card__summary {
+  margin: 8px 0 0;
+
+  color: #343942;
+  font-size: 10px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.legal-review-card__detail {
+  margin: 5px 0 0;
+
+  color: var(--muted);
+  font-size: 9.5px;
+  line-height: 1.7;
+}
+
+.legal-review-card__section {
+  margin-top: 10px;
+  padding-top: 9px;
+
+  border-top:
+    1px solid rgba(105, 112, 128, 0.14);
+}
+
+.legal-review-card__section-title {
+  margin-bottom: 6px;
+
+  color: var(--muted);
+  font-size: 8.5px;
+  font-weight: 800;
+}
+
+.legal-review-card__reference-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.legal-review-card__reference {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  padding: 6px 7px;
+
+  background:
+    rgba(255, 255, 255, 0.78);
+
+  border: 1px solid #e0e4e9;
+  border-radius: 5px;
+}
+
+.legal-review-card__reference strong {
+  color: #373c45;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.legal-review-card__reference span {
+  color: #7d8490;
+  font-size: 8.5px;
+}
+
+.legal-review-card__suggestion {
+  margin: 0;
+
+  color: #454b55;
+  font-size: 9.5px;
+  line-height: 1.65;
+}
+
+.legal-review-panel__empty,
+.legal-review-panel__loading,
+.legal-review-panel__error {
+  padding: 20px 14px;
+
+  background: #fafbfc;
+  border: 1px dashed #d9dee8;
+  border-radius: 7px;
+
+  text-align: center;
+}
+
+.legal-review-panel__empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 9px;
+
+  color: var(--primary);
+  background: #eaf8f3;
+  border-radius: 50%;
+
+  font-weight: 800;
+}
+
+.legal-review-panel__empty strong,
+.legal-review-panel__loading strong,
+.legal-review-panel__error strong {
+  color: #353a42;
+  font-size: 11px;
+}
+
+.legal-review-panel__empty p,
+.legal-review-panel__loading p,
+.legal-review-panel__error p {
+  margin: 5px 0 0;
+
+  color: #7b838f;
+  font-size: 9.5px;
+  line-height: 1.6;
+}
+
+.legal-review-panel__loading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  text-align: left;
+}
+
+.legal-review-panel__spinner {
+  width: 22px;
+  height: 22px;
+
+  flex-shrink: 0;
+
+  border: 2px solid #dde5e1;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+
+  animation:
+    legal-review-spin
+    0.8s linear infinite;
+}
+
+.legal-review-panel__error button {
+  margin-top: 10px;
+}
+
+.legal-review-panel__disclaimer {
+  margin: 13px 0 0;
+  padding-top: 11px;
+
+  color: #8b929d;
+  border-top: 1px solid #eaedf1;
+
+  font-size: 8.5px;
+  line-height: 1.6;
+}
+
+@keyframes legal-review-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes legal-review-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (max-width: 1100px) {
+  .legal-review-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .legal-review-summary__counts {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .legal-review-summary__count:nth-child(2) {
+    border-right: none;
+  }
+
+  .legal-review-summary__count:nth-child(-n + 2) {
+    border-bottom:
+      1px solid #e3e7eb;
+  }
+}

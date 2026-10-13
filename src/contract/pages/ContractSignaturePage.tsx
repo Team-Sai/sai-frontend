@@ -1,0 +1,162 @@
+import { useEffect, useState } from "react";
+
+import { useNavigate } from "react-router-dom";
+
+import "../shared.css";
+import "../components/ContractDocument.css";
+
+import Stepper from "../components/Stepper";
+
+import SignatureAndSubmit from "../components/SignatureAndSubmit";
+
+import { createContract, submitCreditorSignature } from "../api/contractApi";
+
+import {
+  LOAN_CONTRACT_DRAFT_KEY,
+  LOAN_CONTRACT_EDITOR_KEY,
+  type LoanContractDraft,
+} from "../types/contract";
+
+export default function ContractSignaturePage() {
+  const navigate = useNavigate();
+
+  const [draft] = useState<LoanContractDraft | null>(() => {
+    try {
+      const raw = sessionStorage.getItem(LOAN_CONTRACT_DRAFT_KEY);
+
+      return raw ? (JSON.parse(raw) as LoanContractDraft) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [debtorUserToken, setDebtorUserToken] = useState("");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const [isError, setIsError] = useState(false);
+
+  const [createdContractId, setCreatedContractId] = useState<number | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (!draft) {
+      alert("작성 중인 차용증 정보가 없습니다. 처음부터 다시 시도해 주세요.");
+
+      navigate("/contracts/new", {
+        replace: true,
+      });
+
+      return;
+    }
+
+    if (!sessionStorage.getItem("identityVerificationId")) {
+      navigate(
+        `/identity-test?returnTo=${encodeURIComponent("/contracts/signature")}`,
+        {
+          replace: true,
+        },
+      );
+    }
+  }, [draft, navigate]);
+
+  /*
+   * 작성 화면으로 돌아감.
+   *
+   * Editor state를 삭제하지 않으므로
+   * 원금 / 날짜 / 계좌 / AI 조항 등이
+   * 그대로 복구된다.
+   */
+  function handleCancel() {
+    navigate("/contracts/new");
+  }
+
+  async function handleSubmit(signature: Blob) {
+    if (!draft) {
+      return;
+    }
+
+    const identityVerificationId = sessionStorage.getItem(
+      "identityVerificationId",
+    );
+
+    if (!identityVerificationId) {
+      navigate(
+        `/identity-test?returnTo=${encodeURIComponent("/contracts/signature")}`,
+        {
+          replace: true,
+        },
+      );
+
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    setIsError(false);
+
+    setStatusMessage("차용증을 전송하는 중입니다...");
+
+    try {
+      let contractId = createdContractId;
+
+      if (contractId == null) {
+        contractId = await createContract(draft, identityVerificationId);
+
+        setCreatedContractId(contractId);
+
+        sessionStorage.removeItem("identityVerificationId");
+      }
+
+      await submitCreditorSignature(
+        contractId,
+        debtorUserToken.trim(),
+        signature,
+      );
+
+      /*
+       * 계약 생성 + 서명 전송까지
+       * 정상 완료됐을 때만
+       * 임시 Draft 삭제.
+       */
+      sessionStorage.removeItem(LOAN_CONTRACT_DRAFT_KEY);
+
+      sessionStorage.removeItem(LOAN_CONTRACT_EDITOR_KEY);
+
+      navigate(`/contracts/complete?contractId=${contractId}`);
+    } catch (error) {
+      setIsError(true);
+
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : "차용증 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  if (!draft) {
+    return null;
+  }
+
+  return (
+    <div className="page">
+      <Stepper currentStep={3} />
+
+      <SignatureAndSubmit
+        debtorUserToken={debtorUserToken}
+        onDebtorUserTokenChange={setDebtorUserToken}
+        isSubmitting={isSubmitting}
+        statusMessage={statusMessage}
+        isError={isError}
+        onCancel={handleCancel}
+        onSubmit={handleSubmit}
+      />
+    </div>
+  );
+}

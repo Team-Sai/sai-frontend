@@ -1,0 +1,150 @@
+.relation-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 19, 23, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+}
+
+.relation-modal {
+  width: 480px;
+  max-width: 100%;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--surface, #ffffff);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow-card, 0 20px 25px rgba(0, 0, 0, 0.08));
+}
+
+.relation-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--line, #d9dee8);
+}
+
+.relation-modal__eyebrow {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary, #0f8a5f);
+}
+
+.relation-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  padding: 4px;
+  font-size: inherit;
+  font-weight: inherit;
+  border: none;
+  border-radius: 9999px;
+  background: rgba(0, 110, 42, 0.08);
+  color: var(--primary, #0f8a5f);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.relation-modal__close:hover {
+  background: rgba(0, 110, 42, 0.16);
+}
+
+.relation-modal__close:active {
+  transform: none;
+}
+
+.relation-modal__body {
+  padding: 24px;
+}
+
+.relation-modal__intro {
+  text-align: center;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px dashed var(--line, #d9dee8);
+}
+
+.relation-modal__question {
+  margin: 0 0 8px;
+  font-size: 22px;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--text, #17191d);
+}
+
+.relation-modal__desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 500;
+  color: var(--muted, #697080);
+}
+
+.relation-modal__footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--line, #d9dee8);
+}
+
+.relation-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.relation-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 28px;
+  border: 1.5px solid var(--line, #d9dee8);
+  border-radius: var(--radius-md, 8px);
+  background: var(--page, #f7f8fb);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+  font-family: inherit;
+}
+
+.relation-option:hover {
+  border-color: var(--primary, #0f8a5f);
+  background: rgba(0, 200, 83, 0.06);
+}
+
+.relation-option:active {
+  transform: scale(0.99);
+}
+
+.relation-option[aria-checked='true'] {
+  border-color: var(--primary, #0f8a5f);
+  background: rgba(0, 110, 42, 0.06);
+  box-shadow: none;
+  outline: none;
+}
+
+.relation-option__label {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text, #17191d);
+}
+
+.relation-option__detail {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted, #697080);
+}
+
+@media (max-width: 520px) {
+  .relation-modal {
+    width: 100%;
+    border-radius: var(--radius-md, 8px);
+  }
+
+  .relation-modal__question {
+    font-size: 19px;
+  }
+}

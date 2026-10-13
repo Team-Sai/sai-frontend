@@ -1,0 +1,184 @@
+.smart-clause-field {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 4px;
+
+  margin: 0 4px;
+
+  vertical-align: middle;
+
+  font-family: var(--font-ui);
+}
+
+.smart-clause-field input {
+  box-sizing: border-box;
+
+  height: 32px;
+
+  color: #20344f;
+  background: #f5f8fb;
+
+  border: 1px solid #9fb0c2;
+
+  border-radius: 5px;
+
+  outline: none;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  text-align: center;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.smart-clause-field input:focus {
+  background: #ffffff;
+
+  border-color: #456988;
+
+  box-shadow: 0 0 0 3px rgba(69, 105, 136, 0.09);
+}
+
+.smart-clause-field input.has-error {
+  color: #9a5426;
+
+  background: #fff8ef;
+
+  border-color: #d29555;
+}
+
+.smart-clause-field--number input {
+  width: 72px;
+
+  appearance: textfield;
+}
+
+.smart-clause-field--number input::-webkit-inner-spin-button,
+.smart-clause-field--number input::-webkit-outer-spin-button {
+  appearance: none;
+}
+
+.smart-clause-field--text input {
+  width: 190px;
+
+  padding: 0 9px;
+
+  text-align: left;
+}
+
+.smart-clause-field input[type="date"] {
+  width: 145px;
+
+  padding: 0 7px;
+}
+
+.smart-clause-field > b {
+  color: #4c5969;
+
+  font-size: 10px;
+}
+
+.smart-clause-field__step {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: 27px;
+
+  height: 27px;
+
+  padding: 0;
+
+  color: #435d79;
+
+  background: #edf2f6;
+
+  border: 1px solid #d3dce5;
+
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  font-size: 15px;
+
+  line-height: 1;
+}
+
+.smart-clause-field__step:hover:not(:disabled) {
+  background: #e3eaf1;
+}
+
+.smart-clause-field__step:disabled {
+  opacity: 0.32;
+
+  cursor: default;
+}
+
+.smart-clause-field__label {
+  position: absolute;
+
+  top: calc(100% + 4px);
+
+  left: 50%;
+
+  min-width: max-content;
+
+  color: #788493;
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  transform: translateX(-50%);
+}
+
+.smart-clause-field__hint {
+  position: absolute;
+
+  z-index: 30;
+
+  top: calc(100% + 19px);
+
+  left: 50%;
+
+  min-width: 190px;
+
+  padding: 6px 8px;
+
+  color: #815224;
+
+  background: #fff8eb;
+
+  border: 1px solid #e4c48e;
+
+  border-radius: 4px;
+
+  box-shadow: 0 4px 12px rgba(40, 45, 55, 0.08);
+
+  font-size: 8px;
+
+  line-height: 1.45;
+
+  transform: translateX(-50%);
+}
+
+/*
+ * 조항 문장 안에서 필드 아래 라벨이
+ * 다음 줄과 겹치지 않도록
+ * Smart Field가 있는 문단은 약간 여유를 둔다.
+ */
+.contract-clause-with-slots {
+  padding-bottom: 24px;
+}

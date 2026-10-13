@@ -1,0 +1,453 @@
+/* =========================================================
+   CONTRACT FORM PAGE
+========================================================= */
+
+/*
+ * shared.css의 .page 등에 max-width가 잡혀 있어도
+ * 계약 작성 화면만은 넓게 사용한다.
+ */
+.page.contract-form-page {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  margin: 0 !important;
+
+  padding: 30px 36px 70px !important;
+
+  background: #f4f7fa;
+
+  /*
+   * sticky가 깨지지 않게
+   * 여기에는 overflow hidden/auto를 두지 않는다.
+   */
+  overflow: visible !important;
+}
+
+/* =========================================================
+   공통 폭
+========================================================= */
+
+.contract-form-stage,
+.contract-page-alert,
+.contract-workspace {
+  width: 100%;
+
+  /*
+   * 화면 전체를 다 쓰지는 않되
+   * 데스크톱에서 계약서가 충분히 넓어지게.
+   */
+  max-width: 1440px;
+
+  box-sizing: border-box;
+
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* =========================================================
+   STEPPER
+========================================================= */
+
+.contract-form-stage {
+  margin-bottom: 24px;
+}
+
+/*
+ * Stepper 내부에서 자체 max-width를 갖고 있어도
+ * 작성 화면에서는 부모 폭에 맞춘다.
+ */
+.contract-form-stage > * {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   PAGE WARNING
+========================================================= */
+
+.contract-page-alert {
+  display: grid;
+
+  grid-template-columns: auto minmax(0, 1fr) auto;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 16px;
+
+  padding: 13px 15px;
+
+  color: #735027;
+
+  background: #fff9ed;
+
+  border: 1px solid #ead6aa;
+
+  border-radius: 7px;
+}
+
+.contract-page-alert__icon {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  color: #ffffff;
+
+  background: #c78536;
+
+  border-radius: 50%;
+
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.contract-page-alert strong {
+  display: block;
+
+  font-size: 12px;
+}
+
+.contract-page-alert p {
+  margin: 3px 0 0;
+
+  color: #866f4d;
+
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.contract-page-alert > span {
+  padding: 4px 7px;
+
+  color: #8b6428;
+
+  background: #fff1d2;
+
+  border-radius: 4px;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   MAIN WORKSPACE
+
+   핵심:
+   계약서 최소 0이 아니라 충분한 폭을 확보.
+========================================================= */
+
+.contract-workspace {
+  display: grid;
+
+  /*
+   * 왼쪽이 우선.
+   *
+   * 1fr + 400px 구조라서
+   * 1440px 기준:
+   *
+   * 계약서 약 1014px
+   * gap 26px
+   * S-AI 400px
+   */
+  grid-template-columns:
+    minmax(760px, 1fr)
+    400px;
+
+  align-items: start;
+
+  gap: 26px;
+
+  overflow: visible;
+}
+
+/* =========================================================
+   LEFT CONTRACT
+========================================================= */
+
+.contract-workspace__main {
+  width: 100%;
+  min-width: 0;
+
+  overflow: visible;
+}
+
+/*
+ * 계약서 자체가 grid column보다
+ * 작게 축소되지 않게.
+ */
+.contract-workspace__main > .contract-paper {
+  width: 100%;
+}
+
+/* =========================================================
+   RIGHT S-AI
+========================================================= */
+
+.contract-workspace__agent {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  align-self: stretch;
+
+  overflow: visible;
+}
+
+/*
+ * Sticky는 이 wrapper 하나만 담당한다.
+ */
+.contract-workspace__agent-sticky {
+  position: sticky;
+
+  top: 18px;
+
+  width: 100%;
+
+  max-height: calc(100vh - 36px);
+
+  z-index: 20;
+}
+
+/*
+ * ClauseAgentPanel.css의 sticky가 남아 있어도
+ * 여기서 강제로 제거.
+ */
+.contract-workspace__agent-sticky .sai-panel {
+  position: relative !important;
+
+  top: auto !important;
+
+  width: 100%;
+
+  height: calc(100vh - 36px);
+
+  min-height: 650px;
+  max-height: calc(100vh - 36px);
+
+  box-sizing: border-box;
+}
+
+/*
+ * 오른쪽 패널 자체는 유지되고,
+ * 내용이 길어지면 내부 body만 스크롤.
+ */
+.contract-workspace__agent-sticky .sai-panel__body {
+  min-height: 0;
+
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+}
+
+.contract-workspace__agent-sticky .sai-composer {
+  flex: 0 0 auto;
+}
+
+/* =========================================================
+   CONTRACT FOOTER
+========================================================= */
+
+.contract-paper-footer {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 34px 58px 44px;
+
+  background: #ffffff;
+
+  border: 1px solid #d9dfe6;
+
+  border-top: 0;
+
+  border-radius: 0 0 8px 8px;
+
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.035);
+}
+
+.contract-paper-footer > p {
+  margin: 0 0 28px;
+
+  color: #7c8794;
+
+  font-family: "Noto Serif KR", "Nanum Myeongjo", serif;
+
+  font-size: 11px;
+
+  line-height: 1.8;
+
+  text-align: center;
+}
+
+/* =========================================================
+   LARGE DESKTOP
+========================================================= */
+
+@media (min-width: 1600px) {
+  .contract-form-stage,
+  .contract-page-alert,
+  .contract-workspace {
+    max-width: 1520px;
+  }
+
+  .contract-workspace {
+    grid-template-columns:
+      minmax(860px, 1fr)
+      420px;
+
+    gap: 30px;
+  }
+}
+
+/* =========================================================
+   MEDIUM DESKTOP
+========================================================= */
+
+@media (max-width: 1280px) {
+  .page.contract-form-page {
+    padding: 24px 24px 55px !important;
+  }
+
+  .contract-workspace {
+    grid-template-columns:
+      minmax(650px, 1fr)
+      360px;
+
+    gap: 20px;
+  }
+}
+
+/* =========================================================
+   화면이 더 좁아지면
+   억지로 계약서를 찌그러뜨리지 않고
+   S-AI를 아래로 내린다.
+========================================================= */
+
+@media (max-width: 1080px) {
+  .contract-workspace {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+  }
+
+  .contract-workspace__main,
+  .contract-workspace__agent {
+    width: 100%;
+  }
+
+  .contract-workspace__agent-sticky {
+    position: static;
+
+    max-height: none;
+  }
+
+  .contract-workspace__agent-sticky .sai-panel {
+    position: static !important;
+
+    height: 780px;
+    min-height: 0;
+    max-height: none;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 680px) {
+  .page.contract-form-page {
+    padding: 12px 10px 32px !important;
+  }
+
+  .contract-form-stage {
+    margin-bottom: 14px;
+  }
+
+  .contract-paper-footer {
+    padding: 26px 20px 30px;
+  }
+}
+/* 채무자 계약 확인 상태 카드 */
+.debtor-status-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  width: 100%;
+  box-sizing: border-box;
+  margin: 20px 0;
+
+  padding: 18px 20px;
+
+  background: #f0faf5;
+  border: 1px solid #ccebdc;
+  border-radius: 12px;
+}
+
+.debtor-status-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 44px;
+  height: 44px;
+
+  color: #008c69;
+  background: #d9f2e5;
+  border-radius: 50%;
+}
+
+.debtor-status-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.debtor-status-card__content strong {
+  display: block;
+  margin-bottom: 5px;
+
+  font-size: 15px;
+  font-weight: 700;
+  color: #145b45;
+}
+
+.debtor-status-card__content p {
+  margin: 0;
+
+  font-size: 13px;
+  line-height: 1.6;
+  color: #527766;
+}
+
+@media (max-width: 640px) {
+  .debtor-status-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .debtor-status-card__icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .debtor-status-card__content strong {
+    font-size: 14px;
+  }
+
+  .debtor-status-card__content p {
+    font-size: 12px;
+  }
+}
