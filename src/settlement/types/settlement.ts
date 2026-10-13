@@ -22,6 +22,7 @@ export interface SettlementListItem {
   startDate?: string | null;
   endDate?: string | null;
   cycleDate?: string | null;
+  recurringSettlementId?: number | null;
 }
 
 export interface SettlementSummary {
@@ -78,6 +79,37 @@ export interface SettlementDetail {
   endDate?: string | null;
   createdAt?: string | null;
   role: SettlementRole;
+  recurringSettlementId?: number | null;
+}
+
+export type CycleRule = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+
+export interface RecurringSettlementCycle {
+  settlementId: number;
+  cycleNo: number;
+  cycleDate?: string | null;
+  settlementStatus: SettlementStatus;
+  closedAt?: string | null;
+  totalExpectedAmount?: number;
+  totalPaidAmount?: number;
+  totalRemainingAmount?: number;
+  paidCount?: number;
+  partiallyPaidCount?: number;
+  unpaidCount?: number;
+  progressRate?: number;
+}
+
+export interface RecurringSettlementCycleList {
+  recurringSettlementId: number;
+  title?: string;
+  settlementCategory?: string;
+  role: SettlementRole;
+  cycleRule?: CycleRule;
+  totalAmount?: number;
+  startDate?: string | null;
+  endDate?: string | null;
+  totalCycleCount?: number;
+  cycles?: RecurringSettlementCycle[];
 }
 
 export interface PaymentObligation {

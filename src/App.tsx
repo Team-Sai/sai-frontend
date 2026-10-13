@@ -40,6 +40,7 @@ import ContractArchivePreviewPage from "./archive/pages/ContractArchivePreviewPa
 import SettlementListPage from "./settlement/pages/SettlementListPage";
 import SettlementCreatePage from "./settlement/pages/SettlementCreatePage";
 import SettlementDetailPage from "./settlement/pages/SettlementDetailPage";
+import RecurringSettlementCyclePage from "./settlement/pages/RecurringSettlementCyclePage";
 import CalendarPage from "./calendar/pages/CalendarPage";
 
 function App() {
@@ -241,6 +242,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SettlementDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settlements/recurring/:recurringSettlementId"
+              element={
+                <ProtectedRoute>
+                  <RecurringSettlementCyclePage />
                 </ProtectedRoute>
               }
             />

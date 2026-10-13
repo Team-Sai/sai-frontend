@@ -1,5 +1,9 @@
 import { authFetch } from "../../auth/authFetch";
-import type { CalendarDayMarker, CalendarItem } from "../types/calendar";
+import type {
+    CalendarDayMarker,
+    CalendarItem,
+    CalendarDateItems,
+} from "../types/calendar";
 
 function isCalendarDayMarker(value: unknown): value is CalendarDayMarker {
     if (typeof value !== 'object' || value === null) {
@@ -49,6 +53,50 @@ function isCalendarItem(value: unknown): value is CalendarItem {
 
 function isCalendarItemList(value: unknown): value is CalendarItem[] {
     return Array.isArray(value) && value.every(isCalendarItem);
+}
+
+function isCalendarDateItems(
+    value: unknown,
+): value is CalendarDateItems {
+    if (typeof value !== "object" || value === null) {
+        return false;
+    }
+
+    const item = value as Record<string, unknown>;
+
+    return (
+        typeof item.date === "string" &&
+        /^\d{4}-\d{2}-\d{2}$/.test(item.date) &&
+        isCalendarItemList(item.items)
+    );
+}
+
+export async function getCalendarMonthDetail(
+    yearMonth: string,
+    signal?: AbortSignal,
+): Promise<CalendarDateItems[]> {
+    const response = await authFetch(
+        `/api/dashboard/calendar?yearMonth=${encodeURIComponent(yearMonth)}`,
+        {
+            method: "GET",
+            headers: { Accept: "application/json" },
+            signal,
+        },
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            `날짜별 금액을 불러오지 못했습니다. (HTTP ${response.status})`,
+        );
+    }
+
+    const data: unknown = await response.json();
+
+    if (!Array.isArray(data) || !data.every(isCalendarDateItems)) {
+        throw new Error("월별 일정 응답 형식이 올바르지 않습니다.");
+    }
+
+    return data;
 }
 
 export async function getMonthCalendarDays(

@@ -1,0 +1,203 @@
+.planner-preference-examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.planner-preference-examples button {
+    padding: 8px 12px;
+    border: 1px solid #cce7dc;
+    border-radius: 10px;
+    background: #f0faf5;
+    color: #087f5b;
+    font: inherit;
+    font-size: 0.85rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.planner-preference-examples button:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.planner-coordination {
+    margin: 16px 0;
+    padding: 16px;
+    border: 1px solid #dcece4;
+    border-radius: 14px;
+    background: #f7fbf9;
+}
+
+.planner-coordination h3 {
+    margin: 0 0 12px;
+    color: #087f5b;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.planner-coordination__facts {
+    display: grid;
+    gap: 10px;
+    margin: 0 0 14px;
+}
+
+.planner-coordination__facts > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.planner-coordination__facts dt {
+    color: #64748b;
+}
+
+.planner-coordination__facts dd {
+    margin: 0;
+    font-weight: 700;
+}
+
+.planner-coordination__request {
+    margin: 12px 0;
+    padding: 12px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.planner-coordination__request p,
+.planner-proposal-reason p {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.planner-proposal-reason {
+    margin-top: 12px;
+}
+
+.planner-proposal-reason strong {
+    color: #087f5b;
+    font-size: 0.9rem;
+}
+
+/* 조율 결과와 안내 문구의 공통 폰트 */
+.preparation-planner--design .planner-coordination,
+.preparation-planner--design .planner-status-text,
+.preparation-planner--design .planner-validation-messages {
+    font-family: var(--font-sans, "Pretendard", sans-serif);
+    font-style: normal;
+    letter-spacing: -0.015em;
+}
+
+/* 박스 바깥의 처리 상태·결과 안내 */
+.preparation-planner--design .planner-status-text {
+    margin: 10px 0;
+    color: #667078;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+/* 조회 사실과 요청 조건 박스 */
+.preparation-planner--design .planner-coordination {
+    padding: 16px;
+    color: #475467;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.65;
+}
+
+/* 확인한 대상과 요청 조건 / 검증된 조율 결과 */
+.preparation-planner--design .planner-coordination h3 {
+    margin: 0 0 12px;
+    color: #0f8a5f;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+/* 미상환 회차·기존 일정·신규 대상 */
+.preparation-planner--design .planner-coordination__facts {
+    gap: 9px;
+    margin: 0 0 12px;
+}
+
+.preparation-planner--design .planner-coordination__facts dt {
+    color: #667078;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.preparation-planner--design .planner-coordination__facts dd {
+    flex-shrink: 0;
+    margin: 0;
+    color: #344054;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+/* 박스 안의 설명 */
+.preparation-planner--design .planner-coordination > p {
+    margin: 8px 0;
+    color: #667078;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+.preparation-planner--design
+.planner-coordination > .planner-coordination__conditions {
+    font-size: 12px;
+}
+
+/* 입력한 조율 요청 */
+.preparation-planner--design .planner-coordination__request {
+    margin: 12px 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.preparation-planner--design .planner-coordination__request strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #0f8a5f;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.preparation-planner--design .planner-coordination__request p {
+    margin: 0;
+    color: #667078;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.75;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+}
+
+/* 박스 바깥의 검증 실패 안내 */
+.preparation-planner--design .planner-validation-messages {
+    margin: 12px 0;
+    padding-left: 18px;
+    color: #667078;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.7;
+    list-style: disc;
+}
+
+.preparation-planner--design .planner-validation-messages li {
+    padding-left: 2px;
+    overflow-wrap: anywhere;
+}
+
+.preparation-planner--design
+.planner-validation-messages li + li {
+    margin-top: 5px;
+}

@@ -1,4 +1,5 @@
 import { authFetch } from '../../auth/authFetch';
+import { notifyRepaymentChanged } from '../../contract/repaymentRefresh';
 import type {
   CreateRecurringSettlementPayload,
   CreateRecurringSettlementResponse,
@@ -7,6 +8,7 @@ import type {
   CurrentUser,
   LinkedSettlementAccount,
   ParticipantLookup,
+  RecurringSettlementCycleList,
   SettlementAccount,
   SettlementDetail,
   SettlementListItem,
@@ -93,6 +95,11 @@ export const settlementApi = {
       `/api/settlements/${id}/payment-status`,
     ),
 
+  recurringCycles: (recurringSettlementId: number) =>
+    requestJson<RecurringSettlementCycleList>(
+      `/api/settlements/recurring/${recurringSettlementId}/cycles`,
+    ),
+
   account: (id: number) =>
     requestOptionalJson<SettlementAccount>(
       `/api/settlements/${id}/account`,
@@ -143,11 +150,16 @@ export const settlementApi = {
       },
     ),
 
-  syncAll: () =>
-    requestJson<SyncResult>(
-      '/api/transactions/sync',
-      {
-        method: 'POST',
-      },
-    ),
+  syncAll: async (): Promise<SyncResult> => {
+    const result = await requestJson<SyncResult>(
+        '/api/transactions/sync',
+        {
+          method: 'POST',
+        },
+    );
+
+    notifyRepaymentChanged();
+
+    return result;
+  },
 };
