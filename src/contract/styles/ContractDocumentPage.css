@@ -1,183 +1,458 @@
+/* =========================================================
+   Page
+========================================================= */
+
 .contract-document-page {
   box-sizing: border-box;
-  width: min(1344px, calc(100% - 96px));
+
+  width: min(1440px, calc(100% - 80px));
+
   min-width: 0;
+
   margin: 0 auto;
+
   padding: 36px 0 96px;
 }
 
+/* =========================================================
+   Page Header
+========================================================= */
+
 .contract-document-heading {
   display: flex;
-  align-items: center;
+
+  align-items: flex-end;
+
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 8px;
+
+  gap: 28px;
+
+  margin-bottom: 24px;
+}
+
+.contract-document-heading__copy {
+  min-width: 0;
+}
+
+.contract-document-heading__eyebrow {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #0b7b57;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.13em;
 }
 
 .contract-document-heading h1 {
   margin: 0;
+
   color: var(--text);
+
   font-size: 32px;
-  font-weight: 700;
+
+  font-weight: 800;
+
   line-height: 1.2;
+}
+
+.contract-document-heading p {
+  margin: 8px 0 0;
+
+  color: var(--muted);
+
+  font-size: 14px;
+
+  line-height: 1.6;
 }
 
 .contract-document-action {
   min-height: 44px;
+
+  flex: 0 0 auto;
+
   padding: 0 20px;
+
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
+
   border: 1px solid var(--primary);
-  border-radius: 6px;
+
+  border-radius: 7px;
+
   background: var(--primary);
+
   color: #fff;
+
   font: inherit;
+
   font-size: 14px;
+
   font-weight: 700;
+
   cursor: pointer;
-  transition: background-color .15s ease, border-color .15s ease;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .contract-document-action:hover {
   border-color: #0b7651;
+
   background: #0b7651;
+
+  transform: translateY(-1px);
 }
 
-.document-panel {
-  min-width: 0;
-  padding: 28px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
-}
+/* =========================================================
+   Contract Sheet
+========================================================= */
 
-.contract-scope--document .document-paper {
+/*
+ * 중요한 부분.
+ *
+ * ContractDocument와 PartiesInfo를
+ * 하나의 실제 계약서 종이 안에 묶는다.
+ */
+
+.contract-document-sheet {
   box-sizing: border-box;
-  width: 100%;
-  max-width: 920px;
+
+  width: min(1180px, 100%);
+
   min-width: 0;
+
   margin: 0 auto;
-  padding: 28px 40px 36px;
-  border: 1px solid var(--line);
-  border-radius: 4px;
+
+  overflow: hidden;
+
+  border: 1px solid #d8e0ea;
+
+  border-radius: 10px;
+
   background: #fff;
-  font-family: var(--font-ui);
+
+  box-shadow: 0 8px 26px rgba(22, 42, 66, 0.05);
 }
 
-.contract-scope--document .document-title {
-  margin: 0 0 32px;
-  color: var(--text);
-  text-align: center;
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: 8px;
+/* =========================================================
+   ContractDocument wrapper
+========================================================= */
+
+.contract-document-sheet__body {
+  min-width: 0;
 }
 
-.contract-scope--document .document-article {
-  margin-bottom: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-}
+/*
+ * ContractDocument.tsx 자체의
+ * contract-paper를 그대로 사용하지만
+ * 상세페이지에서는 외곽 테두리만 제거한다.
+ *
+ * 바깥 contract-document-sheet가
+ * 하나의 전체 계약서 테두리를 담당한다.
+ */
 
-.contract-scope--document .document-article__heading {
-  margin: 0 0 10px;
-  color: var(--text);
-  font-size: 15px;
-  font-weight: 600;
-}
+.contract-document-sheet__body .contract-paper {
+  box-sizing: border-box;
 
-.contract-scope--document .document-article__body {
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.contract-scope--document .document-table {
   width: 100%;
+
+  max-width: none;
+
+  margin: 0;
+
+  border: 0;
+
+  border-radius: 0;
+
+  box-shadow: none;
+
+  background: transparent;
+}
+
+/*
+ * 상세페이지에서 ContractDocument가
+ * 자체 max-width를 갖고 있어도
+ * 부모 전체 폭을 사용하도록 방어.
+ */
+
+.contract-document-sheet__body > .contract-paper {
+  width: 100%;
+}
+
+/* =========================================================
+   Parties block
+========================================================= */
+
+.contract-document-sheet__parties {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  min-width: 0;
+
+  padding: 0 48px 42px;
+
+  background: #fff;
+}
+
+/*
+ * 제7조 기타사항 다음에
+ * 자연스럽게 같은 문서의 마지막 부분처럼 이어진다.
+ */
+
+.contract-document-sheet__parties .doc__closing {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  margin: 0;
+
+  padding: 26px 0 14px;
+
+  border-top: 1px solid #dfe5ec;
+
+  color: #25364c;
+
+  font-size: 16px;
+
+  line-height: 1.75;
+
+  word-break: keep-all;
+}
+
+/* =========================================================
+   Parties table
+========================================================= */
+
+.contract-document-sheet__parties .parties {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  max-width: none;
+
+  margin: 0;
+
   table-layout: fixed;
+
   border-collapse: collapse;
-  font-size: 14px;
+
+  border-top: 2px solid #2a3c55;
+
+  border-bottom: 2px solid #2a3c55;
+
+  background: #fff;
 }
 
-.contract-scope--document .document-table th {
-  width: 100px;
-  padding: 6px 0;
-  color: var(--muted);
-  text-align: left;
-  font-weight: 500;
+.contract-document-sheet__parties .parties th,
+.contract-document-sheet__parties .parties td {
+  box-sizing: border-box;
+
+  min-width: 0;
+
+  padding: 12px 13px;
+
+  border: 1px solid #dbe2ea;
+
+  vertical-align: middle;
 }
 
-.contract-scope--document .document-table td {
-  padding: 6px 0;
-  color: var(--text);
-  font-weight: 500;
-  overflow-wrap: anywhere;
+.contract-document-sheet__parties .parties__role {
+  background: #f7f9fb;
+
+  color: #27384e;
+
+  text-align: center;
+
+  font-size: 13px;
+
+  font-weight: 800;
 }
 
-.contract-scope--document .document-signature {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 8px;
-  padding-top: 24px;
-  border-top: 2px solid var(--line);
-}
+.contract-document-sheet__parties .parties__label {
+  background: #fafbfd;
 
-.contract-scope--document .document-signature__party {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
+  color: #788397;
 
-.contract-scope--document .document-signature__label {
-  color: var(--muted);
+  text-align: center;
+
   font-size: 12px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
 }
 
-.contract-scope--document .document-signature__name {
-  color: var(--text);
-  font-size: 15px;
-  font-weight: 600;
-}
+.contract-document-sheet__parties .parties__value {
+  min-width: 0;
 
-.contract-scope--document .document-notice {
-  max-width: 920px;
-  margin: 20px auto 0;
-  color: var(--muted);
+  overflow-wrap: anywhere;
+
+  color: #233247;
+
   font-size: 13px;
 }
 
-.contract-scope--document .disclaimer {
-  max-width: 920px;
-  margin: 16px auto 0;
-  color: #777f8c;
-  font-size: 11px;
+.contract-document-sheet__parties .doc__readonly {
+  display: block;
+
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+
+  color: #17283f;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+/*
+ * READ_ONLY에서는 PartiesInfo의 하단 안내 문구가
+ * 나오지 않지만 혹시 남아 있어도 계약서 폭 안에서 처리.
+ */
+
+.contract-document-sheet__parties .doc__hint {
+  margin: 12px 0 0;
+
+  color: #788391;
+
+  font-size: 12px;
+
   line-height: 1.6;
 }
 
+/* =========================================================
+   상세조회 작성용 UI 숨김
+========================================================= */
+
+.contract-document-sheet .document-clause__remove-hover,
+.contract-document-sheet .document-clause__complete-button,
+.contract-document-sheet .document-clause__evidence-button,
+.contract-document-sheet .document-clause__slot-notice,
+.contract-document-sheet .document-draft-badge,
+.contract-document-sheet .document-pending {
+  display: none !important;
+}
+
+/* =========================================================
+   Notice
+========================================================= */
+
+.contract-document-notice {
+  box-sizing: border-box;
+
+  width: min(1180px, 100%);
+
+  margin: 16px auto 0;
+
+  padding: 12px 15px;
+
+  border: 1px solid #e3e8ed;
+
+  border-radius: 6px;
+
+  background: #f8faf9;
+
+  color: #68737f;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+}
+
+/* =========================================================
+   Disclaimer
+========================================================= */
+
+.contract-document-disclaimer {
+  box-sizing: border-box;
+
+  width: min(1180px, 100%);
+
+  margin: 18px auto 0;
+
+  color: #737d8c;
+
+  font-size: 11px;
+
+  line-height: 1.7;
+
+  word-break: keep-all;
+}
+
+/* =========================================================
+   Error / Empty
+========================================================= */
+
 .contract-document-empty {
   padding: 72px 24px;
+
   border: 1px solid var(--line);
+
   border-radius: 8px;
+
   background: var(--surface);
+
   color: var(--muted);
+
   text-align: center;
 }
 
-@media (max-width: 720px) {
+/* =========================================================
+   중요:
+   기존 ContractDocumentPage 구버전 스타일 무효화
+
+   옛 화면의:
+   .document-panel
+   .document-paper
+   .document-title
+   .document-article
+   .document-table
+   .document-signature
+
+   등의 상세페이지 전용 렌더러는
+   이제 사용하지 않는다.
+========================================================= */
+
+.contract-scope--document .document-panel,
+.contract-scope--document .document-title,
+.contract-scope--document .document-article,
+.contract-scope--document .document-table,
+.contract-scope--document .document-signature {
+  /*
+   * 실제 JSX에서 더 이상 사용하지 않으므로
+   * 별도 스타일 없음.
+   */
+}
+
+/* =========================================================
+   Tablet
+========================================================= */
+
+@media (max-width: 1000px) {
   .contract-document-page {
-    width: calc(100% - 32px);
-    max-width: 680px;
-    padding-top: 24px;
+    width: calc(100% - 40px);
+
+    padding-top: 28px;
   }
 
   .contract-document-heading {
     align-items: stretch;
+
     flex-direction: column;
-    gap: 14px;
+
+    gap: 16px;
   }
 
   .contract-document-heading h1 {
@@ -185,42 +460,64 @@
   }
 
   .contract-document-action {
-    width: 100%;
+    align-self: flex-start;
   }
 
-  .document-panel {
-    padding: 14px;
-  }
-
-  .contract-scope--document .document-paper {
-    padding: 24px 18px 28px;
-  }
-
-  .contract-scope--document .document-table th {
-    width: 84px;
-  }
-
-  .contract-scope--document .document-title {
-    font-size: 18px;
-    letter-spacing: 5px;
+  .contract-document-sheet__parties {
+    padding: 0 28px 34px;
   }
 }
 
-@media (max-width: 420px) {
+/* =========================================================
+   Mobile
+========================================================= */
+
+@media (max-width: 700px) {
   .contract-document-page {
     width: calc(100% - 24px);
-    padding-bottom: 48px;
+
+    padding: 20px 0 56px;
   }
 
-  .document-panel {
-    padding: 10px;
+  .contract-document-heading {
+    margin-bottom: 18px;
   }
 
-  .contract-scope--document .document-paper {
-    padding: 22px 14px 26px;
+  .contract-document-heading h1 {
+    font-size: 25px;
   }
 
-  .contract-scope--document .document-title {
-    letter-spacing: 3px;
+  .contract-document-heading p {
+    font-size: 13px;
+  }
+
+  .contract-document-action {
+    width: 100%;
+  }
+
+  .contract-document-sheet {
+    overflow-x: hidden;
+  }
+
+  .contract-document-sheet__parties {
+    padding: 0 16px 26px;
+  }
+
+  /*
+   * 7열 표이므로 모바일에서는
+   * 억지로 찌그러뜨리지 않고 가로 스크롤.
+   */
+
+  .contract-document-sheet__parties {
+    overflow-x: auto;
+  }
+
+  .contract-document-sheet__parties .parties {
+    min-width: 760px;
+  }
+
+  .contract-document-notice,
+  .contract-document-disclaimer {
+    width: 100%;
   }
 }

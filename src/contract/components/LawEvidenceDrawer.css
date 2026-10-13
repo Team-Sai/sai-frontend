@@ -1,0 +1,573 @@
+.law-drawer-root {
+  position: fixed;
+  z-index: 9000;
+  inset: 0;
+}
+
+/* =========================================
+   Backdrop
+========================================= */
+
+.law-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 0;
+
+  background: rgba(15, 23, 42, 0.32);
+
+  border: 0;
+
+  cursor: default;
+
+  backdrop-filter: blur(2px);
+}
+
+/* =========================================
+   Drawer
+========================================= */
+
+.law-drawer {
+  position: absolute;
+
+  top: 0;
+  right: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  width: min(720px, 92vw);
+
+  height: 100%;
+
+  background: #ffffff;
+
+  box-shadow: -18px 0 55px rgba(15, 23, 42, 0.18);
+
+  animation: law-drawer-enter 0.26s ease-out;
+}
+
+@keyframes law-drawer-enter {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* =========================================
+   Header
+========================================= */
+
+.law-drawer__header {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  flex: 0 0 auto;
+
+  padding: 28px 30px 24px;
+
+  color: #ffffff;
+
+  background: #17253a;
+}
+
+.law-drawer__eyebrow {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #93a3b7;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.06em;
+}
+
+.law-drawer__header h2 {
+  margin: 0;
+
+  max-width: 570px;
+
+  font-size: 23px;
+
+  line-height: 1.42;
+}
+
+.law-drawer__header p {
+  max-width: 560px;
+
+  margin: 9px 0 0;
+
+  color: #b5c1cf;
+
+  font-size: 12px;
+
+  line-height: 1.65;
+}
+
+.law-drawer__close {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 38px;
+
+  height: 38px;
+
+  color: #c7d1dc;
+
+  background: rgba(255, 255, 255, 0.06);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  font-size: 23px;
+}
+
+/* =========================================
+   Body
+========================================= */
+
+.law-drawer__body {
+  flex: 1;
+
+  min-height: 0;
+
+  padding: 26px 30px 40px;
+
+  background: #f8fafc;
+
+  overflow-y: auto;
+}
+
+/* =========================================
+   Section Label
+========================================= */
+
+.law-drawer-section-label {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+}
+
+.law-drawer-section-label > span {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: 28px;
+
+  height: 28px;
+
+  color: #ffffff;
+
+  background: #405c7b;
+
+  border-radius: 50%;
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+.law-drawer-section-label strong {
+  color: #293647;
+
+  font-size: 14px;
+}
+
+/* =========================================
+   Summary
+========================================= */
+
+.law-drawer-summary {
+  padding: 19px 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #dce3ea;
+
+  border-radius: 10px;
+}
+
+.law-drawer-summary > p {
+  margin: 14px 0 0;
+
+  color: #475569;
+
+  font-size: 14px;
+
+  line-height: 1.8;
+
+  word-break: keep-all;
+}
+
+/* =========================================
+   Warning
+========================================= */
+
+.law-drawer-warning {
+  margin-top: 16px;
+
+  padding: 18px 20px;
+
+  color: #725729;
+
+  background: #fffaf0;
+
+  border: 1px solid #ead6a5;
+
+  border-radius: 10px;
+}
+
+.law-drawer-warning .law-drawer-section-label > span {
+  background: #c38336;
+}
+
+.law-drawer-warning > div:last-child {
+  margin-top: 13px;
+}
+
+.law-drawer-warning p {
+  position: relative;
+
+  margin: 0 0 10px;
+
+  padding-left: 15px;
+
+  font-size: 12px;
+
+  line-height: 1.7;
+}
+
+.law-drawer-warning p:last-child {
+  margin-bottom: 0;
+}
+
+.law-drawer-warning p::before {
+  position: absolute;
+
+  left: 2px;
+
+  content: "•";
+}
+
+/* =========================================
+   Law section
+========================================= */
+
+.law-drawer-laws {
+  margin-top: 26px;
+}
+
+.law-drawer-laws__title {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+}
+
+.law-drawer-laws__title > span {
+  display: inline-flex;
+
+  align-items: center;
+
+  height: 28px;
+
+  padding: 0 10px;
+
+  color: #59687a;
+
+  background: #e8edf2;
+
+  border-radius: 999px;
+
+  font-size: 10px;
+
+  font-weight: 800;
+}
+
+/* =========================================
+   Law Navigation
+========================================= */
+
+.law-drawer-law-tabs {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+
+  margin-bottom: 13px;
+}
+
+.law-drawer-law-tabs button {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  min-width: 0;
+
+  padding: 11px;
+
+  color: #586575;
+
+  background: #ffffff;
+
+  border: 1px solid #d9e0e7;
+
+  border-radius: 7px;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    border-color 0.14s ease,
+    background 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.law-drawer-law-tabs button:hover {
+  background: #f7f9fb;
+
+  border-color: #bac7d4;
+}
+
+.law-drawer-law-tabs button.is-selected {
+  background: #eff4f8;
+
+  border-color: #7590aa;
+
+  box-shadow: inset 3px 0 0 #405e7c;
+}
+
+.law-drawer-law-tabs button > span {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 27px;
+
+  height: 27px;
+
+  color: #405c79;
+
+  background: #edf2f6;
+
+  border-radius: 50%;
+
+  font-size: 8px;
+
+  font-weight: 900;
+}
+
+.law-drawer-law-tabs button div {
+  min-width: 0;
+}
+
+.law-drawer-law-tabs small {
+  display: block;
+
+  color: #87919e;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  font-size: 8px;
+}
+
+.law-drawer-law-tabs strong {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #354253;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  font-size: 10px;
+}
+
+/* =========================================
+   Legal Document
+========================================= */
+
+.law-drawer-document {
+  padding: 22px;
+
+  background: #ffffff;
+
+  border: 1px solid #d8e0e8;
+
+  border-radius: 10px;
+
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.04);
+}
+
+.law-drawer-document header > div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+.law-drawer-document__primary {
+  padding: 4px 7px;
+
+  color: #355b80;
+
+  background: #e8f0f7;
+
+  border-radius: 4px;
+
+  font-size: 8px;
+
+  font-weight: 900;
+}
+
+.law-drawer-document__law {
+  color: #7f8a97;
+
+  font-size: 10px;
+}
+
+.law-drawer-document h3 {
+  margin: 8px 0 0;
+
+  color: #172333;
+
+  font-size: 20px;
+
+  line-height: 1.4;
+}
+
+.law-drawer-document__original {
+  margin-top: 18px;
+
+  padding-top: 17px;
+
+  border-top: 1px solid #e5e9ee;
+}
+
+.law-drawer-document__original-label {
+  margin-bottom: 9px;
+
+  color: #82909f;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.04em;
+}
+
+.law-drawer-document__original pre {
+  margin: 0;
+
+  color: #344151;
+
+  white-space: pre-wrap;
+
+  word-break: keep-all;
+
+  font-family: "Noto Serif KR", "Nanum Myeongjo", serif;
+
+  font-size: 14px;
+
+  line-height: 2;
+}
+
+.law-drawer-document footer {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 19px;
+
+  padding-top: 12px;
+
+  border-top: 1px solid #e5e9ee;
+}
+
+.law-drawer-document footer span {
+  color: #87929f;
+
+  font-size: 9px;
+}
+
+.law-drawer-document footer strong {
+  padding: 4px 7px;
+
+  color: #4b6178;
+
+  background: #eff3f7;
+
+  border-radius: 4px;
+
+  font-size: 9px;
+}
+
+/* =========================================
+   Responsive
+========================================= */
+
+@media (max-width: 720px) {
+  .law-drawer {
+    width: 100%;
+  }
+
+  .law-drawer__header,
+  .law-drawer__body {
+    padding-left: 18px;
+
+    padding-right: 18px;
+  }
+
+  .law-drawer-law-tabs {
+    grid-template-columns: 1fr;
+  }
+}

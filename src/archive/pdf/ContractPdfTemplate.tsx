@@ -1,295 +1,913 @@
-import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
-import { registerPdfFonts, PDF_FONT_FAMILY } from './fonts';
-import { REPAYMENT_METHOD_LABELS, type LoanContractResponse } from '../../contract/types/contract';
+import {
+
+  Document,
+
+  Image,
+
+  Page,
+
+  StyleSheet,
+
+  Text,
+
+  View,
+
+} from "@react-pdf/renderer";
+
+
+
+import type { LinkedBankAccount } from "../../accounts/types/account";
+
+
+
+import {
+
+  REPAYMENT_METHOD_LABELS,
+
+  type LoanContractResponse,
+
+} from "../../contract/types/contract";
+
+
+
+import {
+  PDF_FONT_FAMILY,
+  registerPdfFonts,
+} from "./fonts";
+
+
+
+import { parseArchivedContractTerms } from "./contractTerms";
+
+
 
 registerPdfFonts();
 
-const COLORS = {
-  primary: '#006E2A',
-  text: '#1a1a1a',
-  muted: '#697080',
-  border: '#CFD5E2',
-  roleBg: '#f0f7f2',
-  labelBg: '#f3f4f5',
-};
+
+
+
+
 
 function formatAmount(amount: number): string {
-  return Number(amount).toLocaleString('ko-KR');
+
+  return Number(amount).toLocaleString("ko-KR");
+
 }
+
+
 
 const styles = StyleSheet.create({
   page: {
     fontFamily: PDF_FONT_FAMILY,
-    fontSize: 9,
-    color: COLORS.text,
-    padding: '12mm 8mm',
-  },
-  ref: {
-    textAlign: 'right',
-    color: COLORS.muted,
-    fontSize: 8,
-    marginBottom: 6,
-  },
-  title: {
-    textAlign: 'center',
-    color: COLORS.primary,
-    fontSize: 17,
-    fontWeight: 700,
-    letterSpacing: 3,
-    marginBottom: 26,
-  },
-  article: {
-    marginBottom: 12,
-  },
-  articleRow: {
-    flexDirection: 'row',
-  },
-  clause: {
-    width: 78,
-    color: COLORS.primary,
-    fontWeight: 700,
-  },
-  body: {
-    flex: 1,
-  },
-  text: {
-    color: COLORS.text,
-    lineHeight: 1.7,
-  },
-  textIndent: {
-    marginTop: 3,
-  },
-  readonly: {
-    color: COLORS.primary,
-    fontWeight: 700,
-  },
-  closing: {
-    fontSize: 9.5,
-    color: COLORS.muted,
-    lineHeight: 1.7,
-    marginTop: 18,
-    marginBottom: 14,
-    textAlign: 'center',
+    color: "#202833",
+    backgroundColor: "#ffffff",
+    paddingTop: "13mm",
+    paddingRight: "13mm",
+    paddingBottom: "14mm",
+    paddingLeft: "13mm",
   },
 
-  partiesTable: {
-    borderTopWidth: 1.5,
-    borderTopColor: COLORS.primary,
-    borderLeftWidth: 0.75,
-    borderLeftColor: COLORS.border,
-    marginBottom: 20,
+  /* =========================================================
+     상단 문서 번호
+  ========================================================= */
+
+  contractNumber: {
+    marginBottom: 5,
+    color: "#9aa3ad",
+    fontSize: 7,
+    textAlign: "right",
   },
-  partiesRow: {
-    flexDirection: 'row',
+
+  /* =========================================================
+     HEADER
+  ========================================================= */
+
+  documentHeader: {
+    alignItems: "center",
+    paddingTop: 8,
+    paddingBottom: 28,
+    borderBottomWidth: 1.4,
+    borderBottomColor: "#263850",
   },
-  partiesRole: {
-    width: '12%',
-    backgroundColor: COLORS.roleBg,
-    color: COLORS.primary,
+
+  title: {
+    color: "#111927",
+    fontSize: 25,
     fontWeight: 700,
+    letterSpacing: 0.8,
+    lineHeight: 1.35,
+    textAlign: "center",
+  },
+
+  subtitle: {
+    marginTop: 8,
+    color: "#87919d",
+    fontSize: 8.6,
+    lineHeight: 1.65,
+    textAlign: "center",
+  },
+
+  partySummary: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 15,
+  },
+
+  partySummaryLabel: {
+    marginRight: 5,
+    color: "#9aa3ad",
+    fontSize: 8,
+  },
+
+  partySummaryValue: {
+    color: "#202833",
+    fontSize: 8.8,
+    fontWeight: 700,
+  },
+
+  partyDivider: {
+    marginHorizontal: 13,
+    color: "#dce2e8",
+    fontSize: 9,
+  },
+
+  /* =========================================================
+     일반 조항
+  ========================================================= */
+
+  article: {
+    paddingTop: 17,
+    paddingRight: 5,
+    paddingBottom: 18,
+    paddingLeft: 5,
+    borderBottomWidth: 0.55,
+    borderBottomColor: "#dce2e8",
+  },
+
+  articleHeading: {
+    marginBottom: 10,
+    color: "#172437",
+    fontSize: 13.2,
+    fontWeight: 700,
+    lineHeight: 1.55,
+  },
+
+  articleText: {
+    color: "#303a48",
+    fontSize: 10.8,
+    fontWeight: 400,
+    lineHeight: 2.0,
+  },
+
+  value: {
+    color: "#087d59",
+    fontWeight: 700,
+  },
+
+  lineText: {
+    marginTop: 6,
+  },
+
+  /* =========================================================
+     수취 계좌
+  ========================================================= */
+
+  accountBox: {
+    marginTop: 13,
+    paddingTop: 11,
+    paddingRight: 12,
+    paddingBottom: 11,
+    paddingLeft: 12,
+    backgroundColor: "#f8faf9",
+    borderLeftWidth: 2.2,
+    borderLeftColor: "#5b9b80",
+  },
+
+  accountDescription: {
+    marginBottom: 5,
+    color: "#62736b",
+    fontSize: 8,
+    lineHeight: 1.55,
+  },
+
+  accountLabel: {
+    marginBottom: 4,
+    color: "#62736b",
+    fontSize: 7.7,
+    fontWeight: 700,
+  },
+
+  accountValue: {
+    color: "#172437",
+    fontSize: 9.2,
+    fontWeight: 700,
+    lineHeight: 1.55,
+  },
+
+  /* =========================================================
+     AI 추가 조항
+  ========================================================= */
+
+  additionalArticle: {
+    paddingTop: 17,
+    paddingRight: 5,
+    paddingBottom: 18,
+    paddingLeft: 5,
+    borderBottomWidth: 0.55,
+    borderBottomColor: "#dce2e8",
+  },
+
+  additionalHeadingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+
+  additionalHeading: {
+    color: "#172437",
+    fontSize: 13.2,
+    fontWeight: 700,
+    lineHeight: 1.55,
+  },
+
+  additionalText: {
+    color: "#303a48",
+    fontSize: 10.8,
+    fontWeight: 400,
+    lineHeight: 2.0,
+  },
+
+  /* =========================================================
+     체결 문구
+  ========================================================= */
+
+  closing: {
+    marginTop: 23,
+    marginBottom: 17,
+    color: "#5f6c79",
     fontSize: 8.5,
-    textAlign: 'center',
-    padding: 7,
-    borderRightWidth: 0.75,
-    borderRightColor: COLORS.border,
-    borderBottomWidth: 0.75,
-    borderBottomColor: COLORS.border,
+    lineHeight: 1.75,
+    textAlign: "center",
   },
-  partiesLabel: {
-    width: '12%',
-    backgroundColor: COLORS.labelBg,
-    color: COLORS.muted,
-    fontWeight: 600,
-    fontSize: 8.5,
-    textAlign: 'center',
-    padding: 7,
-    borderRightWidth: 0.75,
-    borderRightColor: COLORS.border,
-    borderBottomWidth: 0.75,
-    borderBottomColor: COLORS.border,
+
+  /* =========================================================
+     당사자 / 서명
+  ========================================================= */
+
+  signatures: {
+    borderTopWidth: 1.35,
+    borderTopColor: "#263850",
+    borderBottomWidth: 1.35,
+    borderBottomColor: "#263850",
   },
-  partiesValue: {
-    fontSize: 8.5,
-    padding: 7,
-    borderRightWidth: 0.75,
-    borderRightColor: COLORS.border,
-    borderBottomWidth: 0.75,
-    borderBottomColor: COLORS.border,
+
+  signatureRow: {
+    flexDirection: "row",
+    minHeight: 38,
+    borderBottomWidth: 0.55,
+    borderBottomColor: "#dce2e8",
   },
-  partiesValueName: {
-    width: '20%',
-    flexDirection: 'row',
-    alignItems: 'center',
+
+  signatureRole: {
+    width: "9%",
+    paddingTop: 11,
+    paddingRight: 5,
+    paddingBottom: 10,
+    paddingLeft: 5,
+    color: "#172437",
+    backgroundColor: "#fafbfc",
+    fontSize: 8,
+    fontWeight: 700,
+    textAlign: "center",
   },
-  seal: {
-    position: 'relative',
-    marginLeft: 4,
+
+  signatureLabel: {
+    width: "10%",
+    paddingTop: 11,
+    paddingRight: 5,
+    paddingBottom: 10,
+    paddingLeft: 5,
+    color: "#87919d",
+    fontSize: 7.6,
+    textAlign: "center",
   },
+
+  signatureNameValue: {
+    position: "relative",
+    width: "18%",
+    paddingTop: 11,
+    paddingRight: 7,
+    paddingBottom: 10,
+    paddingLeft: 7,
+    color: "#172437",
+    fontSize: 8,
+    fontWeight: 700,
+  },
+
+  signatureBirthValue: {
+    width: "18%",
+    paddingTop: 11,
+    paddingRight: 7,
+    paddingBottom: 10,
+    paddingLeft: 7,
+    color: "#303a48",
+    fontSize: 7.8,
+  },
+
+  signatureAddressValue: {
+    width: "35%",
+    paddingTop: 11,
+    paddingRight: 7,
+    paddingBottom: 10,
+    paddingLeft: 7,
+    color: "#303a48",
+    fontSize: 7.8,
+    lineHeight: 1.45,
+  },
+
   signatureImage: {
-    position: 'absolute',
-    top: -5,
-    left: -5,
-    width: 24,
-    height: 20,
-    objectFit: 'contain',
+    position: "absolute",
+    right: 3,
+    top: 3,
+    width: 29,
+    height: 23,
+    objectFit: "contain",
   },
-  partiesValueBirth: {
-    width: '14%',
-  },
-  partiesValueAddress: {
-    width: '32%',
-  },
+
+  /* =========================================================
+     고지
+  ========================================================= */
 
   disclaimer: {
-    fontSize: 7.5,
-    color: COLORS.muted,
-    lineHeight: 1.6,
+    marginTop: 13,
+    color: "#87919d",
+    fontSize: 6.5,
+    lineHeight: 1.55,
   },
 });
 
+
+
 interface ContractPdfTemplateProps {
+
   contract: LoanContractResponse;
+
+
+
+  account?: LinkedBankAccount | null;
+
+
+
   creditorSignatureDataUri?: string | null;
+
+
+
   debtorSignatureDataUri?: string | null;
+
 }
 
+
+
 export default function ContractPdfTemplate({
+
   contract,
+
+  account = null,
+
   creditorSignatureDataUri,
+
   debtorSignatureDataUri,
+
 }: ContractPdfTemplateProps) {
-  const repaymentTypeLabel = REPAYMENT_METHOD_LABELS[contract.repaymentType] ?? contract.repaymentType;
+
+  const repaymentLabel =
+
+    REPAYMENT_METHOD_LABELS[contract.repaymentType] ?? contract.repaymentType;
+
+
+
+  const additionalClauses = parseArchivedContractTerms(contract.terms);
+
+
+
+  const etcArticleNumber = 6 + additionalClauses.length;
+
+
 
   return (
-    <Document title={`차용증_${contract.contractId}`} author="사이원장" subject="금전 차용 계약서" language="ko">
+
+    <Document
+
+      title={`차용증_${contract.contractId}`}
+
+      author="사이원장"
+
+      subject="금전소비대차계약서"
+
+      language="ko"
+
+    >
+
       <Page size="A4" style={styles.page}>
-        <Text style={styles.ref}>{contract.contractDisplayId}</Text>
-        <Text style={styles.title}>금 전 차 용 계 약 서</Text>
 
-        <View style={styles.article}>
-          <View style={styles.articleRow}>
-            <Text style={styles.clause}>제1조(당사자)</Text>
-            <View style={styles.body}>
-              <Text style={styles.text}>
-                채권자 <Text style={styles.readonly}>{contract.creditorName}</Text>(이하 "갑"이라고 함)는
-              </Text>
-              <Text style={[styles.text, styles.textIndent]}>
-                금 <Text style={styles.readonly}>{formatAmount(contract.principalAmount)}</Text> 원을 채무자{' '}
-                <Text style={styles.readonly}>{contract.debtorName ?? '-'}</Text>(이하 "을"이라고 함)에게 대여하고 을은
-                이를 차용한다.
-              </Text>
-            </View>
-          </View>
-        </View>
+        {contract.contractDisplayId && (
 
-        <View style={styles.article}>
-          <View style={styles.articleRow}>
-            <Text style={styles.clause}>제2조(대출기간)</Text>
-            <View style={styles.body}>
-              <Text style={styles.text}>
-                대출 시작일은 <Text style={styles.readonly}>{contract.startDate}</Text>로 한다.
-              </Text>
-              <Text style={[styles.text, styles.textIndent]}>
-                차용금의 변제기한(만기일)은 <Text style={styles.readonly}>{contract.maturityDate}</Text>로 한다.
-              </Text>
-            </View>
-          </View>
-        </View>
+          <Text style={styles.contractNumber}>
 
-        <View style={styles.article}>
-          <View style={styles.articleRow}>
-            <Text style={styles.clause}>제3조(이자)</Text>
-            <Text style={[styles.text, styles.body]}>
-              이자는 연 <Text style={styles.readonly}>{contract.interestRate}</Text>%의 비율로 하며, 20%를 초과할 수
-              없다.
+            {contract.contractDisplayId}
+
+          </Text>
+
+        )}
+
+
+
+        {/* =====================
+
+            HEADER
+
+        ===================== */}
+
+
+
+        <View style={styles.documentHeader}>
+
+          <Text style={styles.title}>금전소비대차계약서</Text>
+
+
+
+          <Text style={styles.subtitle}>
+
+            채권자와 채무자 간 금전 대여 및 반환에 관한 계약
+
+          </Text>
+
+
+
+          <View style={styles.partySummary}>
+
+            <Text style={styles.partySummaryLabel}>채권자</Text>
+
+
+
+            <Text style={styles.partySummaryValue}>
+
+              {contract.creditorName}
+
             </Text>
+
+
+
+            <Text style={styles.partyDivider}>│</Text>
+
+
+
+            <Text style={styles.partySummaryLabel}>채무자</Text>
+
+
+
+            <Text style={styles.partySummaryValue}>
+
+              {contract.debtorName ?? "-"}
+
+            </Text>
+
           </View>
+
         </View>
 
+
+
+        {/* =====================
+
+            제1조
+
+        ===================== */}
+
+
+
+        <View style={styles.article} wrap={false}>
+
+          <Text style={styles.articleHeading}>제1조 (대여 및 차용)</Text>
+
+
+
+          <Text style={styles.articleText}>
+
+            채권자 <Text style={styles.value}>{contract.creditorName}</Text>
+
+            (이하 "갑"이라 한다)는 채무자{" "}
+
+            <Text style={styles.value}>{contract.debtorName ?? "-"}</Text>
+
+            (이하 "을"이라 한다)에게 금{" "}
+
+            <Text style={styles.value}>
+
+              {formatAmount(contract.principalAmount)}
+
+            </Text>
+
+            원을 대여하고, 을은 이를 차용한다.
+
+          </Text>
+
+        </View>
+
+
+
+        {/* =====================
+
+            제2조
+
+        ===================== */}
+
+
+
+        <View style={styles.article} wrap={false}>
+
+          <Text style={styles.articleHeading}>제2조 (대여기간)</Text>
+
+
+
+          <Text style={styles.articleText}>
+
+            본 계약에 따른 대여금의 지급일은{" "}
+
+            <Text style={styles.value}>{contract.startDate}</Text>로 하고, 최종
+
+            변제기일은 <Text style={styles.value}>{contract.maturityDate}</Text>
+
+            로 한다.
+
+          </Text>
+
+        </View>
+
+
+
+        {/* =====================
+
+            제3조
+
+        ===================== */}
+
+
+
+        <View style={styles.article} wrap={false}>
+
+          <Text style={styles.articleHeading}>제3조 (이자)</Text>
+
+
+
+          <Text style={styles.articleText}>
+
+            을은 미상환 원금에 대하여 연{" "}
+
+            <Text style={styles.value}>{contract.interestRate}</Text>
+
+            %의 약정이율에 따른 이자를 지급한다.
+
+          </Text>
+
+        </View>
+
+
+
+        {/* =====================
+
+            제4조
+
+        ===================== */}
+
+
+
         <View style={styles.article}>
-          <View style={styles.articleRow}>
-            <Text style={styles.clause}>제4조(변제방법)</Text>
-            <View style={styles.body}>
-              <Text style={styles.text}>채무의 변제는 갑의 주소 또는 갑이 지정하는 장소에 지참 또는 송금해서 지불하며,</Text>
-              <Text style={[styles.text, styles.textIndent]}>
-                매월 <Text style={styles.readonly}>{contract.repaymentDay}</Text>일에 지급하기로 한다.
+
+          <Text style={styles.articleHeading}>제4조 (원금 및 이자의 변제)</Text>
+
+
+
+          <Text style={styles.articleText}>
+
+            을은 본 채무를 <Text style={styles.value}>{repaymentLabel}</Text>
+
+            방식으로 변제하며, 정기 상환일은 매월{" "}
+
+            <Text style={styles.value}>{contract.repaymentDay}</Text>
+
+            일로 한다.
+
+          </Text>
+
+
+
+          <Text style={[styles.articleText, styles.lineText]}>
+
+            을은 본 계약에 따른 원금 및 이자를 갑이 지정한 계좌로 송금하여
+
+            변제한다.
+
+          </Text>
+
+
+
+          {account && (
+
+            <View style={styles.accountBox} wrap={false}>
+
+              <Text style={styles.accountDescription}>변제금 수취 계좌</Text>
+
+
+
+              <Text style={styles.accountValue}>
+
+                {account.bankName}
+
+                {" · "}
+
+                {account.maskedAccountNumber}
+
+                {" · 예금주 "}
+
+                {account.accountHolderName}
+
               </Text>
+
             </View>
-          </View>
+
+          )}
+
         </View>
 
-        <View style={styles.article}>
-          <View style={styles.articleRow}>
-            <Text style={styles.clause}>제5조(상환방식)</Text>
-            <Text style={[styles.text, styles.body, styles.readonly]}>{repaymentTypeLabel}</Text>
-          </View>
+
+
+        {/* =====================
+
+            제5조
+
+        ===================== */}
+
+
+
+        <View style={styles.article} wrap={false}>
+
+          <Text style={styles.articleHeading}>제5조 (차용 목적)</Text>
+
+
+
+          <Text style={styles.articleText}>
+
+            을은 본 대여금을{" "}
+
+            <Text style={styles.value}>{contract.contractAlias}</Text>의
+
+            목적으로 사용한다.
+
+          </Text>
+
         </View>
 
-        <View style={styles.article}>
-          <View style={styles.articleRow}>
-            <Text style={styles.clause}>제6조(계약의 목적)</Text>
-            <Text style={[styles.text, styles.body, styles.readonly]}>{contract.contractAlias}</Text>
-          </View>
+
+
+        {/* =====================
+
+            S-AI 추가 조항
+
+        ===================== */}
+
+
+
+        {additionalClauses.map((clause, index) => {
+
+          const articleNumber = 6 + index;
+
+
+
+          return (
+
+            <View
+
+              key={`${articleNumber}-${clause.title}`}
+
+              style={styles.additionalArticle}
+
+            >
+
+              <View style={styles.additionalHeadingRow} wrap={false}>
+
+                <Text style={styles.additionalHeading}>
+
+                  제{articleNumber}조 ({clause.title})
+
+                </Text>
+
+              </View>
+
+
+
+              <Text style={styles.additionalText}>{clause.content}</Text>
+
+            </View>
+
+          );
+
+        })}
+
+
+
+        {/* =====================
+
+            기타사항
+
+        ===================== */}
+
+
+
+        <View style={styles.article} wrap={false}>
+
+          <Text style={styles.articleHeading}>
+
+            제{etcArticleNumber}조 (기타사항)
+
+          </Text>
+
+
+
+          <Text style={styles.articleText}>
+
+            본 계약에서 정하지 아니한 사항은 당사자 간 합의와 관계 법령에 따라
+
+            처리한다.
+
+          </Text>
+
         </View>
 
-        <View style={styles.article}>
-          <View style={styles.articleRow}>
-            <Text style={styles.clause}>제7조(특약사항)</Text>
-            <Text style={[styles.text, styles.body, styles.readonly]}>{contract.terms ?? '-'}</Text>
-          </View>
-        </View>
+
+
+        {/* =====================
+
+            체결 문구
+
+        ===================== */}
+
+
 
         <Text style={styles.closing}>
-          갑과 을은 상기 계약을 증명하기 위하여 본 계약서 2통을 작성하고, 각자 서명 날인한 후 1통씩을 보관한다.
+
+          위 계약 내용을 확인하고 당사자는 전자서명을 통하여 계약 체결 의사를
+
+          표시한다.
+
         </Text>
 
-        <View style={styles.partiesTable}>
-          <View style={styles.partiesRow} wrap={false}>
-            <Text style={styles.partiesRole}>채권자</Text>
-            <Text style={styles.partiesLabel}>성 명</Text>
-            <View style={[styles.partiesValue, styles.partiesValueName]}>
-              <Text style={styles.readonly}>{contract.creditorName}</Text>
-              <View style={styles.seal}>
-                <Text style={styles.readonly}>(인)</Text>
-                {creditorSignatureDataUri && <Image src={creditorSignatureDataUri} style={styles.signatureImage} />}
-              </View>
+
+
+        {/* =====================
+
+            서명
+
+        ===================== */}
+
+
+
+        <View style={styles.signatures}>
+
+          <View style={styles.signatureRow} wrap={false}>
+
+            <Text style={styles.signatureRole}>채권자</Text>
+
+
+
+            <Text style={styles.signatureLabel}>성명</Text>
+
+
+
+            <View style={styles.signatureNameValue}>
+
+              <Text>{contract.creditorName}</Text>
+
+
+
+              {creditorSignatureDataUri && (
+
+                <Image
+
+                  src={creditorSignatureDataUri}
+
+                  style={styles.signatureImage}
+
+                />
+
+              )}
+
             </View>
-            <Text style={styles.partiesLabel}>생년월일</Text>
-            <Text style={[styles.partiesValue, styles.partiesValueBirth, styles.readonly]}>
-              {contract.creditorBirthDate}
+
+
+
+            <Text style={styles.signatureLabel}>생년월일</Text>
+
+
+
+            <Text style={styles.signatureBirthValue}>
+
+              {contract.creditorBirthDate ?? "-"}
+
             </Text>
-            <Text style={styles.partiesLabel}>주 소</Text>
-            <Text style={[styles.partiesValue, styles.partiesValueAddress, styles.readonly]}>
-              {contract.creditorAddress ?? '-'}
+
+
+
+            <Text style={styles.signatureLabel}>주소</Text>
+
+
+
+            <Text style={styles.signatureAddressValue}>
+
+              {contract.creditorAddress ?? "-"}
+
             </Text>
+
           </View>
-          <View style={styles.partiesRow} wrap={false}>
-            <Text style={styles.partiesRole}>채무자</Text>
-            <Text style={styles.partiesLabel}>성 명</Text>
-            <View style={[styles.partiesValue, styles.partiesValueName]}>
-              <Text style={styles.readonly}>{contract.debtorName ?? '-'}</Text>
-              <View style={styles.seal}>
-                <Text style={styles.readonly}>(인)</Text>
-                {debtorSignatureDataUri && <Image src={debtorSignatureDataUri} style={styles.signatureImage} />}
-              </View>
+
+
+
+          <View style={styles.signatureRow} wrap={false}>
+
+            <Text style={styles.signatureRole}>채무자</Text>
+
+
+
+            <Text style={styles.signatureLabel}>성명</Text>
+
+
+
+            <View style={styles.signatureNameValue}>
+
+              <Text>{contract.debtorName ?? "-"}</Text>
+
+
+
+              {debtorSignatureDataUri && (
+
+                <Image
+
+                  src={debtorSignatureDataUri}
+
+                  style={styles.signatureImage}
+
+                />
+
+              )}
+
             </View>
-            <Text style={styles.partiesLabel}>생년월일</Text>
-            <Text style={[styles.partiesValue, styles.partiesValueBirth, styles.readonly]}>
-              {contract.debtorBirthDate ?? '-'}
+
+
+
+            <Text style={styles.signatureLabel}>생년월일</Text>
+
+
+
+            <Text style={styles.signatureBirthValue}>
+
+              {contract.debtorBirthDate ?? "-"}
+
             </Text>
-            <Text style={styles.partiesLabel}>주 소</Text>
-            <Text style={[styles.partiesValue, styles.partiesValueAddress, styles.readonly]}>
-              {contract.debtorAddress ?? '-'}
+
+
+
+            <Text style={styles.signatureLabel}>주소</Text>
+
+
+
+            <Text style={styles.signatureAddressValue}>
+
+              {contract.debtorAddress ?? "-"}
+
             </Text>
+
           </View>
+
         </View>
 
+
+
         <Text style={styles.disclaimer}>
-          본 서비스가 제공하는 차용증 양식은 일반적인 금전소비대차 계약서 작성 편의를 위한 참고용 문서입니다. 서비스
-          제공자는 이용자가 입력한 데이터의 정확성 및 개별 계약 조건에 따른 법적 분쟁에 대해 책임을 지지 않습니다.
-          구체적인 법적 조언이나 강제집행력이 필요한 경우 법률 전문가의 상담 또는 공증 절차를 진행하시길 권장합니다.
+
+          본 결과는 당사자가 입력하고 확정한 계약 내용을 기반으로
+
+          작성되었습니다. 구체적인 법률관계에 따라 별도 확인이 필요할 수
+
+          있습니다.
+
         </Text>
+
       </Page>
+
     </Document>
+
   );
+
 }

@@ -2,7 +2,11 @@ import type {ContractInfo} from "./schedule";
 
 export interface ContractDocument extends ContractInfo {
     creditorName: string;
-   debtorName: string;
+    creditorBirthDate: string | null;
+    creditorAddress: string | null;
+    debtorName: string;
+    debtorBirthDate: string | null;
+    debtorAddress: string | null;
    principalAmount: number;
    startDate: string;
    repaymentDay: number;
