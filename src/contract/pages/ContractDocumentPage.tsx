@@ -50,11 +50,8 @@ function toContractFormData(
 
     terms: data.terms ?? "",
 
-    /*
-     * 현재 /document API에는 주소/선택계좌가 없음.
-     * 상세 조회에서는 읽기 전용이라 빈 값으로 둔다.
-     */
-    creditorAddress: "",
+    // 상세 화면에서도 저장된 채권자 주소를 사용한다.
+    creditorAddress: data.creditorAddress ?? "",
 
     selectedLinkedAccountId: "",
   };
@@ -176,10 +173,13 @@ function noopFieldChange<K extends keyof ContractFormData>(
   _value: ContractFormData[K],
 ) {
   // 상세 조회는 읽기 전용
+  void _field;
+  void _value;
 }
 
 function noopClauseAction(_clauseId: string) {
   // 상세 조회에서는 조항 수정/삭제 없음
+  void _clauseId;
 }
 
 /* =========================================================
@@ -217,10 +217,6 @@ function ContractDocumentContent({ contractId }: { contractId: string }) {
 
   useEffect(() => {
     let cancelled = false;
-
-    setIsLoading(true);
-
-    setError(null);
 
     getContractDocument(Number(contractId))
       .then((response) => {
@@ -291,16 +287,13 @@ function ContractDocumentContent({ contractId }: { contractId: string }) {
   const creditorInfo: CreditorInfo = {
     name: contract.creditorName ?? "-",
 
-    /*
-     * 현재 document API에는 생년월일이 없음.
-     */
-    birthDate: "-",
+    birthDate: contract.creditorBirthDate || "-",
   };
 
   const debtorInfo = {
     name: contract.debtorName ?? "-",
 
-    birthDate: "-",
+    birthDate: contract.debtorBirthDate || "-",
   };
 
   const appliedClauses = parseStoredTerms(contract.terms, contractId);
@@ -375,10 +368,10 @@ function ContractDocumentContent({ contractId }: { contractId: string }) {
         <div className="contract-document-sheet__parties">
           <PartiesInfo
             creditorInfo={creditorInfo}
-            creditorAddress=""
+            creditorAddress={contract.creditorAddress ?? ""}
             onCreditorAddressChange={() => undefined}
             debtorInfo={debtorInfo}
-            debtorAddress=""
+            debtorAddress={contract.debtorAddress ?? ""}
             mode="READ_ONLY"
             disabled
           />

@@ -125,10 +125,13 @@ function noopFieldChange<K extends keyof ContractFormData>(
   _field: K,
   _value: ContractFormData[K],
 ) {
+  void _field;
+  void _value;
   // 상대방 확인 화면은 읽기 전용 계약서이므로 아무 것도 하지 않는다.
 }
 
 function noopClauseAction(_clauseId: string) {
+  void _clauseId;
   // 상대방 확인 화면에서는 조항 편집/삭제 기능을 제공하지 않는다.
 }
 
@@ -373,7 +376,33 @@ export default function DebtorContractFormPage() {
     <div className="page">
       <Stepper currentStep={3} />
 
-      {bannerText && <p className="doc__status-banner">{bannerText}</p>}
+      {bannerText && (
+        <div className="debtor-status-card" role="status">
+          <div className="debtor-status-card__icon">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 2" />
+            </svg>
+          </div>
+          <div className="debtor-status-card__content">
+            <strong>계약 내용 확인 대기 중</strong>
+            <p>
+              채권자가 작성한 차용증이 도착했습니다. 내용을 확인한 후
+              전자서명을 진행해 주세요.
+            </p>
+          </div>
+        </div>
+      )}
 
       {isLoading && !detail && (
         <p className="doc__status" role="status">

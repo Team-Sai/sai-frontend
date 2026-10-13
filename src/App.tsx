@@ -28,7 +28,7 @@ import ContractChangeApprovalFormPage from "./contract/pages/ContractChangeAppro
 import ContractChangeApprovalSignaturePage from "./contract/pages/ContractChangeApprovalSignaturePage";
 import ContractChangeRequestSentPage from "./contract/pages/ContractChangeRequestSentPage";
 import ContractChangeSignaturePage from "./contract/pages/ContractChangeSignaturePage";
-import DebtorContractFormPage from "./contract/pages/DebtorContractFormPage";
+import DebtorContractFormPage from "./contract/pages/DebtorContractFormPage_new";
 import DebtorSignaturePage from "./contract/pages/DebtorSignaturePage";
 import DebtorApprovalIdentityGuard from "./contract/components/DebtorApprovalIdentityGuard";
 import NotificationCenter from "./notification/NotificationCenter";

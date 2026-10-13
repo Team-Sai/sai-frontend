@@ -67,3 +67,26 @@
     width: 100% !important;
   }
 }
+.parties .parties__value {
+  min-width: 0;
+}
+
+.parties .parties__input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border: 1px solid #dfe3e8;
+  border-radius: 4px;
+  background: #fff;
+  color: #263141;
+  font: inherit;
+  font-size: 12px;
+}
+
+.parties .parties__input::placeholder {
+  color: #8994a3;
+  opacity: 1;
+}
