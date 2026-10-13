@@ -1,10 +1,11 @@
+
 import type {
   AppliedContractClause,
   ClauseSlot,
   ClauseSlotType,
 } from "../types/clauseAgent";
 
-const PLACEHOLDER_REGEX = /\[(?:입력\s*필요\s*:\s*)?([^\[\]]+)\]/g;
+const PLACEHOLDER_REGEX = /\[(?:입력\s*필요\s*:\s*)?((?:(?!\[|\]).)+)\]/g;
 
 /* =========================================
    Label 정리
@@ -26,15 +27,10 @@ function normalizeSlotLabel(rawLabel: string): string {
 
 function inferSlotType(rawLabel: string): {
   type: ClauseSlotType;
-
   min?: number;
-
   max?: number;
-
   step?: number;
-
   unit?: string;
-
   options?: string[];
 } {
   const label = rawLabel.toLowerCase().replace(/\s+/g, " ");
@@ -47,7 +43,6 @@ function inferSlotType(rawLabel: string): {
   ) {
     return {
       type: "METHOD",
-
       options: [
         "문자메시지",
         "카카오톡",
@@ -69,13 +64,9 @@ function inferSlotType(rawLabel: string): {
   ) {
     return {
       type: "PERCENT",
-
       min: 0,
-
       max: 100,
-
       step: 0.5,
-
       unit: "%",
     };
   }
@@ -89,11 +80,8 @@ function inferSlotType(rawLabel: string): {
   ) {
     return {
       type: "MONEY",
-
       min: 0,
-
       step: 1000,
-
       unit: "원",
     };
   }
@@ -103,13 +91,9 @@ function inferSlotType(rawLabel: string): {
   if (label.includes("개월")) {
     return {
       type: "MONTHS",
-
       min: 1,
-
       max: 120,
-
       step: 1,
-
       unit: "개월",
     };
   }
@@ -119,13 +103,9 @@ function inferSlotType(rawLabel: string): {
   if (label.includes("횟수") || label.includes("몇 회")) {
     return {
       type: "COUNT",
-
       min: 1,
-
       max: 99,
-
       step: 1,
-
       unit: "회",
     };
   }
@@ -140,13 +120,9 @@ function inferSlotType(rawLabel: string): {
   ) {
     return {
       type: "DAYS",
-
       min: 1,
-
       max: 3650,
-
       step: 1,
-
       unit: "일",
     };
   }
@@ -177,20 +153,14 @@ function inferSlotType(rawLabel: string): {
 
 function extractPlaceholders(template: string): Array<{
   raw: string;
-
   label: string;
-
   start: number;
-
   end: number;
 }> {
   const results: Array<{
     raw: string;
-
     label: string;
-
     start: number;
-
     end: number;
   }> = [];
 
@@ -207,11 +177,8 @@ function extractPlaceholders(template: string): Array<{
 
     results.push({
       raw: match[0],
-
       label: normalizeSlotLabel(rawLabel),
-
       start: match.index,
-
       end: match.index + match[0].length,
     });
   }
@@ -233,15 +200,10 @@ export function createClauseSlots(template: string): ClauseSlot[] {
       id: `slot-${index}-${placeholder.label
         .replace(/[^a-zA-Z0-9가-힣]/g, "-")
         .slice(0, 30)}`,
-
       index,
-
       label: placeholder.label,
-
       value: "",
-
       required: true,
-
       ...inferred,
     };
   });
@@ -341,7 +303,6 @@ export function countUnresolvedClauseSlots(
 ): number {
   return clauses.reduce(
     (total, clause) => total + getUnresolvedClauseSlots(clause).length,
-
     0,
   );
 }
@@ -358,7 +319,6 @@ export function renderClauseContent(clause: AppliedContractClause): string {
   }
 
   let cursor = 0;
-
   let result = "";
 
   placeholders.forEach((placeholder, index) => {
@@ -388,7 +348,6 @@ export function renderClauseContent(clause: AppliedContractClause): string {
 
 export function renderClausePreview(
   template: string,
-
   slots: ClauseSlot[],
 ): string {
   const placeholders = extractPlaceholders(template);
@@ -398,7 +357,6 @@ export function renderClausePreview(
   }
 
   let cursor = 0;
-
   let result = "";
 
   placeholders.forEach((placeholder, index) => {
@@ -425,14 +383,11 @@ export function renderClausePreview(
 export type ClauseTemplateToken =
   | {
       type: "TEXT";
-
       value: string;
     }
   | {
       type: "SLOT";
-
       slotIndex: number;
-
       label: string;
     };
 
@@ -443,7 +398,6 @@ export function parseClauseTemplate(template: string): ClauseTemplateToken[] {
     return [
       {
         type: "TEXT",
-
         value: template,
       },
     ];
@@ -457,16 +411,13 @@ export function parseClauseTemplate(template: string): ClauseTemplateToken[] {
     if (placeholder.start > cursor) {
       tokens.push({
         type: "TEXT",
-
         value: template.slice(cursor, placeholder.start),
       });
     }
 
     tokens.push({
       type: "SLOT",
-
       slotIndex: index,
-
       label: placeholder.label,
     });
 
@@ -476,7 +427,6 @@ export function parseClauseTemplate(template: string): ClauseTemplateToken[] {
   if (cursor < template.length) {
     tokens.push({
       type: "TEXT",
-
       value: template.slice(cursor),
     });
   }
@@ -510,16 +460,13 @@ export function repairClauseSlots(
 
     return {
       ...detected,
-
       value: previous.value,
-
       required: previous.required,
     };
   });
 
   return {
     ...clause,
-
     slots: repaired,
   };
 }

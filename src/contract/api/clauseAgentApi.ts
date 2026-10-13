@@ -1,3 +1,4 @@
+
 import { authFetch } from "../../auth/authFetch";
 
 import type {
@@ -98,10 +99,12 @@ function normalizeReferences(value: unknown): ClauseReference[] {
     .filter((item): item is Record<string, unknown> =>
       Boolean(item && typeof item === "object"),
     )
-    .map((item) => ({
-      documentId: typeof item.documentId === "string" ? item.documentId : "",
+    .map((item): ClauseReference => ({
+      documentId:
+        typeof item.documentId === "string" ? item.documentId : "",
 
-      lawName: typeof item.lawName === "string" ? item.lawName : "관련 법령",
+      lawName:
+        typeof item.lawName === "string" ? item.lawName : "관련 법령",
 
       articleNumber:
         typeof item.articleNumber === "string" ? item.articleNumber : null,
@@ -109,18 +112,20 @@ function normalizeReferences(value: unknown): ClauseReference[] {
       articleTitle:
         typeof item.articleTitle === "string" ? item.articleTitle : null,
 
-      content: typeof item.content === "string" ? item.content : null,
+      content:
+        typeof item.content === "string" ? item.content : "",
 
       vectorScore:
-        typeof item.vectorScore === "number" ? item.vectorScore : null,
+        typeof item.vectorScore === "number" ? item.vectorScore : 0,
 
       rerankScore:
-        typeof item.rerankScore === "number" ? item.rerankScore : null,
+        typeof item.rerankScore === "number" ? item.rerankScore : 0,
 
-      finalScore: typeof item.finalScore === "number" ? item.finalScore : null,
+      finalScore:
+        typeof item.finalScore === "number" ? item.finalScore : 0,
 
       matchedIssue:
-        typeof item.matchedIssue === "string" ? item.matchedIssue : null,
+        typeof item.matchedIssue === "string" ? item.matchedIssue : "",
     }))
     .filter((reference) => reference.documentId || reference.lawName);
 }

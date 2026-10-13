@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from "react";
 
 import { createPortal } from "react-dom";
@@ -47,25 +48,17 @@ function getIssueLabel(type: string): string {
   return labels[type] ?? type;
 }
 
-export default function ClauseReasonDrawer({
+function ClauseReasonDrawerContent({
   clause,
   onClose,
-}: ClauseReasonDrawerProps) {
+}: ClauseReasonDrawerProps & { clause: AppliedContractClause }) {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(
-    null,
+    clause.references[0]?.documentId ?? null,
   );
 
   const [showAllReferences, setShowAllReferences] = useState(false);
 
   useEffect(() => {
-    if (!clause) {
-      return;
-    }
-
-    setSelectedReferenceId(clause.references[0]?.documentId ?? null);
-
-    setShowAllReferences(false);
-
     const previousOverflow = document.body.style.overflow;
 
     document.body.style.overflow = "hidden";
@@ -83,13 +76,9 @@ export default function ClauseReasonDrawer({
 
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [clause, onClose]);
+  }, [onClose]);
 
   const selectedReference = useMemo(() => {
-    if (!clause) {
-      return null;
-    }
-
     return (
       clause.references.find(
         (reference) => reference.documentId === selectedReferenceId,
@@ -98,10 +87,6 @@ export default function ClauseReasonDrawer({
       null
     );
   }, [clause, selectedReferenceId]);
-
-  if (!clause) {
-    return null;
-  }
 
   const renderedClause = renderClauseContent(clause);
 
@@ -124,10 +109,6 @@ export default function ClauseReasonDrawer({
         aria-modal="true"
         aria-labelledby="clause-reason-title"
       >
-        {/* =====================================
-            HEADER
-        ===================================== */}
-
         <header className="clause-reason__header">
           <div>
             <span className="clause-reason__header-label">조항 검토</span>
@@ -151,10 +132,6 @@ export default function ClauseReasonDrawer({
         </header>
 
         <div className="clause-reason__body">
-          {/* =====================================
-              1. 핵심 판단
-          ===================================== */}
-
           <section className="clause-reason-section">
             <div className="clause-reason-section__title">
               <span>1</span>
@@ -176,10 +153,6 @@ export default function ClauseReasonDrawer({
               <p>{clause.summary}</p>
             </div>
           </section>
-
-          {/* =====================================
-              2. 핵심 법령
-          ===================================== */}
 
           {primaryReference && (
             <section className="clause-reason-section">
@@ -239,10 +212,6 @@ export default function ClauseReasonDrawer({
                   </pre>
                 </div>
               </article>
-
-              {/* =================================
-                  보조 근거
-              ================================= */}
 
               {secondaryReferences.length > 0 && (
                 <div className="clause-secondary-laws">
@@ -304,10 +273,6 @@ export default function ClauseReasonDrawer({
             </section>
           )}
 
-          {/* =====================================
-              3. 계약 반영 결과
-          ===================================== */}
-
           <section className="clause-reason-section">
             <div className="clause-reason-section__title">
               <span>3</span>
@@ -326,10 +291,6 @@ export default function ClauseReasonDrawer({
             </div>
           </section>
 
-          {/* =====================================
-              주의사항
-          ===================================== */}
-
           {clause.warnings.length > 0 && (
             <section className="clause-reason-warning">
               <strong>계약 전에 확인하세요</strong>
@@ -346,10 +307,6 @@ export default function ClauseReasonDrawer({
     document.body,
   );
 }
-
-/* =========================================
-   보조 법령 상세
-========================================= */
 
 function SecondaryLawDetail({ reference }: { reference: ClauseReference }) {
   const [expanded, setExpanded] = useState(false);
@@ -387,5 +344,19 @@ function SecondaryLawDetail({ reference }: { reference: ClauseReference }) {
         <pre>{reference.content || "법령 원문을 불러오지 못했습니다."}</pre>
       )}
     </article>
+  );
+}
+
+export default function ClauseReasonDrawer(props: ClauseReasonDrawerProps) {
+  if (!props.clause) {
+    return null;
+  }
+
+  return (
+    <ClauseReasonDrawerContent
+      key={props.clause.id}
+      {...props}
+      clause={props.clause}
+    />
   );
 }

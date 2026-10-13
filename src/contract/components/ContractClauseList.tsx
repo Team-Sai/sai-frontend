@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+
+import { useState } from "react";
 import type {
   AppliedContractClause,
   DraftContractClause,
@@ -128,10 +129,7 @@ export default function ContractClauseList({
       "본 계약에서 정하지 아니한 사항은 당사자 간 합의와 관계 법령에 따라 처리한다.",
   };
 
-  const clauses = useMemo(
-    () => [...baseClausesBeforeAi, ...dynamicClauses, endingClause],
-    [baseClausesBeforeAi, dynamicClauses],
-  );
+  const clauses = [...baseClausesBeforeAi, ...dynamicClauses, endingClause];
 
   return (
     <>

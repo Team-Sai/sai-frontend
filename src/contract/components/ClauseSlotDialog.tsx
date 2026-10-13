@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+
+import { useMemo, useState } from "react";
 
 import type { AppliedContractClause, ClauseSlot } from "../types/clauseAgent";
 
@@ -18,24 +19,14 @@ interface ClauseSlotDialogProps {
   onSave: (clauseId: string, slots: ClauseSlot[]) => void;
 }
 
-export default function ClauseSlotDialog({
+function ClauseSlotDialogContent({
   clause,
   onClose,
   onSave,
-}: ClauseSlotDialogProps) {
-  const [slots, setSlots] = useState<ClauseSlot[]>([]);
-
-  useEffect(() => {
-    if (!clause) {
-      return;
-    }
-
-    setSlots(
-      clause.slots.map((slot) => ({
-        ...slot,
-      })),
-    );
-  }, [clause]);
+}: ClauseSlotDialogProps & { clause: AppliedContractClause }) {
+  const [slots, setSlots] = useState<ClauseSlot[]>(
+    () => clause.slots.map((slot) => ({ ...slot }))
+  );
 
   const errors = useMemo(
     () => slots.map((slot) => getClauseSlotError(slot)),
@@ -43,10 +34,6 @@ export default function ClauseSlotDialog({
   );
 
   const hasError = errors.some(Boolean);
-
-  if (!clause) {
-    return null;
-  }
 
   const tokens = parseClauseTemplate(clause.templateContent);
 
@@ -93,10 +80,6 @@ export default function ClauseSlotDialog({
         </header>
 
         <div className="clause-slot-dialog__body">
-          {/* =====================================
-              미리보기
-          ===================================== */}
-
           <section className="clause-slot-dialog__preview">
             <div className="clause-slot-dialog__preview-title">
               <span>계약서 미리보기</span>
@@ -129,10 +112,6 @@ export default function ClauseSlotDialog({
               })}
             </p>
           </section>
-
-          {/* =====================================
-              입력 영역
-          ===================================== */}
 
           <section className="clause-slot-dialog__fields">
             <div className="clause-slot-dialog__fields-head">
@@ -180,10 +159,6 @@ export default function ClauseSlotDialog({
   );
 }
 
-/* =========================================
-   Slot input
-========================================= */
-
 function ClauseSlotInput({
   index,
   slot,
@@ -213,8 +188,6 @@ function ClauseSlotInput({
           {slot.required && <span>필수</span>}
         </div>
 
-        {/* 방법 선택 */}
-
         {slot.type === "METHOD" && (
           <div className="clause-slot-options">
             {slot.options?.map((option) => (
@@ -230,8 +203,6 @@ function ClauseSlotInput({
           </div>
         )}
 
-        {/* 날짜 */}
-
         {slot.type === "DATE" && (
           <input
             type="date"
@@ -240,8 +211,6 @@ function ClauseSlotInput({
             onChange={(event) => onChange(event.target.value)}
           />
         )}
-
-        {/* 텍스트 */}
 
         {slot.type === "TEXT" && (
           <input
@@ -252,8 +221,6 @@ function ClauseSlotInput({
             onChange={(event) => onChange(event.target.value)}
           />
         )}
-
-        {/* 숫자 */}
 
         {(slot.type === "PERCENT" ||
           slot.type === "MONEY" ||
@@ -340,5 +307,19 @@ function ClauseSlotInput({
         {error && <p className="clause-slot-row__error">{error}</p>}
       </div>
     </div>
+  );
+}
+
+export default function ClauseSlotDialog(props: ClauseSlotDialogProps) {
+  if (!props.clause) {
+    return null;
+  }
+
+  return (
+    <ClauseSlotDialogContent
+      key={props.clause.id}
+      {...props}
+      clause={props.clause}
+    />
   );
 }

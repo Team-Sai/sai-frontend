@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 
 import { createPortal } from "react-dom";
@@ -15,21 +16,15 @@ interface LawEvidenceDrawerProps {
   onClose: () => void;
 }
 
-export default function LawEvidenceDrawer({
+function LawEvidenceDrawerContent({
   clause,
   onClose,
-}: LawEvidenceDrawerProps) {
+}: LawEvidenceDrawerProps & { clause: AppliedContractClause }) {
   const [selectedReferenceId, setSelectedReferenceId] = useState<string | null>(
-    null,
+    clause.references[0]?.documentId ?? null,
   );
 
   useEffect(() => {
-    if (!clause) {
-      return;
-    }
-
-    setSelectedReferenceId(clause.references[0]?.documentId ?? null);
-
     const previousOverflow = document.body.style.overflow;
 
     document.body.style.overflow = "hidden";
@@ -47,11 +42,7 @@ export default function LawEvidenceDrawer({
 
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [clause, onClose]);
-
-  if (!clause) {
-    return null;
-  }
+  }, [onClose]);
 
   const selectedReference =
     clause.references.find(
@@ -75,10 +66,6 @@ export default function LawEvidenceDrawer({
         aria-modal="true"
         aria-labelledby="law-drawer-title"
       >
-        {/* =========================
-            HEADER
-        ========================= */}
-
         <header className="law-drawer__header">
           <div>
             <span className="law-drawer__eyebrow">법령 근거</span>
@@ -96,13 +83,7 @@ export default function LawEvidenceDrawer({
           </button>
         </header>
 
-        {/* =========================
-            BODY
-        ========================= */}
-
         <div className="law-drawer__body">
-          {/* 이 계약에서의 의미 */}
-
           <section className="law-drawer-summary">
             <div className="law-drawer-section-label">
               <span>01</span>
@@ -112,8 +93,6 @@ export default function LawEvidenceDrawer({
 
             <p>{clause.summary}</p>
           </section>
-
-          {/* 주의사항 */}
 
           {clause.warnings.length > 0 && (
             <section className="law-drawer-warning">
@@ -130,8 +109,6 @@ export default function LawEvidenceDrawer({
               </div>
             </section>
           )}
-
-          {/* 법령 목록 */}
 
           <section className="law-drawer-laws">
             <div className="law-drawer-laws__title">
@@ -189,10 +166,6 @@ export default function LawEvidenceDrawer({
   );
 }
 
-/* =========================
-   법령 문서
-========================= */
-
 function LawDocument({
   reference,
   isPrimary,
@@ -233,5 +206,19 @@ function LawDocument({
         </footer>
       )}
     </article>
+  );
+}
+
+export default function LawEvidenceDrawer(props: LawEvidenceDrawerProps) {
+  if (!props.clause) {
+    return null;
+  }
+
+  return (
+    <LawEvidenceDrawerContent
+      key={props.clause.id}
+      {...props}
+      clause={props.clause}
+    />
   );
 }

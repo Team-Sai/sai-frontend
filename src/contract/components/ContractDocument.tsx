@@ -1,70 +1,45 @@
+
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-
 import { Input, Select } from "../../common/components";
-
 import type { LinkedBankAccount } from "../../accounts/types/account";
-
 import { getSelectableAccounts } from "../api/contractApi";
-
 import {
   REPAYMENT_METHOD_LABELS,
   type ContractFormData,
   type CreditorInfo,
   type RepaymentMethod,
 } from "../types/contract";
-
 import type {
   AppliedContractClause,
   DraftContractClause,
 } from "../types/clauseAgent";
-
 import type { ContractFieldWarning } from "../utils/contractValidation";
 import { findContractWarning } from "../utils/contractValidation";
-
 import {
   formatClauseSlotValue,
   getUnresolvedClauseSlots,
   parseClauseTemplate,
 } from "../utils/clauseSlots";
-
 import ClauseReasonDrawer from "./ClauseReasonDrawer";
-
 import "./ContractDocument.css";
 import "./ContractDocumentEnhancements.css";
 
 interface ContractDocumentProps {
   formData: ContractFormData;
-
   onFieldChange: <K extends keyof ContractFormData>(
     field: K,
     value: ContractFormData[K],
   ) => void;
-
   creditorInfo: CreditorInfo | null;
-
   debtorName?: string | null;
-
   appliedClauses: AppliedContractClause[];
-
   draftClause: DraftContractClause | null;
-
   recentlyAppliedClauseId: string | null;
-
   fieldWarnings: ContractFieldWarning[];
-
   onOpenClauseSettings: (clauseId: string) => void;
-
   onRemoveClause: (clauseId: string) => void;
-
   disabled?: boolean;
-
-  /**
-   * 계약 작성 화면이 아닌 상대방 확인/완료 조회 화면에서 사용한다.
-   * true이면 작성용 Input, Select, 삭제/근거/조건입력 버튼을 숨기고
-   * 동일한 계약서 디자인 안에서 확정된 값을 텍스트로 렌더링한다.
-   */
   readOnly?: boolean;
-
   documentStatusText?: string;
 }
 
@@ -73,32 +48,20 @@ interface InlineWarningData {
   message: string;
 }
 
-/* =========================================================
-   날짜 검증
-========================================================= */
-
 function parseContractDate(value: string): Date | null {
-  if (!value) {
-    return null;
-  }
+  if (!value) return null;
 
   const parts = value.split("-").map(Number);
 
-  if (parts.length !== 3) {
-    return null;
-  }
+  if (parts.length !== 3) return null;
 
   const [year, month, day] = parts;
 
-  if (!year || !month || !day) {
-    return null;
-  }
+  if (!year || !month || !day) return null;
 
   const date = new Date(year, month - 1, day);
 
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
+  if (Number.isNaN(date.getTime())) return null;
 
   return date;
 }
@@ -108,9 +71,14 @@ function getOneMonthLater(date: Date): Date {
   const month = date.getMonth();
   const day = date.getDate();
 
-  const lastDayOfTargetMonth = new Date(year, month + 2, 0).getDate();
+  const lastDayOfTargetMonth =
+    new Date(year, month + 2, 0).getDate();
 
-  return new Date(year, month + 1, Math.min(day, lastDayOfTargetMonth));
+  return new Date(
+    year,
+    month + 1,
+    Math.min(day, lastDayOfTargetMonth),
+  );
 }
 
 function getLoanPeriodWarning(
@@ -120,14 +88,13 @@ function getLoanPeriodWarning(
   const startDate = parseContractDate(startDateValue);
   const maturityDate = parseContractDate(maturityDateValue);
 
-  if (!startDate || !maturityDate) {
-    return undefined;
-  }
+  if (!startDate || !maturityDate) return undefined;
 
   if (maturityDate <= startDate) {
     return {
       title: "변제기일을 확인해 주세요",
-      message: "최종 변제기일은 대여금 지급일보다 이후 날짜여야 합니다.",
+      message:
+        "최종 변제기일은 대여금 지급일보다 이후 날짜여야 합니다.",
     };
   }
 
@@ -144,23 +111,19 @@ function getLoanPeriodWarning(
   return undefined;
 }
 
-/* =========================================================
-   공통 표시
-========================================================= */
-
 function InlineWarning({
   warning,
 }: {
-  warning: InlineWarningData | ContractFieldWarning | undefined;
+  warning:
+    | InlineWarningData
+    | ContractFieldWarning
+    | undefined;
 }) {
-  if (!warning) {
-    return null;
-  }
+  if (!warning) return null;
 
   return (
     <div className="document-inline-warning">
       <span>!</span>
-
       <div>
         <strong>{warning.title}</strong>
         <p>{warning.message}</p>
@@ -174,12 +137,12 @@ function ReadOnlyValue({
 }: {
   children: React.ReactNode;
 }) {
-  return <strong className="document-value">{children || "-"}</strong>;
+  return (
+    <strong className="document-value">
+      {children || "-"}
+    </strong>
+  );
 }
-
-/* =========================================================
-   Agent Clause
-========================================================= */
 
 function RenderSmartClause({
   clause,
@@ -196,14 +159,16 @@ function RenderSmartClause({
     <p className="smart-clause-sentence">
       {tokens.map((token, index) => {
         if (token.type === "TEXT") {
-          return <span key={`text-${index}`}>{token.value}</span>;
+          return (
+            <span key={`text-${index}`}>
+              {token.value}
+            </span>
+          );
         }
 
         const slot = clause.slots[token.slotIndex];
 
-        if (!slot) {
-          return null;
-        }
+        if (!slot) return null;
 
         const value = formatClauseSlotValue(slot);
 
@@ -211,7 +176,10 @@ function RenderSmartClause({
           return (
             <strong
               key={slot.id}
-              className={["smart-clause-token", value ? "is-filled" : "is-empty"]
+              className={[
+                "smart-clause-token",
+                value ? "is-filled" : "is-empty",
+              ]
                 .filter(Boolean)
                 .join(" ")}
             >
@@ -224,7 +192,10 @@ function RenderSmartClause({
           <button
             type="button"
             key={slot.id}
-            className={["smart-clause-token", value ? "is-filled" : "is-empty"]
+            className={[
+              "smart-clause-token",
+              value ? "is-filled" : "is-empty",
+            ]
               .filter(Boolean)
               .join(" ")}
             onClick={onOpen}
@@ -237,36 +208,18 @@ function RenderSmartClause({
   );
 }
 
-/* =========================================================
-   Draft 한 글자 타자기
-
-   React state를 글자마다 갱신하지 않고,
-   실제 span의 textContent만 한 글자씩 변경한다.
-
-   → 화면에서는 진짜 한 글자씩 타이핑
-   → ContractDocument 전체 재렌더 없음
-========================================================= */
-
 const DRAFT_CHAR_INTERVAL_MS = 28;
-
 const DRAFT_COMMA_PAUSE_MS = 35;
-
 const DRAFT_SENTENCE_PAUSE_MS = 80;
 
-
-function getDraftCharDelay(
-  character: string,
-): number {
+function getDraftCharDelay(character: string): number {
   if (
     character === "." ||
     character === "!" ||
     character === "?" ||
     character === "\n"
   ) {
-    return (
-      DRAFT_CHAR_INTERVAL_MS +
-      DRAFT_SENTENCE_PAUSE_MS
-    );
+    return DRAFT_CHAR_INTERVAL_MS + DRAFT_SENTENCE_PAUSE_MS;
   }
 
   if (
@@ -274,169 +227,92 @@ function getDraftCharDelay(
     character === ";" ||
     character === ":"
   ) {
-    return (
-      DRAFT_CHAR_INTERVAL_MS +
-      DRAFT_COMMA_PAUSE_MS
-    );
+    return DRAFT_CHAR_INTERVAL_MS + DRAFT_COMMA_PAUSE_MS;
   }
 
   return DRAFT_CHAR_INTERVAL_MS;
 }
-
 
 function DraftTypewriter({
   text,
   animate,
 }: {
   text: string;
-
   animate: boolean;
 }) {
-  const textRef =
-    useRef<HTMLSpanElement | null>(
-      null,
-    );
+  const textRef = useRef<HTMLSpanElement | null>(null);
 
-  /*
-   * 이 컴포넌트가 처음 만들어질 때만
-   * 타자기 애니메이션 여부를 결정한다.
-   *
-   * 이후 부모 status가 STREAMING -> READY로 바뀌더라도
-   * 컴포넌트를 갈아끼우지 않고 현재 타이핑을 끝까지 계속한다.
-   *
-   * 반대로 새로고침으로 READY 상태를 복원한 경우에는
-   * 처음부터 전체 문장을 즉시 보여준다.
-   */
-  const shouldAnimateRef =
-    useRef(
-      animate,
-    );
+  const shouldAnimateRef = useRef(animate);
 
   useEffect(() => {
-    const element =
-      textRef.current;
+    const element = textRef.current;
 
-    if (!element) {
+    if (!element) return;
+
+    if (!shouldAnimateRef.current) {
+      element.textContent = text;
       return;
     }
 
-    if (
-      !shouldAnimateRef.current
-    ) {
-      element.textContent =
-        text;
+    const characters = Array.from(text);
 
-      return;
-    }
+    let index = 0;
+    let timer: number | null = null;
+    let cancelled = false;
 
-    const characters =
-      Array.from(
-        text,
-      );
+    element.textContent = "";
 
-    let index =
-      0;
+    const typeNext = () => {
+      if (cancelled || !textRef.current) return;
 
-    let timer:
-      number | null =
-      null;
+      if (index >= characters.length) return;
 
-    let cancelled =
-      false;
+      const character = characters[index];
 
-    element.textContent =
-      "";
+      textRef.current.textContent += character;
+      index += 1;
 
-    const typeNext =
-      () => {
-        if (
-          cancelled ||
-          !textRef.current
-        ) {
-          return;
-        }
+      if (index >= characters.length) return;
 
-        if (
-          index >=
-          characters.length
-        ) {
-          return;
-        }
-
-        const character =
-          characters[
-            index
-          ];
-
-        textRef.current.textContent +=
-          character;
-
-        index +=
-          1;
-
-        if (
-          index >=
-          characters.length
-        ) {
-          return;
-        }
-
-        timer =
-          window.setTimeout(
-            typeNext,
-            getDraftCharDelay(
-              character,
-            ),
-          );
-      };
-
-    timer =
-      window.setTimeout(
+      timer = window.setTimeout(
         typeNext,
-        70,
+        getDraftCharDelay(character),
       );
+    };
+
+    timer = window.setTimeout(typeNext, 70);
 
     return () => {
-      cancelled =
-        true;
+      cancelled = true;
 
-      if (
-        timer !== null
-      ) {
-        window.clearTimeout(
-          timer,
-        );
+      if (timer !== null) {
+        window.clearTimeout(timer);
       }
     };
-  }, [
-    text,
-  ]);
+  }, [text]);
 
   return (
     <span
-      ref={
-        textRef
-      }
+      ref={textRef}
       className="document-typewriter-text"
-      aria-label={
-        text
-      }
+      aria-label={text}
     />
   );
 }
 
-/* =========================================================
-   Scroll
-========================================================= */
-
-function findScrollableParent(element: HTMLElement | null): HTMLElement | null {
+function findScrollableParent(
+  element: HTMLElement | null,
+): HTMLElement | null {
   let parent = element?.parentElement ?? null;
 
   while (parent) {
     const style = window.getComputedStyle(parent);
     const overflowY = style.overflowY;
 
-    if (overflowY === "auto" || overflowY === "scroll") {
+    if (
+      overflowY === "auto" ||
+      overflowY === "scroll"
+    ) {
       return parent;
     }
 
@@ -445,10 +321,6 @@ function findScrollableParent(element: HTMLElement | null): HTMLElement | null {
 
   return null;
 }
-
-/* =========================================================
-   Component
-========================================================= */
 
 export default function ContractDocument({
   formData,
@@ -465,25 +337,22 @@ export default function ContractDocument({
   readOnly = false,
   documentStatusText,
 }: ContractDocumentProps) {
-  const [accounts, setAccounts] = useState<LinkedBankAccount[]>([]);
-  const [accountError, setAccountError] = useState<string | null>(null);
-  const [principalFocused, setPrincipalFocused] = useState(false);
+  const [accounts, setAccounts] =
+    useState<LinkedBankAccount[]>([]);
+
+  const [accountError, setAccountError] =
+    useState<string | null>(null);
+
+  const [principalFocused, setPrincipalFocused] =
+    useState(false);
+
   const [reasonClause, setReasonClause] =
     useState<AppliedContractClause | null>(null);
 
   const draftRef = useRef<HTMLElement | null>(null);
 
-  /* =========================================================
-     계좌 조회
-     - 상대방 확인/완료 조회에서는 채무자의 계좌 API를 호출하지 않는다.
-  ========================================================= */
-
   useEffect(() => {
-    if (readOnly) {
-      setAccounts([]);
-      setAccountError(null);
-      return;
-    }
+    if (readOnly) return;
 
     let cancelled = false;
 
@@ -495,9 +364,7 @@ export default function ContractDocument({
         }
       })
       .catch((error: unknown) => {
-        if (cancelled) {
-          return;
-        }
+        if (cancelled) return;
 
         setAccounts([]);
         setAccountError(
@@ -512,29 +379,25 @@ export default function ContractDocument({
     };
   }, [readOnly]);
 
-  /* =========================================================
-     Draft 자동 스크롤
-  ========================================================= */
-
   useLayoutEffect(() => {
-    if (!draftClause || readOnly) {
-      return;
-    }
+    if (!draftClause || readOnly) return;
 
     const timer = window.setTimeout(() => {
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
           const target = draftRef.current;
 
-          if (!target) {
-            return;
-          }
+          if (!target) return;
 
-          const scrollParent = findScrollableParent(target);
+          const scrollParent =
+            findScrollableParent(target);
 
           if (scrollParent) {
             scrollParent.scrollTo({
-              top: Math.max(0, target.offsetTop - 120),
+              top: Math.max(
+                0,
+                target.offsetTop - 120,
+              ),
               behavior: "smooth",
             });
             return;
@@ -551,16 +414,19 @@ export default function ContractDocument({
     return () => {
       window.clearTimeout(timer);
     };
-  }, [draftClause?.title, draftClause?.status, readOnly]);
+  }, [draftClause, readOnly]);
 
-  const selectedAccount = accounts.find(
+  const selectedAccount = (readOnly ? [] : accounts).find(
     (account) =>
-      String(account.linkedAccountId) === formData.selectedLinkedAccountId,
+      String(account.linkedAccountId) ===
+      formData.selectedLinkedAccountId,
   );
 
   const principalValue =
     !principalFocused && formData.principalAmount
-      ? Number(formData.principalAmount).toLocaleString("ko-KR")
+      ? Number(
+          formData.principalAmount,
+        ).toLocaleString("ko-KR")
       : formData.principalAmount;
 
   const principalWarning = findContractWarning(
@@ -569,10 +435,19 @@ export default function ContractDocument({
   );
 
   const maturityWarning =
-    findContractWarning(fieldWarnings, "maturityDate") ??
-    getLoanPeriodWarning(formData.startDate, formData.maturityDate);
+    findContractWarning(
+      fieldWarnings,
+      "maturityDate",
+    ) ??
+    getLoanPeriodWarning(
+      formData.startDate,
+      formData.maturityDate,
+    );
 
-  const interestWarning = findContractWarning(fieldWarnings, "interestRate");
+  const interestWarning = findContractWarning(
+    fieldWarnings,
+    "interestRate",
+  );
 
   const repaymentDayWarning = findContractWarning(
     fieldWarnings,
@@ -580,23 +455,23 @@ export default function ContractDocument({
   );
 
   const resolvedStatusText =
-    documentStatusText ?? (readOnly ? "계약 내용 확인" : "작성 중");
+    documentStatusText ??
+    (readOnly ? "계약 내용 확인" : "작성 중");
 
   const resolvedDebtorName =
-    debtorName?.trim() || "상대방 확인 단계에서 확정";
+    debtorName?.trim() ||
+    "상대방 확인 단계에서 확정";
 
-  function handleRemoveClause(clause: AppliedContractClause) {
-    if (readOnly) {
-      return;
-    }
+  function handleRemoveClause(
+    clause: AppliedContractClause,
+  ) {
+    if (readOnly) return;
 
     const confirmed = window.confirm(
       `「${clause.title}」 조항을 계약서에서 삭제할까요?`,
     );
 
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     if (reasonClause?.id === clause.id) {
       setReasonClause(null);
@@ -608,10 +483,6 @@ export default function ContractDocument({
   return (
     <>
       <article className="contract-paper">
-        {/* ===================================
-            Header
-        =================================== */}
-
         <header className="contract-paper__header">
           <div className="contract-paper__meta">
             <span>금전소비대차계약</span>
@@ -620,11 +491,15 @@ export default function ContractDocument({
 
           <h1>금전소비대차계약서</h1>
 
-          <p>금전의 대여 및 반환에 관한 당사자 간 계약</p>
+          <p>
+            금전의 대여 및 반환에 관한 당사자 간 계약
+          </p>
 
           <div className="contract-paper__party-line">
             <span>채권자</span>
-            <strong>{creditorInfo?.name ?? "확인 중"}</strong>
+            <strong>
+              {creditorInfo?.name ?? "확인 중"}
+            </strong>
 
             <i />
 
@@ -633,12 +508,11 @@ export default function ContractDocument({
           </div>
         </header>
 
-        {/* ===================================
-            제1조
-        =================================== */}
-
         <section
-          className={["document-clause", principalWarning ? "has-error" : ""]
+          className={[
+            "document-clause",
+            principalWarning ? "has-error" : "",
+          ]
             .filter(Boolean)
             .join(" ")}
         >
@@ -654,13 +528,17 @@ export default function ContractDocument({
             </strong>
             (이하 "갑"이라 한다)는 채무자{" "}
             {readOnly && (
-              <strong className="document-value">{resolvedDebtorName}</strong>
+              <strong className="document-value">
+                {resolvedDebtorName}
+              </strong>
             )}
             (이하 "을"이라 한다)에게 금
             {readOnly ? (
               <ReadOnlyValue>
                 {formData.principalAmount
-                  ? Number(formData.principalAmount).toLocaleString("ko-KR")
+                  ? Number(
+                      formData.principalAmount,
+                    ).toLocaleString("ko-KR")
                   : "-"}
               </ReadOnlyValue>
             ) : (
@@ -671,12 +549,19 @@ export default function ContractDocument({
                 inputMode="numeric"
                 value={principalValue}
                 disabled={disabled}
-                onFocus={() => setPrincipalFocused(true)}
-                onBlur={() => setPrincipalFocused(false)}
+                onFocus={() =>
+                  setPrincipalFocused(true)
+                }
+                onBlur={() =>
+                  setPrincipalFocused(false)
+                }
                 onChange={(event) =>
                   onFieldChange(
                     "principalAmount",
-                    event.target.value.replace(/[^\d]/g, ""),
+                    event.target.value.replace(
+                      /[^\d]/g,
+                      "",
+                    ),
                   )
                 }
               />
@@ -684,15 +569,16 @@ export default function ContractDocument({
             원을 대여하고, 을은 이를 차용한다.
           </p>
 
-          <InlineWarning warning={principalWarning} />
+          <InlineWarning
+            warning={principalWarning}
+          />
         </section>
 
-        {/* ===================================
-            제2조
-        =================================== */}
-
         <section
-          className={["document-clause", maturityWarning ? "has-error" : ""]
+          className={[
+            "document-clause",
+            maturityWarning ? "has-error" : "",
+          ]
             .filter(Boolean)
             .join(" ")}
         >
@@ -704,7 +590,9 @@ export default function ContractDocument({
           <p>
             본 계약에 따른 대여금의 지급일은
             {readOnly ? (
-              <ReadOnlyValue>{formData.startDate || "-"}</ReadOnlyValue>
+              <ReadOnlyValue>
+                {formData.startDate || "-"}
+              </ReadOnlyValue>
             ) : (
               <Input
                 variant="document"
@@ -713,13 +601,18 @@ export default function ContractDocument({
                 value={formData.startDate}
                 disabled={disabled}
                 onChange={(event) =>
-                  onFieldChange("startDate", event.target.value)
+                  onFieldChange(
+                    "startDate",
+                    event.target.value,
+                  )
                 }
               />
             )}
             로 하고, 최종 변제기일은
             {readOnly ? (
-              <ReadOnlyValue>{formData.maturityDate || "-"}</ReadOnlyValue>
+              <ReadOnlyValue>
+                {formData.maturityDate || "-"}
+              </ReadOnlyValue>
             ) : (
               <Input
                 variant="document"
@@ -728,22 +621,26 @@ export default function ContractDocument({
                 value={formData.maturityDate}
                 disabled={disabled}
                 onChange={(event) =>
-                  onFieldChange("maturityDate", event.target.value)
+                  onFieldChange(
+                    "maturityDate",
+                    event.target.value,
+                  )
                 }
               />
             )}
             로 한다.
           </p>
 
-          <InlineWarning warning={maturityWarning} />
+          <InlineWarning
+            warning={maturityWarning}
+          />
         </section>
 
-        {/* ===================================
-            제3조
-        =================================== */}
-
         <section
-          className={["document-clause", interestWarning ? "has-error" : ""]
+          className={[
+            "document-clause",
+            interestWarning ? "has-error" : "",
+          ]
             .filter(Boolean)
             .join(" ")}
         >
@@ -755,7 +652,9 @@ export default function ContractDocument({
           <p>
             을은 미상환 원금에 대하여 연
             {readOnly ? (
-              <ReadOnlyValue>{formData.interestRate || "-"}</ReadOnlyValue>
+              <ReadOnlyValue>
+                {formData.interestRate || "-"}
+              </ReadOnlyValue>
             ) : (
               <Input
                 variant="document"
@@ -767,24 +666,27 @@ export default function ContractDocument({
                 value={formData.interestRate}
                 disabled={disabled}
                 onChange={(event) =>
-                  onFieldChange("interestRate", event.target.value)
+                  onFieldChange(
+                    "interestRate",
+                    event.target.value,
+                  )
                 }
               />
             )}
             %의 약정이율에 따른 이자를 지급한다.
           </p>
 
-          <InlineWarning warning={interestWarning} />
+          <InlineWarning
+            warning={interestWarning}
+          />
         </section>
-
-        {/* ===================================
-            제4조
-        =================================== */}
 
         <section
           className={[
             "document-clause",
-            repaymentDayWarning ? "has-error" : "",
+            repaymentDayWarning
+              ? "has-error"
+              : "",
           ]
             .filter(Boolean)
             .join(" ")}
@@ -798,7 +700,9 @@ export default function ContractDocument({
             을은 본 채무를
             {readOnly ? (
               <ReadOnlyValue>
-                {REPAYMENT_METHOD_LABELS[formData.repaymentType] ?? "-"}
+                {REPAYMENT_METHOD_LABELS[
+                  formData.repaymentType
+                ] ?? "-"}
               </ReadOnlyValue>
             ) : (
               <Select
@@ -809,22 +713,34 @@ export default function ContractDocument({
                 onChange={(event) =>
                   onFieldChange(
                     "repaymentType",
-                    event.target.value as RepaymentMethod,
+                    event.target
+                      .value as RepaymentMethod,
                   )
                 }
               >
-                {(Object.keys(REPAYMENT_METHOD_LABELS) as RepaymentMethod[]).map(
-                  (value) => (
-                    <option key={value} value={value}>
-                      {REPAYMENT_METHOD_LABELS[value]}
-                    </option>
-                  ),
-                )}
+                {(
+                  Object.keys(
+                    REPAYMENT_METHOD_LABELS,
+                  ) as RepaymentMethod[]
+                ).map((value) => (
+                  <option
+                    key={value}
+                    value={value}
+                  >
+                    {
+                      REPAYMENT_METHOD_LABELS[
+                        value
+                      ]
+                    }
+                  </option>
+                ))}
               </Select>
             )}
             방식으로 변제하며, 정기 상환일은 매월
             {readOnly ? (
-              <ReadOnlyValue>{formData.repaymentDay || "-"}</ReadOnlyValue>
+              <ReadOnlyValue>
+                {formData.repaymentDay || "-"}
+              </ReadOnlyValue>
             ) : (
               <Input
                 variant="document"
@@ -835,19 +751,24 @@ export default function ContractDocument({
                 value={formData.repaymentDay}
                 disabled={disabled}
                 onChange={(event) =>
-                  onFieldChange("repaymentDay", event.target.value)
+                  onFieldChange(
+                    "repaymentDay",
+                    event.target.value,
+                  )
                 }
               />
             )}
             일로 한다.
           </p>
 
-          <InlineWarning warning={repaymentDayWarning} />
+          <InlineWarning
+            warning={repaymentDayWarning}
+          />
 
           <div className="document-account">
             <p>
-              을은 본 계약에 따른 원금 및 이자를 갑이 지정한 계좌로 송금하여
-              변제한다.
+              을은 본 계약에 따른 원금 및 이자를
+              갑이 지정한 계좌로 송금하여 변제한다.
             </p>
 
             {!readOnly && (
@@ -856,47 +777,73 @@ export default function ContractDocument({
 
                 <Select
                   variant="document"
-                  value={formData.selectedLinkedAccountId}
+                  value={
+                    formData.selectedLinkedAccountId
+                  }
                   disabled={disabled}
                   onChange={(event) =>
-                    onFieldChange("selectedLinkedAccountId", event.target.value)
+                    onFieldChange(
+                      "selectedLinkedAccountId",
+                      event.target.value,
+                    )
                   }
                 >
-                  <option value="">변제금을 받을 계좌를 선택해 주세요</option>
+                  <option value="">
+                    변제금을 받을 계좌를 선택해 주세요
+                  </option>
 
-                  {accounts.map((account) => (
-                    <option
-                      key={account.linkedAccountId}
-                      value={account.linkedAccountId}
-                    >
-                      {account.bankName}
-                      {" · "}
-                      {account.accountHolderName}
-                      {" · "}
-                      {account.maskedAccountNumber}
-                    </option>
-                  ))}
+                  {(readOnly ? [] : accounts).map(
+                    (account) => (
+                      <option
+                        key={
+                          account.linkedAccountId
+                        }
+                        value={
+                          account.linkedAccountId
+                        }
+                      >
+                        {account.bankName}
+                        {" · "}
+                        {
+                          account.accountHolderName
+                        }
+                        {" · "}
+                        {
+                          account.maskedAccountNumber
+                        }
+                      </option>
+                    ),
+                  )}
                 </Select>
 
                 {selectedAccount && (
                   <div className="document-account__info">
-                    <span>{selectedAccount.bankName}</span>
-                    <b>{selectedAccount.maskedAccountNumber}</b>
-                    <span>예금주 {selectedAccount.accountHolderName}</span>
+                    <span>
+                      {selectedAccount.bankName}
+                    </span>
+                    <b>
+                      {
+                        selectedAccount.maskedAccountNumber
+                      }
+                    </b>
+                    <span>
+                      예금주{" "}
+                      {
+                        selectedAccount.accountHolderName
+                      }
+                    </span>
                   </div>
                 )}
 
-                {accountError && (
-                  <small className="document-error">{accountError}</small>
+                {!readOnly && accountError && (
+                  <small className="document-error">
+                    {accountError}
+                  </small>
                 )}
               </>
             )}
           </div>
         </section>
-
-        {/* ===================================
-            제5조
-        =================================== */}
 
         <section className="document-clause">
           <h2>
@@ -907,7 +854,9 @@ export default function ContractDocument({
           <p>
             을은 본 대여금을
             {readOnly ? (
-              <ReadOnlyValue>{formData.contractAlias || "-"}</ReadOnlyValue>
+              <ReadOnlyValue>
+                {formData.contractAlias || "-"}
+              </ReadOnlyValue>
             ) : (
               <Input
                 variant="document"
@@ -917,7 +866,10 @@ export default function ContractDocument({
                 value={formData.contractAlias}
                 disabled={disabled}
                 onChange={(event) =>
-                  onFieldChange("contractAlias", event.target.value)
+                  onFieldChange(
+                    "contractAlias",
+                    event.target.value,
+                  )
                 }
               />
             )}
@@ -925,13 +877,11 @@ export default function ContractDocument({
           </p>
         </section>
 
-        {/* ===================================
-            확정된 S-AI 조항
-        =================================== */}
-
         {appliedClauses.map((clause, index) => {
           const articleNumber = 6 + index;
-          const unresolved = getUnresolvedClauseSlots(clause);
+
+          const unresolved =
+            getUnresolvedClauseSlots(clause);
 
           return (
             <section
@@ -939,8 +889,13 @@ export default function ContractDocument({
               className={[
                 "document-clause",
                 "document-clause--generated",
-                unresolved.length > 0 ? "has-unresolved-slots" : "",
-                clause.id === recentlyAppliedClauseId ? "is-just-applied" : "",
+                unresolved.length > 0
+                  ? "has-unresolved-slots"
+                  : "",
+                clause.id ===
+                recentlyAppliedClauseId
+                  ? "is-just-applied"
+                  : "",
               ]
                 .filter(Boolean)
                 .join(" ")}
@@ -951,7 +906,9 @@ export default function ContractDocument({
                   className="document-clause__remove-rail"
                   aria-label={`${clause.title} 조항 삭제`}
                   title="조항 삭제"
-                  onClick={() => handleRemoveClause(clause)}
+                  onClick={() =>
+                    handleRemoveClause(clause)
+                  }
                 >
                   <span aria-hidden="true">−</span>
                 </button>
@@ -959,7 +916,8 @@ export default function ContractDocument({
 
               <div className="document-clause__generated-head">
                 <h2>
-                  제{articleNumber}조<span>({clause.title})</span>
+                  제{articleNumber}조
+                  <span>({clause.title})</span>
                 </h2>
 
                 {!readOnly && (
@@ -968,17 +926,27 @@ export default function ContractDocument({
                       <button
                         type="button"
                         className="document-clause__complete-button"
-                        onClick={() => onOpenClauseSettings(clause.id)}
+                        onClick={() =>
+                          onOpenClauseSettings(
+                            clause.id,
+                          )
+                        }
                       >
-                        입력 필요 {unresolved.length}
+                        입력 필요{" "}
+                        {unresolved.length}
                       </button>
                     )}
 
-                    {clause.references.length > 0 && (
+                    {clause.references.length >
+                      0 && (
                       <button
                         type="button"
                         className="document-clause__evidence-button"
-                        onClick={() => setReasonClause(clause)}
+                        onClick={() =>
+                          setReasonClause(
+                            clause,
+                          )
+                        }
                       >
                         왜 이 조항인가요?
                         <span>→</span>
@@ -990,32 +958,43 @@ export default function ContractDocument({
 
               <RenderSmartClause
                 clause={clause}
-                onOpen={() => onOpenClauseSettings(clause.id)}
+                onOpen={() =>
+                  onOpenClauseSettings(
+                    clause.id,
+                  )
+                }
                 readOnly={readOnly}
               />
 
-              {!readOnly && unresolved.length > 0 && (
-                <div className="document-clause__slot-notice">
-                  <div>
-                    <strong>이 조항에 확정할 계약 조건이 있습니다.</strong>
-                    <p>문장을 직접 수정할 필요 없이 필요한 값만 선택하면 됩니다.</p>
-                  </div>
+              {!readOnly &&
+                unresolved.length > 0 && (
+                  <div className="document-clause__slot-notice">
+                    <div>
+                      <strong>
+                        이 조항에 확정할 계약 조건이
+                        있습니다.
+                      </strong>
+                      <p>
+                        문장을 직접 수정할 필요 없이
+                        필요한 값만 선택하면 됩니다.
+                      </p>
+                    </div>
 
-                  <button
-                    type="button"
-                    onClick={() => onOpenClauseSettings(clause.id)}
-                  >
-                    조건 입력하기
-                  </button>
-                </div>
-              )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onOpenClauseSettings(
+                          clause.id,
+                        )
+                      }
+                    >
+                      조건 입력하기
+                    </button>
+                  </div>
+                )}
             </section>
           );
         })}
-
-        {/* ===================================
-            작성 중 Draft
-        =================================== */}
 
         {!readOnly && draftClause && (
           <section
@@ -1025,7 +1004,9 @@ export default function ContractDocument({
             <div className="document-clause__generated-head">
               <h2>
                 제{6 + appliedClauses.length}조
-                <span>({draftClause.title})</span>
+                <span>
+                  ({draftClause.title})
+                </span>
               </h2>
 
               <span className="document-draft-badge">
@@ -1042,7 +1023,8 @@ export default function ContractDocument({
                 }
               />
 
-              {draftClause.status === "STREAMING" && (
+              {draftClause.status ===
+                "STREAMING" && (
                 <i className="document-writing-caret" />
               )}
             </p>
@@ -1050,24 +1032,26 @@ export default function ContractDocument({
             {draftClause.status === "READY" && (
               <div className="document-pending">
                 <span />
-                아직 계약에 반영되지 않은 검토 중인 초안입니다.
+                아직 계약에 반영되지 않은 검토 중인
+                초안입니다.
               </div>
             )}
           </section>
         )}
 
-        {/* ===================================
-            기타사항
-        =================================== */}
-
         <section className="document-clause">
           <h2>
-            제{6 + appliedClauses.length + (!readOnly && draftClause ? 1 : 0)}조
+            제{
+              6 +
+              appliedClauses.length +
+              (!readOnly && draftClause ? 1 : 0)
+            }조
             <span>(기타사항)</span>
           </h2>
 
           <p>
-            본 계약에서 정하지 아니한 사항은 당사자 간 합의와 관계 법령에 따라
+            본 계약에서 정하지 아니한 사항은
+            당사자 간 합의와 관계 법령에 따라
             처리한다.
           </p>
         </section>
@@ -1076,7 +1060,9 @@ export default function ContractDocument({
       {!readOnly && (
         <ClauseReasonDrawer
           clause={reasonClause}
-          onClose={() => setReasonClause(null)}
+          onClose={() =>
+            setReasonClause(null)
+          }
         />
       )}
     </>
