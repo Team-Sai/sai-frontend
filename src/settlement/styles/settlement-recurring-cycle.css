@@ -1,0 +1,27 @@
+.recurring-cycle-page .cycle-sub {
+  margin-left: 6px;
+  color: var(--muted);
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.recurring-cycle-page .cycle-row-active td {
+  background: #f7fbf9;
+}
+
+.recurring-cycle-page .cycle-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recurring-cycle-page .cycle-progress .progress-track {
+  flex: 1;
+}
+
+.recurring-cycle-page .cycle-progress span {
+  min-width: 40px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: right;
+}

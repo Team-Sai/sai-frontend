@@ -1,0 +1,136 @@
+.card {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid #d9e0dd;
+  border-radius: 12px;
+  background: #fff;
+  color: #18231f;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 18px;
+  padding: 18px 20px;
+}
+
+.amount {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.deposit {
+  color: #056347;
+}
+
+.withdrawal {
+  color: #a23d3d;
+}
+
+.meta {
+  flex: 1 1 230px;
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.meta > div {
+  display: grid;
+  grid-template-columns: 4.5em minmax(0, 1fr);
+  gap: 8px;
+}
+
+.meta dt {
+  color: #66706c;
+}
+
+.meta dd {
+  min-width: 0;
+  margin: 0;
+}
+
+.memo {
+  white-space: pre-wrap;
+}
+
+.badge {
+  max-width: 100%;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.PENDING,
+.UNMATCHED {
+  background: #f0f3f2;
+  color: #50605a;
+}
+
+.APPLIED {
+  background: #eef9f5;
+  color: #056347;
+}
+
+.NEEDS_CHECK {
+  background: #fff3e9;
+  color: #954711;
+}
+
+.FAILED {
+  background: #fff0f0;
+  color: #a23d3d;
+}
+
+.actions {
+  min-width: 0;
+  padding: 16px 18px 18px;
+  border-top: 1px solid #d9e0dd;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.actions > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.actions:empty {
+  display: none;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .summary {
+    padding: 16px;
+    gap: 10px;
+  }
+  .amount {
+    flex: 1 1 100%;
+  }
+  .meta {
+    flex-basis: 100%;
+  }
+  .actions {
+    padding: 14px 16px 16px;
+  }
+}

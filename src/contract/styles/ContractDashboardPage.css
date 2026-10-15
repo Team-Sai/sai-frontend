@@ -1,0 +1,29 @@
+.contract-dashboard-page .dashboard-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0 8px;
+}
+
+.contract-dashboard-page .dashboard-pagination .updated-text {
+  margin: 0;
+  color: var(--gray-650, #65717f);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.contract-dashboard-page .local-data-note {
+  margin: 20px 0 0;
+  color: var(--gray-500, #8e99a5);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.contract-dashboard-page .settlement-name {
+  cursor: pointer;
+}
+
+.contract-dashboard-page .heading-actions > .button-primary {
+  min-width: 118px;
+}

@@ -1,0 +1,486 @@
+/* =========================================
+   추가 조항 공통
+========================================= */
+
+.document-clause--generated {
+  position: relative;
+}
+
+/* =========================================
+   승인 직후 고정 효과
+========================================= */
+
+.document-clause--generated.is-just-applied {
+  animation: clause-lock-in 1.2s ease;
+}
+
+@keyframes clause-lock-in {
+  0% {
+    background: rgba(217, 244, 231, 0.85);
+
+    box-shadow: inset 4px 0 0 #25966d;
+  }
+
+  45% {
+    background: rgba(235, 248, 242, 0.7);
+
+    box-shadow: inset 2px 0 0 #81bea6;
+  }
+
+  100% {
+    background: transparent;
+
+    box-shadow: none;
+  }
+}
+
+/* =========================================
+   입력해야 할 값이 남은 조항
+========================================= */
+
+.document-clause--generated.has-unresolved-slots {
+  position: relative;
+
+  margin: 8px -12px;
+
+  padding: 22px 16px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 252, 238, 0.42),
+    rgba(255, 255, 255, 0)
+  );
+
+  border-left: 3px solid #d9b65a;
+}
+
+/* =========================================
+   조항 우측 도구
+========================================= */
+
+.document-clause__tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+/* 입력 필요 */
+
+.document-clause__complete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 32px;
+
+  padding: 0 11px;
+
+  color: #765814;
+
+  background: #fff8cf;
+
+  border: 1px solid #e6d58d;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+
+  font-family: var(--font-ui);
+
+  font-size: 9px;
+
+  font-weight: 800;
+}
+
+.document-clause__complete-button:hover {
+  background: #fff2ad;
+}
+
+/* 왜 이 조항인가요 */
+
+.document-clause__evidence-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  min-height: 32px;
+
+  padding: 0 11px;
+
+  color: #2f6551;
+
+  background: #edf8f3;
+
+  border: 1px solid #c7e4d8;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+
+  font-family: var(--font-ui);
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.document-clause__evidence-button:hover {
+  background: #e2f4eb;
+
+  transform: translateX(2px);
+}
+
+.document-clause__evidence-button span {
+  color: #4a8a70;
+
+  font-size: 11px;
+}
+
+/* =========================================
+   Smart Clause 문장
+========================================= */
+
+.smart-clause-sentence {
+  margin: 0;
+
+  color: #303844;
+
+  font-family: "Noto Serif KR", "Nanum Myeongjo", serif;
+
+  font-size: 14px;
+
+  line-height: 2.15;
+
+  word-break: keep-all;
+}
+
+/* =========================================
+   형광펜 값 Token
+========================================= */
+
+.smart-clause-token {
+  position: relative;
+
+  display: inline;
+
+  margin: 0 3px;
+
+  padding: 1px 5px 2px;
+
+  color: inherit;
+
+  border: 0;
+
+  border-radius: 1px;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  font-size: inherit;
+
+  font-weight: 800;
+
+  line-height: inherit;
+
+  box-decoration-break: clone;
+
+  -webkit-box-decoration-break: clone;
+
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/*
+ * 아직 입력 안 됨:
+ * 노란색 형광펜
+ */
+.smart-clause-token.is-empty {
+  color: #74591c;
+
+  background: linear-gradient(
+    transparent 18%,
+    rgba(255, 224, 92, 0.58) 18%,
+    rgba(255, 224, 92, 0.58) 88%,
+    transparent 88%
+  );
+
+  box-shadow: inset 0 -1px 0 rgba(187, 145, 24, 0.28);
+}
+
+.smart-clause-token.is-empty::before {
+  content: "+ ";
+
+  font-family: var(--font-ui);
+
+  font-size: 10px;
+}
+
+/*
+ * 입력 완료:
+ * 초록 형광펜
+ */
+.smart-clause-token.is-filled {
+  color: #1e4c3c;
+
+  background: linear-gradient(
+    transparent 18%,
+    rgba(134, 229, 189, 0.46) 18%,
+    rgba(134, 229, 189, 0.46) 88%,
+    transparent 88%
+  );
+
+  box-shadow: inset 0 -1px 0 rgba(48, 142, 105, 0.22);
+}
+
+.smart-clause-token:hover {
+  filter: brightness(0.96);
+}
+
+/* =========================================
+   조건 입력 안내
+========================================= */
+
+.document-clause__slot-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  margin-top: 16px;
+
+  padding: 12px 14px;
+
+  color: #665326;
+
+  background: #fffbed;
+
+  border: 1px solid #e7d7a2;
+
+  border-radius: 4px;
+
+  font-family: var(--font-ui);
+}
+
+.document-clause__slot-notice strong {
+  display: block;
+
+  color: #60501f;
+
+  font-size: 10px;
+}
+
+.document-clause__slot-notice p {
+  margin: 4px 0 0;
+
+  color: #88774f;
+
+  font-size: 8px;
+
+  line-height: 1.6;
+}
+
+.document-clause__slot-notice button {
+  flex: 0 0 auto;
+
+  height: 34px;
+
+  padding: 0 13px;
+
+  color: #ffffff;
+
+  background: #168760;
+
+  border: 0;
+
+  border-radius: 4px;
+
+  cursor: pointer;
+
+  font-size: 9px;
+
+  font-weight: 800;
+}
+
+.document-clause__slot-notice button:hover {
+  background: #107553;
+}
+
+/* =========================================
+   Draft
+========================================= */
+
+.document-clause--generated.is-draft {
+  position: relative;
+
+  margin: 8px -14px;
+
+  padding: 22px 18px;
+
+  background: rgba(241, 249, 245, 0.54);
+
+  border: 1px dashed #7baa97;
+
+  border-left: 3px solid #228a65;
+
+  border-radius: 3px;
+
+  animation: ai-draft-glow 1.3s ease-in-out infinite;
+}
+
+@keyframes ai-draft-glow {
+  0%,
+  100% {
+    background: rgba(247, 251, 249, 0.7);
+  }
+
+  50% {
+    background: rgba(230, 246, 238, 0.9);
+  }
+}
+
+.document-draft-badge {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 4px 7px;
+
+  color: #267055;
+
+  background: #e7f5ee;
+
+  border: 1px solid #c1e2d4;
+
+  border-radius: 3px;
+
+  font-family: var(--font-ui);
+
+  font-size: 8px;
+
+  font-weight: 800;
+}
+
+.document-draft-badge i {
+  width: 7px;
+
+  height: 7px;
+
+  background: #2aa778;
+
+  border-radius: 50%;
+
+  animation: draft-status-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes draft-status-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.document-writing-caret {
+  display: inline-block;
+
+  width: 2px;
+
+  height: 16px;
+
+  margin-left: 3px;
+
+  vertical-align: -3px;
+
+  background: #18825e;
+
+  animation: writing-caret-blink 0.62s steps(1) infinite;
+}
+
+@keyframes writing-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.document-pending {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 12px;
+
+  padding-top: 10px;
+
+  color: #657b72;
+
+  border-top: 1px solid #d9e6e0;
+
+  font-family: var(--font-ui);
+
+  font-size: 9px;
+}
+
+.document-pending span {
+  width: 7px;
+
+  height: 7px;
+
+  background: #2c9d75;
+
+  border-radius: 50%;
+
+  animation: pending-pulse 1s infinite;
+}
+
+@keyframes pending-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* 과거 인라인 법령 UI 숨김 */
+
+.document-evidence,
+.document-evidence__heading,
+.document-evidence__item {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .document-clause__generated-head {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 9px;
+  }
+
+  .document-clause__tools {
+    justify-content: flex-start;
+
+    width: 100%;
+  }
+
+  .document-clause__slot-notice {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .document-clause__slot-notice button {
+    width: 100%;
+  }
+}

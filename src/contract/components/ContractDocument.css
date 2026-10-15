@@ -1,0 +1,664 @@
+/* =========================================================
+   CONTRACT PAPER
+========================================================= */
+
+.contract-paper {
+  width: 100%;
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  padding: 0 58px 58px;
+
+  color: #202833;
+  background: #ffffff;
+
+  border: 1px solid #d9dfe6;
+
+  border-radius: 8px 8px 0 0;
+
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.035);
+
+  font-family: "Noto Serif KR", "Nanum Myeongjo", serif;
+
+  /*
+   * 기존 명조 계열 느낌은 유지하되
+   * 한글 획이 너무 가늘고 거칠게 보이지 않도록 렌더링을 안정화한다.
+   */
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  -webkit-font-smoothing: auto;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.contract-paper__header {
+  display: block;
+
+  padding: 52px 8px 42px;
+
+  border-bottom: 2px solid #25354b;
+
+  text-align: center;
+}
+
+/*
+ * 이전 meta 완전히 제거.
+ */
+.contract-paper__meta {
+  display: none !important;
+}
+
+/*
+ * 핵심:
+ * 금전소비대차계약서가 두 줄로 안 깨지게.
+ */
+.contract-paper__header h1 {
+  display: block;
+
+  width: 100%;
+
+  margin: 0;
+
+  padding: 0;
+
+  color: #111927;
+
+  font-family: "Noto Serif KR", "Nanum Myeongjo", serif;
+
+  font-size: 32px;
+  font-weight: 800;
+
+  line-height: 1.45;
+
+  letter-spacing: 0.11em;
+
+  white-space: nowrap;
+
+  text-align: center;
+}
+
+.contract-paper__header > p {
+  display: block;
+
+  margin: 12px 0 0;
+
+  color: #87919d;
+
+  font-size: 12px;
+
+  line-height: 1.7;
+
+  text-align: center;
+}
+
+/* =========================================================
+   PARTIES
+========================================================= */
+
+.contract-paper__party-line {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 24px;
+
+  color: #687482;
+
+  font-family: "Noto Sans KR", Arial, sans-serif;
+
+  font-size: 10px;
+}
+
+.contract-paper__party-line span {
+  color: #929ca8;
+}
+
+.contract-paper__party-line strong {
+  color: #25313e;
+
+  font-weight: 800;
+}
+
+.contract-paper__party-line i {
+  display: block;
+
+  width: 1px;
+  height: 13px;
+
+  margin: 0 10px;
+
+  background: #d9dee5;
+}
+
+/* =========================================================
+   CLAUSE
+========================================================= */
+
+.document-clause {
+  position: relative;
+
+  display: block;
+
+  margin: 0;
+
+  padding: 28px 5px;
+
+  border-bottom: 1px solid #e3e7ec;
+}
+
+.document-clause:last-child {
+  border-bottom: 0;
+}
+
+.document-clause h2 {
+  display: block;
+
+  margin: 0 0 14px;
+
+  padding: 0;
+
+  color: #132035;
+
+  font-size: 19px;
+  font-weight: 800;
+
+  line-height: 1.55;
+}
+
+.document-clause h2 span {
+  margin-left: 4px;
+
+  font-size: 18px;
+}
+
+/*
+ * 계약서 일반 문장
+ */
+.document-clause > p,
+.smart-clause-sentence {
+  display: block;
+
+  margin: 0;
+
+  color: #303a48;
+
+  font-size: 17px;
+
+  /*
+   * 브라우저 100% 배율에서도 기존 120% 배율에서 보이던
+   * 명조체의 안정적인 획 두께와 크기에 가깝게 보이도록 한다.
+   * 폰트 자체는 바꾸지 않는다.
+   */
+  font-weight: 500;
+
+  line-height: 2.05;
+
+  letter-spacing: -0.004em;
+
+  word-break: keep-all;
+
+  overflow-wrap: break-word;
+}
+
+/* =========================================================
+   INLINE CONTRACT VALUE
+========================================================= */
+
+.document-value {
+  display: inline-block;
+
+  padding: 0 4px 1px;
+
+  color: #087d59;
+
+  font-weight: 800;
+
+  border-bottom: 1px solid #a7b8b0;
+}
+
+/* =========================================================
+   DOCUMENT INPUT
+========================================================= */
+
+.document-inline {
+  display: inline-block !important;
+
+  box-sizing: border-box !important;
+
+  height: 32px !important;
+
+  margin: 0 6px !important;
+
+  padding: 0 6px !important;
+
+  color: #07825c !important;
+
+  background: transparent !important;
+
+  border: 0 !important;
+
+  border-bottom: 1px solid #b7c2cd !important;
+
+  border-radius: 0 !important;
+
+  outline: none !important;
+
+  box-shadow: none !important;
+
+  font-family: "Noto Serif KR", "Nanum Myeongjo", serif !important;
+
+  font-size: 17px !important;
+
+  font-weight: 700 !important;
+
+  line-height: 30px !important;
+
+  text-align: center !important;
+
+  vertical-align: baseline !important;
+}
+
+.document-inline:focus {
+  color: #075f45 !important;
+
+  background: linear-gradient(
+    transparent 12%,
+    rgba(179, 235, 210, 0.3) 12%,
+    rgba(179, 235, 210, 0.3) 92%,
+    transparent 92%
+  ) !important;
+
+  border-bottom-color: #278b69 !important;
+}
+
+.document-inline--money {
+  width: 165px !important;
+
+  text-align: right !important;
+}
+
+.document-inline--date {
+  width: 155px !important;
+}
+
+.document-inline--rate {
+  width: 72px !important;
+}
+
+.document-inline--day {
+  width: 55px !important;
+}
+
+.document-inline--purpose {
+  width: 340px !important;
+
+  text-align: left !important;
+}
+
+/* =========================================================
+   SELECT
+========================================================= */
+
+.document-inline-select {
+  display: inline-block !important;
+
+  box-sizing: border-box !important;
+
+  width: 220px !important;
+
+  height: 34px !important;
+
+  margin: 0 6px !important;
+
+  padding: 0 9px !important;
+
+  color: #26384c !important;
+
+  background: #fbfcfd !important;
+
+  border: 0 !important;
+
+  border-bottom: 1px solid #b7c3cf !important;
+
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  box-shadow: none !important;
+
+  font-family: "Noto Serif KR", "Nanum Myeongjo", serif !important;
+
+  font-size: 15px !important;
+
+  font-weight: 700 !important;
+}
+
+/* =========================================================
+   ACCOUNT
+========================================================= */
+
+.document-account {
+  display: block;
+
+  margin-top: 21px;
+
+  padding: 17px 18px;
+
+  background: #f8faf9;
+
+  border-left: 3px solid #5b8f78;
+}
+
+.document-account > p {
+  display: block;
+
+  margin: 0 0 13px;
+
+  color: #56675f;
+
+  font-size: 12px;
+
+  line-height: 1.8;
+}
+
+.document-account > label {
+  display: block;
+
+  margin: 0 0 8px;
+
+  color: #46584f;
+
+  font-family: "Noto Sans KR", Arial, sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 800;
+}
+
+.document-account select {
+  display: block;
+
+  width: 100%;
+
+  min-height: 44px;
+
+  box-sizing: border-box;
+
+  padding: 0 13px;
+
+  color: #283543;
+
+  background: #ffffff;
+
+  border: 1px solid #d2dce4;
+
+  border-radius: 5px;
+
+  outline: none;
+
+  font-family: "Noto Sans KR", Arial, sans-serif;
+
+  font-size: 12px;
+}
+
+.document-account select:focus {
+  border-color: #6ba78f;
+
+  box-shadow: 0 0 0 3px rgba(34, 139, 100, 0.06);
+}
+
+/*
+ * 중복 상세표 제거
+ */
+.document-account__info {
+  display: none !important;
+}
+
+/* =========================================================
+   VALIDATION
+========================================================= */
+
+.document-clause.has-error {
+  margin: 0 -15px;
+
+  padding: 27px 20px;
+
+  background: #fffaf4;
+
+  border-left: 3px solid #d48837;
+}
+
+.document-inline-warning {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  margin-top: 15px;
+
+  padding: 11px 13px;
+
+  color: #714a26;
+
+  background: #fff4e5;
+
+  border: 1px solid #edca98;
+
+  border-radius: 4px;
+
+  font-family: "Noto Sans KR", Arial, sans-serif;
+}
+
+.document-inline-warning__icon {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 22px;
+
+  height: 22px;
+
+  color: #ffffff;
+
+  background: #c97b30;
+
+  border-radius: 50%;
+
+  font-size: 10px;
+
+  font-weight: 900;
+}
+
+.document-inline-warning strong {
+  display: block;
+
+  font-size: 11px;
+}
+
+.document-inline-warning p {
+  margin: 4px 0 0;
+
+  font-size: 10px;
+
+  line-height: 1.6;
+}
+
+/* =========================================================
+   GENERATED CLAUSE HEADER
+========================================================= */
+
+.document-clause__generated-head {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 16px;
+}
+
+.document-clause__generated-head h2 {
+  flex: 1;
+
+  min-width: 0;
+}
+
+/* =========================================================
+   ACCOUNT AUTH
+========================================================= */
+
+.account-auth-notice {
+  display: grid;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 13px;
+
+  padding: 13px 14px;
+
+  color: #6e5930;
+
+  background: #fff9eb;
+
+  border: 1px solid #e6d2a7;
+
+  border-radius: 5px;
+
+  font-family: "Noto Sans KR", Arial, sans-serif;
+}
+
+.account-auth-notice__icon {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 27px;
+
+  height: 27px;
+
+  color: #ffffff;
+
+  background: #c78a38;
+
+  border-radius: 50%;
+
+  font-size: 11px;
+
+  font-weight: 900;
+}
+
+.account-auth-notice strong {
+  display: block;
+
+  font-size: 11px;
+}
+
+.account-auth-notice p {
+  margin: 4px 0 0;
+
+  color: #85724d;
+
+  font-size: 10px;
+
+  line-height: 1.6;
+}
+
+.account-auth-notice button {
+  height: 36px;
+
+  padding: 0 14px;
+
+  color: #ffffff;
+
+  background: #18815f;
+
+  border: 0;
+
+  border-radius: 4px;
+
+  cursor: pointer;
+
+  font-size: 10px;
+
+  font-weight: 800;
+}
+
+/* =========================================================
+   DESKTOP CONTRACT WIDTH
+========================================================= */
+
+@media (min-width: 1081px) {
+  /*
+   * 계약서가 너무 좁게 만들어지는 걸 방지.
+   */
+  .contract-paper {
+    min-width: 0;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 680px) {
+  .contract-paper {
+    padding: 0 20px 32px;
+  }
+
+  .contract-paper__header {
+    padding: 40px 0 31px;
+  }
+
+  .contract-paper__header h1 {
+    font-size: 24px;
+
+    letter-spacing: 0.05em;
+
+    white-space: normal;
+  }
+
+  .document-clause {
+    padding: 22px 3px;
+  }
+
+  .document-clause > p,
+  .smart-clause-sentence {
+    font-size: 14px;
+
+    line-height: 2;
+  }
+
+  .document-inline--purpose {
+    width: 210px !important;
+  }
+
+  .account-auth-notice {
+    grid-template-columns: auto 1fr;
+  }
+
+  .account-auth-notice button {
+    grid-column: 1 / -1;
+
+    width: 100%;
+  }
+}
