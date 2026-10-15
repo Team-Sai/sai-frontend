@@ -35,13 +35,13 @@ export function getNotificationDestination(n: NotificationResponse): Notificatio
   }
   if (n.notificationType === 'CONTRACT_CHANGE' && isNotificationId(n.referenceId)) {
     return isNotificationId(n.secondaryReferenceId)
-      ? destination(`/contracts/${n.referenceId}/change-requests/${n.secondaryReferenceId}`, '변경 요청 확인하기')
-      : destination(`/contracts/${n.referenceId}/contract-detail`, '계약서 보기');
+        ? destination(`/contracts/${n.referenceId}/change-requests/${n.secondaryReferenceId}`, '변경 요청 확인하기')
+        : destination(`/contracts/${n.referenceId}/contract-detail`, '계약서 보기');
   }
   const isDue = ['SETTLEMENT_DUE_REMINDER_D3', 'SETTLEMENT_DUE_REMINDER_D1', 'SETTLEMENT_DUE_REMINDER_DDAY'].includes(n.notificationType);
   if (isDue || n.notificationType === 'SETTLEMENT_PARTICIPANT_ADDED') {
     const id = isDue ? n.secondaryReferenceId
-      : n.referenceType === 'SETTLEMENT' ? n.referenceId : n.secondaryReferenceId;
+        : n.referenceType === 'SETTLEMENT' ? n.referenceId : n.secondaryReferenceId;
     if (isNotificationId(id)) return destination(`/settlements/${id}`, '정산 보기');
   }
   const isRepaymentDue = ['REPAYMENT_DUE_REMINDER_D3', 'REPAYMENT_DUE_REMINDER_D1',
