@@ -25,7 +25,3 @@ export interface CalendarItem {
   periodStartDate: string | null;
   periodEndDate: string | null;
 }
-export interface CalendarDateItems {
-  date: string;
-  items: CalendarItem[];
-}
