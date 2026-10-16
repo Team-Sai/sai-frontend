@@ -18,30 +18,18 @@ export function formatNotificationTime(dateString: string | null, now: number): 
 export function getNotificationDestination(n: NotificationResponse): NotificationDestination | null {
   if (!isNotificationId(n.notificationId)) return null;
   const destination = (url: string, label: string): NotificationDestination => ({ url, label, available: true });
-  if (n.notificationType === 'REPAYMENT_PREPARATION_REMINDER') {
-    const key = n.secondaryReferenceId;
-    if (!Number.isSafeInteger(key) || key == null) {
-      return destination('/calendar', '캘린더 확인하기');
-    }
-    const raw = String(key);
-    if (!/^\d{8}$/.test(raw)) {
-      return destination('/calendar', '캘린더 확인하기');
-    }
-    const date = `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`;
-    return destination(`/calendar?date=${date}`, '상환 확인 일정 보기');
-  }
   if (n.notificationType === 'CONTRACT_REQUESTED' && isNotificationId(n.referenceId)) {
     return { ...destination(`/contracts/${n.referenceId}/approve`, '서명하러 가기'), contractId: n.referenceId };
   }
   if (n.notificationType === 'CONTRACT_CHANGE' && isNotificationId(n.referenceId)) {
     return isNotificationId(n.secondaryReferenceId)
-      ? destination(`/contracts/${n.referenceId}/change-requests/${n.secondaryReferenceId}`, '변경 요청 확인하기')
-      : destination(`/contracts/${n.referenceId}/contract-detail`, '계약서 보기');
+        ? destination(`/contracts/${n.referenceId}/change-requests/${n.secondaryReferenceId}`, '변경 요청 확인하기')
+        : destination(`/contracts/${n.referenceId}/contract-detail`, '계약서 보기');
   }
   const isDue = ['SETTLEMENT_DUE_REMINDER_D3', 'SETTLEMENT_DUE_REMINDER_D1', 'SETTLEMENT_DUE_REMINDER_DDAY'].includes(n.notificationType);
   if (isDue || n.notificationType === 'SETTLEMENT_PARTICIPANT_ADDED') {
     const id = isDue ? n.secondaryReferenceId
-      : n.referenceType === 'SETTLEMENT' ? n.referenceId : n.secondaryReferenceId;
+        : n.referenceType === 'SETTLEMENT' ? n.referenceId : n.secondaryReferenceId;
     if (isNotificationId(id)) return destination(`/settlements/${id}`, '정산 보기');
   }
   const isRepaymentDue = ['REPAYMENT_DUE_REMINDER_D3', 'REPAYMENT_DUE_REMINDER_D1',
