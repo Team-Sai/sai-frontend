@@ -4,6 +4,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://api.saiwonjang.site/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
     }
   ]
 }
