@@ -8,6 +8,38 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Noto Serif KR';
+  src: url('/fonts/noto/NotoSerifKR-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Serif KR';
+  src: url('/fonts/noto/NotoSerifKR-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('/fonts/noto/NotoSansKR-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans KR';
+  src: url('/fonts/noto/NotoSansKR-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --font-sans: 'Pretendard', Arial, sans-serif;
 
