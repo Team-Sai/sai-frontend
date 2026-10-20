@@ -1646,7 +1646,7 @@ const navigate =
 
           <p className="archive-contract-disclaimer">
 
-            \* 본 계약서는 당사자가 입력하고 확정한 계약 내용을 기반으로
+            * 본 계약서는 당사자가 입력하고 확정한 계약 내용을 기반으로
 
             작성·보관된 문서입니다. 구체적인 법률관계에 따라 별도의 확인이
 

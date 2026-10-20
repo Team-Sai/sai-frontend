@@ -1,6 +1,6 @@
 import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { ReactNode } from "react";
-import { registerPdfFonts, PDF_FONT_FAMILY } from "./fonts";
+import { registerPdfFonts, PDF_SANS_FONT_FAMILY } from "./fonts";
 import {
   ARCHIVE_SETTLEMENT_STATUS_LABELS,
   ARCHIVE_SETTLEMENT_TYPE_LABELS,
@@ -54,7 +54,7 @@ function formatDateTime(isoString: string | null | undefined): string {
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: PDF_FONT_FAMILY,
+    fontFamily: PDF_SANS_FONT_FAMILY,
     fontSize: 9,
     color: COLORS.text,
     padding: "12mm 8mm",
