@@ -1,6 +1,8 @@
 import { Font } from "@react-pdf/renderer";
 
-export const PDF_FONT_FAMILY = "Pretendard";
+export const PDF_SERIF_FONT_FAMILY = "Noto Serif KR";
+
+export const PDF_SANS_FONT_FAMILY = "Noto Sans KR";
 
 let registered = false;
 
@@ -12,15 +14,30 @@ export function registerPdfFonts() {
   registered = true;
 
   Font.register({
-    family: PDF_FONT_FAMILY,
+    family: PDF_SERIF_FONT_FAMILY,
 
     fonts: [
       {
-        src: "/fonts/Pretendard-Regular-subset.woff2",
+        src: "/fonts/noto/NotoSerifKR-Regular.woff2",
         fontWeight: 400,
       },
       {
-        src: "/fonts/Pretendard-Bold-subset.woff2",
+        src: "/fonts/noto/NotoSerifKR-Bold.woff2",
+        fontWeight: 700,
+      },
+    ],
+  });
+
+  Font.register({
+    family: PDF_SANS_FONT_FAMILY,
+
+    fonts: [
+      {
+        src: "/fonts/noto/NotoSansKR-Regular.woff2",
+        fontWeight: 400,
+      },
+      {
+        src: "/fonts/noto/NotoSansKR-Bold.woff2",
         fontWeight: 700,
       },
     ],

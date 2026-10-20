@@ -595,6 +595,11 @@
 ========================================================= */
 
 .archive-contract-signatures {
+  font-family:
+    "Noto Sans KR",
+    Arial,
+    sans-serif;
+
   box-sizing:
     border-box;
 
@@ -696,6 +701,11 @@
 ========================================================= */
 
 .archive-contract-account {
+  font-family:
+    "Noto Sans KR",
+    Arial,
+    sans-serif;
+
   box-sizing:
     border-box;
 
@@ -779,6 +789,11 @@
 ========================================================= */
 
 .archive-contract-disclaimer {
+  font-family:
+    "Noto Sans KR",
+    Arial,
+    sans-serif;
+
   box-sizing:
     border-box;
 
