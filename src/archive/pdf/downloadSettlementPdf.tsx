@@ -1,5 +1,5 @@
 import { pdf } from '@react-pdf/renderer';
-import { getSettlementArchivePreview, saveSettlementPdf } from '../api/archiveApi';
+import { getSettlementArchivePreview, getSavedSettlementPdf, saveSettlementPdf } from '../api/archiveApi';
 import SettlementPdfTemplate from './SettlementPdfTemplate';
 
 function triggerBlobDownload(blob: Blob, filename: string): void {
@@ -17,6 +17,12 @@ function triggerBlobDownload(blob: Blob, filename: string): void {
 
 export async function downloadSettlementPdf(settlementId: number): Promise<void> {
   const filename = `정산_${settlementId}.pdf`;
+
+  const savedPdf = await getSavedSettlementPdf(settlementId);
+  if (savedPdf) {
+    triggerBlobDownload(savedPdf, filename);
+    return;
+  }
 
   const preview = await getSettlementArchivePreview(settlementId);
   const blob = await pdf(<SettlementPdfTemplate preview={preview} />).toBlob();
