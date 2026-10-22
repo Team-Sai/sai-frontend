@@ -963,3 +963,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* 스트리밍: 검증 중 상태 */
+.sai-result__status.is-reviewing {
+  color: #3d5a99;
+
+  background: #e8eefb;
+}
+
+/* 스트리밍: 검증에서 문장이 수정됐을 때 */
+.sai-revised details {
+  margin-top: 6px;
+}
+
+.sai-revised summary {
+  cursor: pointer;
+
+  font-size: 12px;
+}
+
+.sai-revised details p {
+  margin-top: 6px;
+
+  white-space: pre-wrap;
+
+  opacity: 0.8;
+}
