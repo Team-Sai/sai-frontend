@@ -57,7 +57,26 @@ export interface ClauseSuggestionResponse {
   validation: ClauseValidation;
   references: ClauseReference[];
 
-  unresolvedDecisions?: ClauseUnresolvedDecision[];
+    unresolvedDecisions?: ClauseUnresolvedDecision[];
+  /** 스트리밍에서만: 검증 과정에서 초안 문장이 수정됐는지 */
+  clauseRevised?: boolean;
+}
+
+/** 스트리밍 진행 단계 (AI 서버가 보내는 progress 이벤트) */
+export type ClauseStreamStep =
+  | "analysis"
+  | "retrieval"
+  | "generation"
+  | "validation";
+
+/** 생성 직후 받은 조항 초안 (검증 전이라 계약서에 반영할 수 없다) */
+export interface ClauseDraft {
+  title: string;
+  summary: string;
+  suggestedClause: string;
+  warnings: string[];
+  references: ClauseReference[];
+  unresolvedDecisions: ClauseUnresolvedDecision[];
 }
 
 export type ClauseSlotType =
@@ -119,5 +138,10 @@ export interface DraftContractClause {
 
   content: string;
 
-  status: "STREAMING" | "READY";
+  /*
+   * STREAMING: 계약서에 글자가 써지는 중
+   * REVIEWING: 다 써졌지만 아직 검증 중 (반영 불가)
+   * READY: 검증까지 끝남
+   */
+  status: "STREAMING" | "REVIEWING" | "READY";
 }
