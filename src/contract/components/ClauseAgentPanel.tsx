@@ -340,6 +340,9 @@ export default function ClauseAgentPanel({
         window.clearInterval(stepTimer.current);
       }
       abortController.current?.abort();
+      abortController.current = null;
+      setIsLoading(false);
+      stopStepTimer();
     };
   }, []);
 
@@ -505,18 +508,16 @@ export default function ClauseAgentPanel({
   async function fetchSuggestion(
     request: ClauseSuggestionRequest,
     requestStartedAt: number,
+    controller: AbortController,
   ): Promise<{
     response: ClauseSuggestionResponse;
     shownDraft: ClauseDraft | null;
   }> {
     let shownDraft: ClauseDraft | null = null;
 
-    const controller = new AbortController();
-    abortController.current = controller;
-
     try {
       const response = await requestClauseSuggestionStream(
-        request,
+        request, 
         {
           onProgress: (step) => setStreamStep(step),
 
@@ -550,7 +551,7 @@ export default function ClauseAgentPanel({
       startWorkSteps();
 
       return {
-        response: await requestClauseSuggestion(request),
+        response: await requestClauseSuggestion(request, controller.signal),
         shownDraft: null,
       };
     }
@@ -604,6 +605,10 @@ export default function ClauseAgentPanel({
     finalArrived.current = false;
 
     const requestStartedAt = performance.now();
+    // 이 요청 전용 컨트롤러. 취소 후 바로 새로 요청해도
+    // 이전 요청이 새 요청의 상태(ref, 로딩, 초안)를 건드리지 않도록 지역 변수로 들고 있는다.
+    const controller = new AbortController();
+    abortController.current = controller;
 
     try {
       const principal = Number(formData.principalAmount);
@@ -637,7 +642,12 @@ export default function ClauseAgentPanel({
       const { response, shownDraft } = await fetchSuggestion(
         request,
         requestStartedAt,
+        controller,
       );
+      // 응답을 받는 사이에 취소됐다면 결과를 화면에 붙이지 않는다.
+      if (controller.signal.aborted) {
+        return;
+      }
 
       const apiMs = performance.now() - requestStartedAt;
 
@@ -668,7 +678,7 @@ export default function ClauseAgentPanel({
         return;
       }
 
-            saveStoredAgentSession(message, response);
+      saveStoredAgentSession(message, response);
       setResult(response);
       setDraft(null);
 
@@ -682,16 +692,17 @@ export default function ClauseAgentPanel({
         streamClause(response, apiMs);
       }
     } catch (requestError) {
+      // 사용자가 취소한 요청은 오류로 보여주지 않고, 화면 정리도 handleCancel에 맡긴다.
+      // (여기서 정리하면 취소 직후 시작한 새 요청의 초안까지 지워진다)
+      if (controller.signal.aborted) {
+        return;
+      }
+
       stopStepTimer();
       stopTyping();
       setIsStreaming(false);
       setDraft(null);
       onDraftChange(null);
-
-      // 사용자가 취소한 경우는 오류로 보여주지 않는다.
-      if (abortController.current?.signal.aborted) {
-        return;
-      }
 
       setError(
         requestError instanceof Error
@@ -699,13 +710,19 @@ export default function ClauseAgentPanel({
           : "계약 조항을 검토하는 중 오류가 발생했습니다.",
       );
     } finally {
-      setIsLoading(false);
-      abortController.current = null;
+      // 취소 후 새 요청이 시작됐다면 그 요청의 상태는 건드리지 않는다.
+      if (abortController.current === controller) {
+        abortController.current = null;
+        setIsLoading(false);
+      }
     }
   }
 
   function handleCancel() {
     abortController.current?.abort();
+    abortController.current = null;
+    setIsLoading(false);
+    stopStepTimer();
     stopTyping();
     clearStoredAgentSession();
 

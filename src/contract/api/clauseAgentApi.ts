@@ -189,6 +189,7 @@ function normalizeClauseSuggestionResponse(
 
 export async function requestClauseSuggestion(
   request: ClauseSuggestionRequest,
+  signal?: AbortSignal,
 ): Promise<ClauseSuggestionResponse> {
   const response = await authFetch("/api/contracts/clause-suggestions", {
     method: "POST",
@@ -200,6 +201,7 @@ export async function requestClauseSuggestion(
     },
 
     body: JSON.stringify(request),
+    signal,
   });
 
   if (!response.ok) {
@@ -253,6 +255,8 @@ export interface ClauseStreamHandlers {
   onDraft?: (draft: ClauseDraft) => void;
 }
 
+/** 이 상태 코드는 "스트리밍 경로가 없다"는 뜻이라 기존 API로 다시 요청한다. */
+const STREAM_NOT_SUPPORTED_STATUSES = [404, 405, 501];
 const STREAM_STEPS: ClauseStreamStep[] = [
   "analysis",
   "retrieval",
@@ -343,20 +347,26 @@ export async function requestClauseSuggestionStream(
     throw new ClauseStreamUnavailableError("스트리밍 연결에 실패했습니다.");
   }
 
-  // 요청 내용 자체가 잘못된 경우는 기존 API로 다시 보내도 같으므로 바로 알린다.
-  if (response.status === 400) {
+  // 스트리밍 API가 아직 없는 서버(배포 전 백엔드 등)일 때만 기존 API로 다시 요청한다.
+  // 400·401·403·429·5xx는 기존 API로 보내도 같은 결과이거나 AI를 한 번 더 부르게 되므로 바로 알린다.
+  if (STREAM_NOT_SUPPORTED_STATUSES.includes(response.status)) {
+    throw new ClauseStreamUnavailableError(
+      `스트리밍 API를 사용할 수 없습니다. (${response.status})`,
+    );
+  }
+
+  if (!response.ok) {
     throw new Error(
-      await readErrorMessage(response, "요청 내용을 확인해 주세요."),
+      await readErrorMessage(
+        response,
+        `S-AI 조항 생성에 실패했습니다. (${response.status})`,
+      ),
     );
   }
 
   const contentType = response.headers.get("Content-Type") ?? "";
 
-  if (
-    !response.ok ||
-    !response.body ||
-    !contentType.includes("text/event-stream")
-  ) {
+  if (!response.body || !contentType.includes("text/event-stream")) {
     throw new ClauseStreamUnavailableError(
       `스트리밍 응답을 받을 수 없습니다. (${response.status})`,
     );
