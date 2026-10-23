@@ -1002,7 +1002,8 @@ export default function ContractDocument({
               <DraftTypewriter
                 text={draftClause.content}
                 animate={
-                  draftClause.status === "STREAMING"
+                  draftClause.status === "STREAMING" &&
+                  !draftClause.live
                 }
               />
 

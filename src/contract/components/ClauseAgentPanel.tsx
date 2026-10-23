@@ -329,6 +329,9 @@ export default function ClauseAgentPanel({
   const abortController = useRef<AbortController | null>(null);
   /* 타이핑이 끝났을 때 "검토 중"으로 둘지 "완료"로 둘지 */
   const finalArrived = useRef(false);
+  
+  /* AI가 지금까지 실제로 쓴 조항 글자 (delta 이벤트를 이어 붙인 것) */
+  const liveText = useRef("");
 
   useEffect(() => {
     return () => {
@@ -395,6 +398,20 @@ export default function ClauseAgentPanel({
     }
 
     stopTyping();
+    
+    // 글자가 이미 실시간으로 다 써졌다면 다시 타이핑하지 않고 바로 "검토 중"으로 바꾼다.
+    if (liveText.current) {
+      setIsStreaming(false);
+
+      onDraftChange({
+        title: nextDraft.title,
+        content: nextDraft.suggestedClause,
+        status: finalArrived.current ? "READY" : "REVIEWING",
+        live: true,
+      });
+      return;
+    }
+
     setIsStreaming(true);
     draftStartedAt.current = performance.now();
 
@@ -463,6 +480,19 @@ export default function ClauseAgentPanel({
     }, getDraftTypingDuration(nextDraft.suggestedClause));
   }
 
+  /* 스트리밍: AI가 쓰는 글자를 받는 대로 계약서에 이어 붙인다. */
+  function appendLiveText(text: string) {
+    liveText.current += text;
+    setIsStreaming(true);
+
+    onDraftChange({
+      title: "조항 작성 중",
+      content: liveText.current,
+      status: "STREAMING",
+      live: true,
+    });
+  }
+
   /* 스트리밍: 최종 결과가 오면 초안을 확정하거나, 바뀐 문장으로 교체한다. */
   function finishDraft(
     shownDraft: ClauseDraft,
@@ -520,6 +550,19 @@ export default function ClauseAgentPanel({
         request, 
         {
           onProgress: (step) => setStreamStep(step),
+
+          
+          onDelta: (text) => {
+            if (!liveText.current) {
+              console.info(
+                `[S-AI PERF] First text shown: ${Math.round(
+                  performance.now() - requestStartedAt,
+                )}ms`,
+              );
+            }
+
+            appendLiveText(text);
+          },
 
           onDraft: (nextDraft) => {
             shownDraft = nextDraft;
@@ -603,6 +646,7 @@ export default function ClauseAgentPanel({
     setDraft(null);
     setRevisedFrom(null);
     finalArrived.current = false;
+    liveText.current = "";
 
     const requestStartedAt = performance.now();
     // 이 요청 전용 컨트롤러. 취소 후 바로 새로 요청해도
@@ -720,6 +764,7 @@ export default function ClauseAgentPanel({
 
   function handleCancel() {
     abortController.current?.abort();
+    liveText.current = "";
     abortController.current = null;
     setIsLoading(false);
     stopStepTimer();

@@ -252,6 +252,8 @@ export class ClauseStreamUnavailableError extends Error {
 
 export interface ClauseStreamHandlers {
   onProgress?: (step: ClauseStreamStep) => void;
+  /** AI가 조항을 쓰는 중에 새로 써진 글자 */
+  onDelta?: (text: string) => void;
   onDraft?: (draft: ClauseDraft) => void;
 }
 
@@ -388,6 +390,14 @@ export async function requestClauseSuggestionStream(
 
       if (STREAM_STEPS.includes(step as ClauseStreamStep)) {
         handlers.onProgress?.(step as ClauseStreamStep);
+      }
+
+      return;
+    }
+
+    if (event === "delta") {
+      if (typeof body.text === "string" && body.text) {
+        handlers.onDelta?.(body.text);
       }
 
       return;
