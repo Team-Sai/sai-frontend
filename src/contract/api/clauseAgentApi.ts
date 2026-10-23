@@ -252,6 +252,10 @@ export class ClauseStreamUnavailableError extends Error {
 
 export interface ClauseStreamHandlers {
   onProgress?: (step: ClauseStreamStep) => void;
+  /** 순위 매기기가 끝난 뒤, 조항을 쓰기 전에 먼저 받는 근거 법령 */
+  onReferences?: (references: ClauseReference[]) => void;
+  /** AI가 조항을 쓰는 중에 새로 써진 글자 */
+  onDelta?: (text: string) => void;
   onDraft?: (draft: ClauseDraft) => void;
 }
 
@@ -388,6 +392,24 @@ export async function requestClauseSuggestionStream(
 
       if (STREAM_STEPS.includes(step as ClauseStreamStep)) {
         handlers.onProgress?.(step as ClauseStreamStep);
+      }
+
+      return;
+    }
+
+    if (event === "references") {
+      const references = normalizeReferences(body.references);
+
+      if (references.length > 0) {
+        handlers.onReferences?.(references);
+      }
+
+      return;
+    }
+
+    if (event === "delta") {
+      if (typeof body.text === "string" && body.text) {
+        handlers.onDelta?.(body.text);
       }
 
       return;

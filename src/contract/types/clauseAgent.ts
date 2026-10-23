@@ -144,4 +144,14 @@ export interface DraftContractClause {
    * READY: 검증까지 끝남
    */
   status: "STREAMING" | "REVIEWING" | "READY";
+
+  
+  /*
+   * true면 AI가 실제로 쓰는 글자를 그대로 보여주는 중이라
+   * 타이핑 연출(한 글자씩 다시 쓰기)을 하지 않는다.
+   */
+  live?: boolean;
+
+  /* 글자가 오기 전, 조항 자리에 보여줄 안내 (예: "관련 법령을 확인하고 있어요") */
+  placeholder?: string;
 }

@@ -10,6 +10,7 @@ import type { ContractFormData } from "../types/contract";
 import type {
   AppliedContractClause,
   ClauseDraft,
+  ClauseReference,
   ClauseStreamStep,
   ClauseSuggestionRequest,
   ClauseSuggestionResponse,
@@ -17,7 +18,12 @@ import type {
 } from "../types/clauseAgent";
 import type { ContractFieldWarning } from "../utils/contractValidation";
 import { createClauseSlots } from "../utils/clauseSlots";
-import { getDraftTypingDuration } from "../utils/draftTyping";
+import {
+  getDraftTypingDuration,
+  getLiveStep,
+  LIVE_CATCH_UP_MS,
+  LIVE_TICK_MS,
+} from "../utils/draftTyping";
 import "./ClauseAgentPanel.css";
 
 interface ClauseAgentPanelProps {
@@ -58,6 +64,17 @@ const STREAM_STEPS: { step: ClauseStreamStep; label: string }[] = [
   { step: "generation", label: "계약 문구를 작성하고 있어요" },
   { step: "validation", label: "기존 계약과 충돌하지 않는지 확인하고 있어요" },
 ];
+
+/* "민법 제468조, 민법 제397조 등" 처럼 앞의 2개만 짧게 */
+function formatReferenceNames(references: ClauseReference[]): string {
+  const names = references
+    .slice(0, 2)
+    .map((reference) =>
+      [reference.lawName, reference.articleNumber].filter(Boolean).join(" "),
+    );
+
+  return references.length > 2 ? `${names.join(", ")} 등` : names.join(", ");
+}
 
 function getIssueLabel(type: string): string {
   const labels: Record<string, string> = {
@@ -309,6 +326,8 @@ export default function ClauseAgentPanel({
   const [stepMode, setStepMode] = useState<"stream" | "legacy">("stream");
   const [streamStep, setStreamStep] = useState<ClauseStreamStep | null>(null);
   const [draft, setDraft] = useState<ClauseDraft | null>(null);
+  /* 순위 매기기가 끝나면 먼저 보여주는 근거 법령 */
+  const [foundReferences, setFoundReferences] = useState<ClauseReference[]>([]);
   const [revisedFrom, setRevisedFrom] = useState<string | null>(null);
 
   /* 초안은 보이지만 아직 검증(최종 결과)을 기다리는 중 */
@@ -329,6 +348,23 @@ export default function ClauseAgentPanel({
   const abortController = useRef<AbortController | null>(null);
   /* 타이핑이 끝났을 때 "검토 중"으로 둘지 "완료"로 둘지 */
   const finalArrived = useRef(false);
+  
+  /* AI가 지금까지 실제로 쓴 조항 글자 (delta 이벤트를 이어 붙인 것) */
+  const liveText = useRef("");
+
+  /*
+   * 받은 글자(liveText)를 화면에는 읽을 수 있는 속도로 옮겨 적는다.
+   * - liveShown: 지금까지 화면에 보여준 글자 수
+   * - livePacer: 옮겨 적는 타이머
+   * - liveDeadline: AI가 다 쓴 뒤, 남은 글자를 이 시각까지 끝낸다
+   * - pendingDraft / pendingFinish: 화면이 다 써질 때까지 미뤄 둔 초안·최종 결과 처리
+   */
+  const liveShown = useRef(0);
+  const livePacer = useRef<number | null>(null);
+  const liveDeadline = useRef<number | null>(null);
+  const liveTitle = useRef("조항 작성 중");
+  const pendingDraft = useRef<ClauseDraft | null>(null);
+  const pendingFinish = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     return () => {
@@ -339,10 +375,10 @@ export default function ClauseAgentPanel({
       if (stepTimer.current !== null) {
         window.clearInterval(stepTimer.current);
       }
+      if (livePacer.current !== null) {
+        window.clearInterval(livePacer.current);
+      }
       abortController.current?.abort();
-      abortController.current = null;
-      setIsLoading(false);
-      stopStepTimer();
     };
   }, []);
 
@@ -361,6 +397,93 @@ export default function ClauseAgentPanel({
 
     window.clearTimeout(typingTimer.current);
     typingTimer.current = null;
+  }
+
+  function stopLivePacer() {
+    if (livePacer.current === null) return;
+
+    window.clearInterval(livePacer.current);
+    livePacer.current = null;
+  }
+
+  /* 실시간 글자 관련 상태를 모두 처음으로 */
+  function resetLive() {
+    stopLivePacer();
+    liveText.current = "";
+    liveShown.current = 0;
+    liveDeadline.current = null;
+    liveTitle.current = "조항 작성 중";
+    pendingDraft.current = null;
+    pendingFinish.current = null;
+  }
+
+  /* 화면이 다 써졌을 때: 미뤄 둔 최종 결과가 있으면 그걸로, 없으면 "검토 중" */
+  function completeLiveDraft() {
+    const nextDraft = pendingDraft.current;
+    const finish = pendingFinish.current;
+
+    pendingFinish.current = null;
+    setIsStreaming(false);
+
+    if (finish) {
+      finish();
+      return;
+    }
+
+    if (nextDraft) {
+      onDraftChange({
+        title: nextDraft.title,
+        content: nextDraft.suggestedClause,
+        status: finalArrived.current ? "READY" : "REVIEWING",
+        live: true,
+      });
+    }
+  }
+
+  /* 받은 글자를 LIVE_TICK_MS마다 조금씩 화면에 옮겨 적는다 */
+  function ensureLivePacer() {
+    if (livePacer.current !== null) return;
+
+    let lastTick = performance.now();
+
+    livePacer.current = window.setInterval(() => {
+      const now = performance.now();
+      const elapsed = now - lastTick;
+      lastTick = now;
+
+      const total = liveText.current.length;
+      const remaining = total - liveShown.current;
+
+      if (remaining > 0) {
+        let shown =
+          liveShown.current +
+          getLiveStep(
+            remaining,
+            elapsed,
+            liveDeadline.current === null ? null : liveDeadline.current - now,
+          );
+
+        // 이모지처럼 두 칸짜리 글자를 반으로 자르지 않게
+        const code = liveText.current.charCodeAt(shown - 1);
+        if (code >= 0xd800 && code <= 0xdbff && shown < total) shown += 1;
+
+        liveShown.current = shown;
+
+        onDraftChange({
+          title: liveTitle.current,
+          content: liveText.current.slice(0, shown),
+          status: "STREAMING",
+          live: true,
+        });
+        return;
+      }
+
+      // 화면이 다 따라잡았고 AI도 다 썼다면(draft 도착) 마무리
+      if (pendingDraft.current) {
+        stopLivePacer();
+        completeLiveDraft();
+      }
+    }, LIVE_TICK_MS);
   }
 
   function stopStepTimer() {
@@ -442,6 +565,24 @@ export default function ClauseAgentPanel({
    */
   function showDraft(nextDraft: ClauseDraft) {
     stopTyping();
+
+    // 실시간으로 받는 중이면: 타이핑 연출을 다시 하지 않고,
+    // 화면이 남은 글자를 LIVE_CATCH_UP_MS 안에 마저 쓰게 한 뒤 "검토 중"으로 바꾼다.
+    if (liveText.current) {
+      pendingDraft.current = nextDraft;
+      liveTitle.current = nextDraft.title;
+      liveDeadline.current = performance.now() + LIVE_CATCH_UP_MS;
+
+      // 초안 문장이 기준이다. 이미 보여준 부분과 이어지면 초안으로 바꿔 끼운다.
+      const shownText = liveText.current.slice(0, liveShown.current);
+      if (nextDraft.suggestedClause.startsWith(shownText)) {
+        liveText.current = nextDraft.suggestedClause;
+      }
+
+      ensureLivePacer();
+      return;
+    }
+
     setIsStreaming(true);
     finalArrived.current = false;
 
@@ -463,11 +604,46 @@ export default function ClauseAgentPanel({
     }, getDraftTypingDuration(nextDraft.suggestedClause));
   }
 
+  /*
+   * 스트리밍: 글자가 오기 전이라도 계약서에 새 조항 자리를 먼저 만들고,
+   * 지금 무엇을 하고 있는지(법령 확인 중 → 문장 준비 중)를 그 자리에 보여준다.
+   * 글자가 오기 시작하면(liveText) 더 이상 바꾸지 않는다.
+   */
+  function showDraftSlot(title: string, placeholder: string) {
+    if (liveText.current) {
+      return;
+    }
+
+    setIsStreaming(true);
+
+    onDraftChange({
+      title,
+      content: "",
+      status: "STREAMING",
+      live: true,
+      placeholder,
+    });
+  }
+
+  /* 스트리밍: AI가 쓰는 글자를 받는 대로 계약서에 이어 붙인다. */
+  function appendLiveText(text: string) {
+    liveText.current += text;
+    setIsStreaming(true);
+    ensureLivePacer();
+  }
+
   /* 스트리밍: 최종 결과가 오면 초안을 확정하거나, 바뀐 문장으로 교체한다. */
   function finishDraft(
     shownDraft: ClauseDraft,
     response: ClauseSuggestionResponse,
   ) {
+    // 화면이 아직 글자를 옮겨 적는 중이면, 다 써진 뒤에 처리한다.
+    if (livePacer.current !== null) {
+      finalArrived.current = true;
+      pendingFinish.current = () => finishDraft(shownDraft, response);
+      return;
+    }
+
     const finalClause = response.suggestedClause?.trim() ?? "";
     const revised =
       response.clauseRevised === true ||
@@ -491,6 +667,7 @@ export default function ClauseAgentPanel({
         title: response.title,
         content: finalClause,
         status: "READY",
+        live: liveText.current !== "",
       });
       return;
     }
@@ -501,6 +678,7 @@ export default function ClauseAgentPanel({
         title: response.title,
         content: finalClause,
         status: "READY",
+        live: liveText.current !== "",
       });
     }
   }
@@ -519,7 +697,44 @@ export default function ClauseAgentPanel({
       const response = await requestClauseSuggestionStream(
         request, 
         {
-          onProgress: (step) => setStreamStep(step),
+          onProgress: (step) => {
+            setStreamStep(step);
+
+            if (step === "retrieval") {
+              showDraftSlot("조항 준비 중", "관련 법령을 확인하고 있어요");
+            }
+
+            if (step === "generation") {
+              showDraftSlot("조항 작성 중", "문장을 준비하고 있어요");
+            }
+          },
+
+          onReferences: (references) => {
+            setFoundReferences(references);
+            showDraftSlot(
+              "조항 준비 중",
+              `관련 법령을 확인하고 있어요 · ${formatReferenceNames(references)}`,
+            );
+
+            console.info(
+              `[S-AI PERF] References shown: ${Math.round(
+                performance.now() - requestStartedAt,
+              )}ms`,
+            );
+          },
+
+          
+          onDelta: (text) => {
+            if (!liveText.current) {
+              console.info(
+                `[S-AI PERF] First text shown: ${Math.round(
+                  performance.now() - requestStartedAt,
+                )}ms`,
+              );
+            }
+
+            appendLiveText(text);
+          },
 
           onDraft: (nextDraft) => {
             shownDraft = nextDraft;
@@ -546,6 +761,11 @@ export default function ClauseAgentPanel({
       console.info(
         `[S-AI STREAM] ${streamError.message} - 기존 API로 요청합니다.`,
       );
+
+      // 혹시 실시간으로 받던 글자가 있었다면 지우고 기존 방식으로 처음부터 보여준다.
+      resetLive();
+      setFoundReferences([]);
+      onDraftChange(null);
 
       setStepMode("legacy");
       startWorkSteps();
@@ -603,6 +823,8 @@ export default function ClauseAgentPanel({
     setDraft(null);
     setRevisedFrom(null);
     finalArrived.current = false;
+    resetLive();
+    setFoundReferences([]);
 
     const requestStartedAt = performance.now();
     // 이 요청 전용 컨트롤러. 취소 후 바로 새로 요청해도
@@ -671,6 +893,7 @@ export default function ClauseAgentPanel({
         setResult(null);
         setDuplicateClause(duplicate);
         onDraftChange(null);
+        resetLive();
 
         console.info(
           `[S-AI DUPLICATE] 기존 조항 감지: ${duplicate.title}`,
@@ -689,6 +912,8 @@ export default function ClauseAgentPanel({
           `[S-AI PERF] Final received: ${Math.round(apiMs)}ms`,
         );
       } else {
+        // 초안 없이 최종 결과만 왔다면 실시간 글자는 버리고 기존 타이핑 연출로 보여준다.
+        resetLive();
         streamClause(response, apiMs);
       }
     } catch (requestError) {
@@ -703,6 +928,7 @@ export default function ClauseAgentPanel({
       setIsStreaming(false);
       setDraft(null);
       onDraftChange(null);
+      resetLive();
 
       setError(
         requestError instanceof Error
@@ -720,6 +946,8 @@ export default function ClauseAgentPanel({
 
   function handleCancel() {
     abortController.current?.abort();
+    resetLive();
+    setFoundReferences([]);
     abortController.current = null;
     setIsLoading(false);
     stopStepTimer();
@@ -985,6 +1213,22 @@ export default function ClauseAgentPanel({
                         >
                           <i />
                           <span>{label}</span>
+
+                          {step === "retrieval" && foundReferences.length > 0 && (
+                            <ul className="sai-working__refs">
+                              {foundReferences.slice(0, 3).map((reference) => (
+                                <li key={reference.documentId}>
+                                  {reference.lawName}
+                                  {reference.articleNumber
+                                    ? ` ${reference.articleNumber}`
+                                    : ""}
+                                  {reference.articleTitle
+                                    ? ` (${reference.articleTitle})`
+                                    : ""}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
                       );
                     })}

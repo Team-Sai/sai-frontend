@@ -999,10 +999,18 @@ export default function ContractDocument({
             </div>
 
             <p className="document-typewriter">
+              {/* 조항 자리만 먼저 만들어지고 아직 글자가 안 왔을 때 */}
+              {draftClause.live && !draftClause.content && (
+                <span className="document-draft-placeholder">
+                  {draftClause.placeholder ?? "문장을 준비하고 있어요"}
+                </span>
+              )}
+
               <DraftTypewriter
                 text={draftClause.content}
                 animate={
-                  draftClause.status === "STREAMING"
+                  draftClause.status === "STREAMING" &&
+                  !draftClause.live
                 }
               />
 
