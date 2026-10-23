@@ -151,4 +151,7 @@ export interface DraftContractClause {
    * 타이핑 연출(한 글자씩 다시 쓰기)을 하지 않는다.
    */
   live?: boolean;
+
+  /* 글자가 오기 전, 조항 자리에 보여줄 안내 (예: "관련 법령을 확인하고 있어요") */
+  placeholder?: string;
 }

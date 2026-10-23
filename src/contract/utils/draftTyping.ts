@@ -57,3 +57,37 @@ export function getDraftTypingDuration(content: string): number {
     DRAFT_TYPING_PADDING_MS
   );
 }
+
+/*
+ * AI가 실시간으로 쓰는 글자(delta)를 계약서에 보여주는 속도.
+ *
+ * AI는 생각을 끝내면 1초에 수백 자를 한꺼번에 쏟아내서, 그대로 보여주면
+ * 글이 "확" 나타나 읽을 수가 없다. 받은 글자는 먼저 모아 두고(버퍼),
+ * 화면에는 눈으로 따라갈 수 있는 속도로 옮겨 적는다.
+ *
+ * - 기본: 1초에 LIVE_CHARS_PER_SECOND자
+ * - AI가 다 쓴 뒤(draft 도착)에는 남은 글자를 LIVE_CATCH_UP_MS 안에 끝낸다
+ *   (긴 조항이라도 하염없이 기다리지 않게)
+ */
+export const LIVE_CHARS_PER_SECOND = 50;
+export const LIVE_CATCH_UP_MS = 5000;
+export const LIVE_TICK_MS = 50;
+
+/** 이번 틱에 화면에 더 보여줄 글자 수 */
+export function getLiveStep(
+  remaining: number,
+  elapsedMs: number,
+  msUntilDeadline: number | null,
+): number {
+  if (remaining <= 0) return 0;
+
+  let step = (LIVE_CHARS_PER_SECOND * elapsedMs) / 1000;
+
+  if (msUntilDeadline !== null) {
+    // 마감까지 남은 시간 안에 다 쓰려면 이번 틱에 얼마나 써야 하는지
+    const timeLeft = Math.max(msUntilDeadline, elapsedMs);
+    step = Math.max(step, (remaining * elapsedMs) / timeLeft);
+  }
+
+  return Math.min(remaining, Math.max(1, Math.round(step)));
+}
