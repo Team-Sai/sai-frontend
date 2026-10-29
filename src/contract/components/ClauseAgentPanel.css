@@ -463,6 +463,7 @@
 
 .sai-working__steps > div {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
 
   gap: 8px;
@@ -962,4 +963,50 @@
   .sai-result__actions {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* 스트리밍: 검증 중 상태 */
+.sai-result__status.is-reviewing {
+  color: #3d5a99;
+
+  background: #e8eefb;
+}
+
+/* 스트리밍: 검증에서 문장이 수정됐을 때 */
+.sai-revised details {
+  margin-top: 6px;
+}
+
+.sai-revised summary {
+  cursor: pointer;
+
+  font-size: 12px;
+}
+
+.sai-revised details p {
+  margin-top: 6px;
+
+  white-space: pre-wrap;
+
+  opacity: 0.8;
+}
+
+/* "관련 법령을 확인하고 있어요" 아래에 먼저 보여주는 근거 법령 */
+.sai-working__refs {
+  flex-basis: 100%;
+
+  margin: 4px 0 0 14px;
+  padding: 0;
+
+  list-style: none;
+
+  color: #4f7563;
+
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.sai-working__refs li::before {
+  content: "· ";
 }

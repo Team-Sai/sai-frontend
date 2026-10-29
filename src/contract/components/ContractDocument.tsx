@@ -20,6 +20,10 @@ import {
   getUnresolvedClauseSlots,
   parseClauseTemplate,
 } from "../utils/clauseSlots";
+import {
+  getDraftCharDelay,
+  getDraftTypingScale,
+} from "../utils/draftTyping";
 import ClauseReasonDrawer from "./ClauseReasonDrawer";
 import "./ContractDocument.css";
 import "./ContractDocumentEnhancements.css";
@@ -208,31 +212,6 @@ function RenderSmartClause({
   );
 }
 
-const DRAFT_CHAR_INTERVAL_MS = 28;
-const DRAFT_COMMA_PAUSE_MS = 35;
-const DRAFT_SENTENCE_PAUSE_MS = 80;
-
-function getDraftCharDelay(character: string): number {
-  if (
-    character === "." ||
-    character === "!" ||
-    character === "?" ||
-    character === "\n"
-  ) {
-    return DRAFT_CHAR_INTERVAL_MS + DRAFT_SENTENCE_PAUSE_MS;
-  }
-
-  if (
-    character === "," ||
-    character === ";" ||
-    character === ":"
-  ) {
-    return DRAFT_CHAR_INTERVAL_MS + DRAFT_COMMA_PAUSE_MS;
-  }
-
-  return DRAFT_CHAR_INTERVAL_MS;
-}
-
 function DraftTypewriter({
   text,
   animate,
@@ -255,6 +234,8 @@ function DraftTypewriter({
     }
 
     const characters = Array.from(text);
+    // 긴 조항도 정해진 시간 안에 다 써지도록 글자 간격을 줄인다.
+    const scale = getDraftTypingScale(text);
 
     let index = 0;
     let timer: number | null = null;
@@ -276,7 +257,7 @@ function DraftTypewriter({
 
       timer = window.setTimeout(
         typeNext,
-        getDraftCharDelay(character),
+        getDraftCharDelay(character, scale),
       );
     };
 
@@ -1011,15 +992,25 @@ export default function ContractDocument({
 
               <span className="document-draft-badge">
                 <i />
-                작성 중
+                {draftClause.status === "REVIEWING"
+                  ? "검토 중"
+                  : "작성 중"}
               </span>
             </div>
 
             <p className="document-typewriter">
+              {/* 조항 자리만 먼저 만들어지고 아직 글자가 안 왔을 때 */}
+              {draftClause.live && !draftClause.content && (
+                <span className="document-draft-placeholder">
+                  {draftClause.placeholder ?? "문장을 준비하고 있어요"}
+                </span>
+              )}
+
               <DraftTypewriter
                 text={draftClause.content}
                 animate={
-                  draftClause.status === "STREAMING"
+                  draftClause.status === "STREAMING" &&
+                  !draftClause.live
                 }
               />
 
@@ -1028,6 +1019,14 @@ export default function ContractDocument({
                 <i className="document-writing-caret" />
               )}
             </p>
+
+            {draftClause.status === "REVIEWING" && (
+              <div className="document-pending">
+                <span />
+                기존 계약과 충돌하지 않는지 확인하고 있어요.
+                확인이 끝나면 반영할 수 있어요.
+              </div>
+            )}
 
             {draftClause.status === "READY" && (
               <div className="document-pending">

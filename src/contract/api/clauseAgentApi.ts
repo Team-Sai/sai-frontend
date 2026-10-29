@@ -1,10 +1,13 @@
 
 import { authFetch } from "../../auth/authFetch";
+import { createSseParser } from "../utils/sseParser";
 
 import type {
+  ClauseDraft,
   ClauseIssue,
   ClauseReference,
   ClauseSuggestionRequest,
+  ClauseStreamStep,
   ClauseSuggestionResponse,
   ClauseUnresolvedDecision,
   ClauseValidation,
@@ -186,6 +189,7 @@ function normalizeClauseSuggestionResponse(
 
 export async function requestClauseSuggestion(
   request: ClauseSuggestionRequest,
+  signal?: AbortSignal,
 ): Promise<ClauseSuggestionResponse> {
   const response = await authFetch("/api/contracts/clause-suggestions", {
     method: "POST",
@@ -197,6 +201,7 @@ export async function requestClauseSuggestion(
     },
 
     body: JSON.stringify(request),
+    signal,
   });
 
   if (!response.ok) {
@@ -224,4 +229,248 @@ export async function requestClauseSuggestion(
   const body: unknown = await response.json();
 
   return normalizeClauseSuggestionResponse(body);
+}
+
+
+/* ============================================================
+ * 스트리밍(SSE) 요청
+ * ============================================================
+ *
+ * 서버가 단계마다 이벤트를 보낸다.
+ *   progress → draft(생성 직후 초안, 검증 전) → final(최종 결과)
+ *
+ * 스트리밍 API가 아직 배포되지 않았거나(404 등) 응답이 스트림이 아니면
+ * ClauseStreamUnavailableError를 던진다. 호출하는 쪽에서 기존 API로 다시 요청하면 된다.
+ */
+
+export class ClauseStreamUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ClauseStreamUnavailableError";
+  }
+}
+
+export interface ClauseStreamHandlers {
+  onProgress?: (step: ClauseStreamStep) => void;
+  /** 순위 매기기가 끝난 뒤, 조항을 쓰기 전에 먼저 받는 근거 법령 */
+  onReferences?: (references: ClauseReference[]) => void;
+  /** AI가 조항을 쓰는 중에 새로 써진 글자 */
+  onDelta?: (text: string) => void;
+  onDraft?: (draft: ClauseDraft) => void;
+}
+
+/** 이 상태 코드는 "스트리밍 경로가 없다"는 뜻이라 기존 API로 다시 요청한다. */
+const STREAM_NOT_SUPPORTED_STATUSES = [404, 405, 501];
+const STREAM_STEPS: ClauseStreamStep[] = [
+  "analysis",
+  "retrieval",
+  "generation",
+  "validation",
+];
+
+function parseJson(data: string): Record<string, unknown> {
+  try {
+    const parsed: unknown = JSON.parse(data);
+
+    return parsed && typeof parsed === "object"
+      ? (parsed as Record<string, unknown>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+function normalizeDraft(body: Record<string, unknown>): ClauseDraft | null {
+  const suggestedClause =
+    typeof body.suggestedClause === "string" ? body.suggestedClause.trim() : "";
+
+  if (!suggestedClause) {
+    return null;
+  }
+
+  return {
+    title: typeof body.title === "string" ? body.title : "추가 조항",
+    summary: typeof body.summary === "string" ? body.summary : "",
+    suggestedClause,
+    warnings: normalizeWarnings(body.warnings),
+    references: normalizeReferences(body.references),
+    unresolvedDecisions: normalizeUnresolvedDecisions(body.unresolvedDecisions),
+  };
+}
+
+async function readErrorMessage(
+  response: Response,
+  fallback: string,
+): Promise<string> {
+  try {
+    const body: unknown = await response.json();
+
+    if (body && typeof body === "object") {
+      if ("detail" in body && typeof body.detail === "string") {
+        return body.detail;
+      }
+
+      if ("message" in body && typeof body.message === "string") {
+        return body.message;
+      }
+    }
+  } catch {
+    // 기본 메시지 사용
+  }
+
+  return fallback;
+}
+
+export async function requestClauseSuggestionStream(
+  request: ClauseSuggestionRequest,
+  handlers: ClauseStreamHandlers = {},
+  signal?: AbortSignal,
+): Promise<ClauseSuggestionResponse> {
+  let response: Response;
+
+  try {
+    response = await authFetch("/api/contracts/clause-suggestions/stream", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+
+        // 정상일 때는 스트림, 오류(400 등)일 때는 JSON 오류 메시지를 받기 위해 둘 다 받는다
+        Accept: "text/event-stream, application/json",
+      },
+
+      body: JSON.stringify(request),
+
+      signal,
+    });
+  } catch (error) {
+    if (signal?.aborted) {
+      throw error;
+    }
+
+    throw new ClauseStreamUnavailableError("스트리밍 연결에 실패했습니다.");
+  }
+
+  // 스트리밍 API가 아직 없는 서버(배포 전 백엔드 등)일 때만 기존 API로 다시 요청한다.
+  // 400·401·403·429·5xx는 기존 API로 보내도 같은 결과이거나 AI를 한 번 더 부르게 되므로 바로 알린다.
+  if (STREAM_NOT_SUPPORTED_STATUSES.includes(response.status)) {
+    throw new ClauseStreamUnavailableError(
+      `스트리밍 API를 사용할 수 없습니다. (${response.status})`,
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      await readErrorMessage(
+        response,
+        `S-AI 조항 생성에 실패했습니다. (${response.status})`,
+      ),
+    );
+  }
+
+  const contentType = response.headers.get("Content-Type") ?? "";
+
+  if (!response.body || !contentType.includes("text/event-stream")) {
+    throw new ClauseStreamUnavailableError(
+      `스트리밍 응답을 받을 수 없습니다. (${response.status})`,
+    );
+  }
+
+  // 콜백 안에서 값을 바꾸므로 TypeScript가 null로 좁히지 않도록 as로 선언한다.
+  let finalResult = null as ClauseSuggestionResponse | null;
+  let streamError = null as Error | null;
+
+  const parser = createSseParser(({ event, data }) => {
+    if (finalResult || streamError) {
+      return;
+    }
+
+    const body = parseJson(data);
+
+    if (event === "progress") {
+      const step = body.step;
+
+      if (STREAM_STEPS.includes(step as ClauseStreamStep)) {
+        handlers.onProgress?.(step as ClauseStreamStep);
+      }
+
+      return;
+    }
+
+    if (event === "references") {
+      const references = normalizeReferences(body.references);
+
+      if (references.length > 0) {
+        handlers.onReferences?.(references);
+      }
+
+      return;
+    }
+
+    if (event === "delta") {
+      if (typeof body.text === "string" && body.text) {
+        handlers.onDelta?.(body.text);
+      }
+
+      return;
+    }
+
+    if (event === "draft") {
+      const draft = normalizeDraft(body);
+
+      if (draft) {
+        handlers.onDraft?.(draft);
+      }
+
+      return;
+    }
+
+    if (event === "final") {
+      finalResult = {
+        ...normalizeClauseSuggestionResponse(body),
+        clauseRevised: body.clauseRevised === true,
+      };
+
+      return;
+    }
+
+    if (event === "error") {
+      streamError = new Error(
+        typeof body.message === "string"
+          ? body.message
+          : "S-AI 조항 생성에 실패했습니다.",
+      );
+    }
+  });
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+
+  try {
+    while (!finalResult && !streamError) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        parser.push(decoder.decode());
+        parser.flush();
+        break;
+      }
+
+      parser.push(decoder.decode(value, { stream: true }));
+    }
+  } finally {
+    reader.cancel().catch(() => undefined);
+  }
+
+  if (streamError) {
+    throw streamError;
+  }
+
+  if (!finalResult) {
+    throw new Error(
+      "S-AI 응답이 중간에 끊겼어요. 잠시 후 다시 시도해 주세요.",
+    );
+  }
+
+  return finalResult;
 }

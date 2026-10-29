@@ -856,3 +856,8 @@
     width: 94px;
   }
 }
+
+/* 조항 자리만 먼저 만들어졌을 때 (AI가 글자를 쓰기 전) */
+.document-draft-placeholder {
+  color: #9aa8a1;
+}
