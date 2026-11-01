@@ -140,6 +140,57 @@ function getBasicConditionProgress(
   };
 }
 
+interface RequiredAgentField {
+  label: string;
+  filled: boolean;
+}
+
+/*
+ * AI 패널을 쓰기 전에 꼭 채워야 하는 계약 칸.
+ * 다 채워야 입력창이 열린다. (빈 칸은 AI가 묻지 않는다)
+ */
+function getRequiredAgentFields(
+  formData: ContractFormData,
+): RequiredAgentField[] {
+  const principalAmount = Number(formData.principalAmount);
+  const interestRate = Number(formData.interestRate);
+  const repaymentDay = Number(formData.repaymentDay);
+
+  return [
+    {
+      label: "원금",
+      filled:
+        formData.principalAmount !== "" &&
+        Number.isFinite(principalAmount) &&
+        principalAmount > 0,
+    },
+    {
+      label: "이자율",
+      filled: formData.interestRate !== "" && Number.isFinite(interestRate),
+    },
+    {
+      label: "시작일",
+      filled: Boolean(formData.startDate),
+    },
+    {
+      label: "만기일",
+      filled: Boolean(formData.maturityDate),
+    },
+    {
+      label: "상환일",
+      filled:
+        formData.repaymentDay !== "" &&
+        Number.isInteger(repaymentDay) &&
+        repaymentDay >= 1 &&
+        repaymentDay <= 31,
+    },
+    {
+      label: "상환방식",
+      filled: Boolean(formData.repaymentType),
+    },
+  ];
+}
+
 function normalizeText(value: string): string {
   return value
     .toLowerCase()
@@ -777,12 +828,19 @@ export default function ClauseAgentPanel({
     }
   }
 
+  const requiredAgentFields = getRequiredAgentFields(formData);
+  const missingAgentFields = requiredAgentFields.filter(
+    (field) => !field.filled,
+  );
+  const isAgentLocked = missingAgentFields.length > 0;
+
   async function handleSend() {
     const message = input.trim();
 
     if (
       !message ||
       disabled ||
+      isAgentLocked ||
       isLoading ||
       isStreaming ||
       result
@@ -1066,6 +1124,37 @@ export default function ClauseAgentPanel({
             </span>
           )}
         </div>
+
+        {isAgentLocked && (
+          <section className="sai-chat-row">
+            <AgentAvatar
+              visible={headImageVisible}
+              onError={() => setHeadImageVisible(false)}
+            />
+
+            <div className="sai-chat-bubble sai-chat-bubble--assistant">
+              <strong>계약 기본 조건을 먼저 채워 주세요.</strong>
+              <p>
+                아래 {missingAgentFields.length}개를 채우면 바로 대화를
+                시작할 수 있어요.
+              </p>
+
+              <ul className="sai-required-fields">
+                {requiredAgentFields.map((field) => (
+                  <li
+                    key={field.label}
+                    className={field.filled ? "is-filled" : undefined}
+                  >
+                    <span aria-hidden="true">
+                      {field.filled ? "✓" : "○"}
+                    </span>
+                    {field.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
 
         {justApplied && (
           <section className="sai-chat-row">
@@ -1424,11 +1513,16 @@ export default function ClauseAgentPanel({
           rows={3}
           disabled={
             disabled ||
+            isAgentLocked ||
             isLoading ||
             isStreaming ||
             Boolean(result)
           }
-          placeholder="추가하고 싶은 계약 조건을 말씀해 주세요."
+          placeholder={
+            isAgentLocked
+              ? "계약 조건 추가가 잠겨 있습니다."
+              : "추가하고 싶은 계약 조건을 말씀해 주세요."
+          }
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={(event) => {
             if (
@@ -1446,6 +1540,7 @@ export default function ClauseAgentPanel({
           aria-label="메시지 보내기"
           disabled={
             disabled ||
+            isAgentLocked ||
             isLoading ||
             isStreaming ||
             Boolean(result) ||

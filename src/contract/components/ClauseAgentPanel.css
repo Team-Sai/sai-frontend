@@ -179,6 +179,33 @@
   color: #96702d;
 }
 
+.sai-required-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 6px 12px;
+
+  margin: 10px 0 0;
+  padding: 0;
+
+  color: #96702d;
+
+  font-size: 12px;
+
+  list-style: none;
+}
+
+.sai-required-fields li {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+.sai-required-fields li.is-filled {
+  color: #34594a;
+}
+
 /* =========================================
    WELCOME
 ========================================= */
