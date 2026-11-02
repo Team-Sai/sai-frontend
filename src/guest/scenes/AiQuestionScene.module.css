@@ -1,0 +1,105 @@
+.scene {
+  --p: 0;
+  --t-q: clamp(0, var(--p) / 0.25, 1);
+  --t-a1: clamp(0, (var(--p) - 0.3) / 0.2, 1);
+  --t-a2: clamp(0, (var(--p) - 0.5) / 0.2, 1);
+  --t-shrink: clamp(0, (var(--p) - 0.3) / 0.3, 1);
+  position: relative;
+  height: 180vh;
+  height: 180svh;
+  background: var(--ai-bg);
+  color: #fff;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(50% 45% at 50% 40%, rgba(108, 227, 176, calc(0.08 + var(--p) * 0.16)), transparent 70%),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 100% 64px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 64px 100%;
+  mask-image: radial-gradient(70% 70% at 50% 50%, #000 30%, transparent 100%);
+}
+
+.badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 28px;
+  padding: 6px 16px 6px 6px;
+  border: 1px solid rgba(108, 227, 176, 0.3);
+  border-radius: 999px;
+  color: #b9f0d8;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: var(--t-q);
+}
+
+.badge span {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--ai-mint);
+  color: #0b2a20;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.question {
+  position: relative;
+  margin: 0;
+  font-size: clamp(34px, 5.4vw, 76px);
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+  opacity: calc(var(--t-q) * (1 - var(--t-shrink) * 0.55));
+  transform: translateY(calc((1 - var(--t-q)) * 40px)) scale(calc(1 - var(--t-shrink) * 0.22));
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+.answer {
+  position: relative;
+  margin-top: 36px;
+}
+
+.answerLead {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(18px, 1.8vw, 24px);
+  opacity: var(--t-a1);
+  transform: translateY(calc((1 - var(--t-a1)) * 24px));
+}
+
+.answerMain {
+  margin: 14px 0 0;
+  word-break: keep-all;
+  text-wrap: balance;
+  font-size: clamp(26px, 3.4vw, 46px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  opacity: var(--t-a2);
+  transform: translateY(calc((1 - var(--t-a2)) * 24px));
+}
+
+.answerMain em {
+  font-style: normal;
+  color: var(--ai-mint);
+  background: linear-gradient(transparent 62%, rgba(108, 227, 176, 0.25) 62%) no-repeat;
+  background-size: calc(var(--t-a2) * 100%) 100%;
+}

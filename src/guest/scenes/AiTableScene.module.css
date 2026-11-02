@@ -1,0 +1,156 @@
+.scene {
+  padding: 120px 24px 140px;
+  background: var(--ai-bg);
+  color: #fff;
+}
+
+.inner {
+  width: min(1040px, 100%);
+  margin: 0 auto;
+}
+
+.inner h2 {
+  margin: 0 0 40px;
+  font-size: clamp(28px, 3.4vw, 46px);
+  letter-spacing: -0.035em;
+  text-align: center;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 15.5px;
+  line-height: 1.55;
+}
+
+.table th,
+.table td {
+  padding: 20px 22px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  word-break: keep-all;
+}
+
+.table thead th {
+  padding-top: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.table thead th.ours {
+  color: var(--ai-mint);
+}
+
+.table tbody th {
+  width: 20%;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.table tbody td {
+  width: 38%;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.table tbody td.ours {
+  color: #fff;
+  font-weight: 600;
+  background: rgba(108, 227, 176, 0.08);
+}
+
+.table tbody tr:first-child td.ours {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.table tbody tr:last-child td.ours {
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.table tbody tr {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--r) * 0.08s);
+}
+
+.isIn .table tbody tr {
+  opacity: 1;
+  transform: none;
+}
+
+.note {
+  margin: 24px 0 0;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .scene {
+    padding: 80px 16px 100px;
+  }
+
+  /* 좁은 화면에서는 행마다 카드처럼 쌓는다 */
+  .table,
+  .table tbody,
+  .table tr,
+  .table th,
+  .table td {
+    display: block;
+    min-width: 0;
+    width: auto;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  .table tbody tr {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    overflow: hidden;
+  }
+
+  .table tbody th,
+  .table tbody td {
+    padding: 12px 16px;
+    width: auto;
+    border: 0;
+    font-size: 14px;
+    white-space: normal;
+  }
+
+  .table tbody th {
+    padding-bottom: 0;
+    color: var(--ai-mint);
+  }
+
+  .table tbody td:not(.ours)::before {
+    content: '일반 AI 챗봇 · ';
+    color: rgba(255, 255, 255, 0.35);
+  }
+
+  .table tbody td.ours,
+  .table tbody tr:first-child td.ours,
+  .table tbody tr:last-child td.ours {
+    border-radius: 0;
+  }
+}

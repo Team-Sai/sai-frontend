@@ -1,0 +1,194 @@
+.scene {
+  --p: 0;
+  --dist: 0px;
+  position: relative;
+  height: calc(100vh + var(--dist) * 1.1);
+  height: calc(100svh + var(--dist) * 1.1);
+  background: #fff;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  min-height: 600px;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.42fr) minmax(0, 1fr);
+  align-items: center;
+  overflow: hidden;
+  padding-left: max(24px, calc((100vw - 1180px) / 2));
+}
+
+.head {
+  position: relative;
+  z-index: 2;
+  padding-right: 32px;
+  background: #fff;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--mint);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.head h2 {
+  margin: 20px 0 36px;
+  font-size: clamp(30px, 3.6vw, 52px);
+  line-height: 1.28;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.meter {
+  width: 160px;
+  height: 4px;
+  border-radius: 2px;
+  background: #e5e8eb;
+  overflow: hidden;
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  background: var(--green);
+  transform-origin: left;
+  transform: scaleX(var(--p));
+}
+
+.viewport {
+  min-width: 0;
+}
+
+.track {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  padding-right: max(24px, calc((100vw - 1180px) / 2));
+  transform: translateX(calc(var(--p) * var(--dist) * -1));
+}
+
+.card {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(250px, 26vw, 340px);
+  aspect-ratio: 3 / 4;
+  border-radius: 30px;
+  overflow: hidden;
+  background: #f2f4f6;
+  /* 들어올 때 살짝 기울었다가 펴진다 */
+  --enter: clamp(0, var(--p) * 6 - var(--k) * 0.6 + 1.2, 1);
+  transform: translateY(calc((1 - var(--enter)) * 40px)) rotate(calc((1 - var(--enter)) * 4deg));
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(calc(1.15 - var(--p) * 0.15));
+}
+
+.card:has(.photo)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.62));
+}
+
+.green {
+  background: linear-gradient(160deg, #d9f7ea, #9fe6c8);
+}
+
+.blue {
+  background: linear-gradient(160deg, #e3eeff, #a9c8fb);
+}
+
+.character {
+  position: absolute;
+  left: 50%;
+  bottom: -6%;
+  width: 82%;
+  height: auto;
+  translate: -50% 0;
+}
+
+.cardCopy {
+  position: absolute;
+  z-index: 2;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  color: #fff;
+}
+
+.green .cardCopy,
+.blue .cardCopy {
+  top: 24px;
+  bottom: auto;
+  color: var(--ink);
+}
+
+.tag {
+  display: inline-block;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.green .tag,
+.blue .tag {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.cardCopy h3 {
+  margin: 12px 0 0;
+  font-size: clamp(20px, 1.9vw, 25px);
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+}
+
+@media (max-width: 900px) {
+  .stage {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-content: center;
+    padding-left: 20px;
+    gap: 28px;
+  }
+
+  .head {
+    align-self: auto;
+    padding-right: 20px;
+  }
+
+  .head h2 {
+    margin: 12px 0 20px;
+    font-size: clamp(26px, 7vw, 34px);
+  }
+
+  .head h2 br {
+    display: none;
+  }
+
+  .track {
+    padding-right: 20px;
+    gap: 14px;
+  }
+
+  .card {
+    width: min(66vw, 280px);
+    border-radius: 24px;
+  }
+}
