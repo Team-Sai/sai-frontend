@@ -1118,6 +1118,8 @@ export default function ClauseAgentPanel({
             ? chatError.message
             : "요청 내용을 확인하지 못했어요.",
         );
+        // 사용자가 쓴 요청이 사라지지 않게 입력창에 되돌린다.
+        setInput((current) => current || request.message);
         return;
       }
 
@@ -1163,8 +1165,14 @@ export default function ClauseAgentPanel({
         },
       );
 
-      if (replied.readyToWrite && pendingRequest.current) {
-        void writeClause(pendingRequest.current, sessionId);
+      if (replied.readyToWrite) {
+        if (pendingRequest.current) {
+          void writeClause(pendingRequest.current, sessionId);
+        } else {
+          // 쓸 요청을 잃어버렸으면(드문 경우) 대화를 정리하고 다시 요청하게 한다.
+          setChat(null);
+          setError("대화가 끝났어요. 처음부터 다시 요청해 주세요.");
+        }
       }
 
       return true;
