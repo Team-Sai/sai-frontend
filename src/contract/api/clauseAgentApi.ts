@@ -3,6 +3,8 @@ import { authFetch } from "../../auth/authFetch";
 import { createSseParser } from "../utils/sseParser";
 
 import type {
+  ClauseChatReplyResponse,
+  ClauseChatStartResponse,
   ClauseDraft,
   ClauseIssue,
   ClauseReference,
@@ -321,15 +323,16 @@ async function readErrorMessage(
   return fallback;
 }
 
-export async function requestClauseSuggestionStream(
-  request: ClauseSuggestionRequest,
-  handlers: ClauseStreamHandlers = {},
+async function requestClauseStream(
+  path: string,
+  body: unknown,
+  handlers: ClauseStreamHandlers,
   signal?: AbortSignal,
 ): Promise<ClauseSuggestionResponse> {
   let response: Response;
 
   try {
-    response = await authFetch("/api/contracts/clause-suggestions/stream", {
+    response = await authFetch(path, {
       method: "POST",
 
       headers: {
@@ -339,7 +342,7 @@ export async function requestClauseSuggestionStream(
         Accept: "text/event-stream, application/json",
       },
 
-      body: JSON.stringify(request),
+      body: body === undefined ? undefined : JSON.stringify(body),
 
       signal,
     });
@@ -473,4 +476,103 @@ export async function requestClauseSuggestionStream(
   }
 
   return finalResult;
+}
+
+
+/** 기존 한 번에 쓰기: 이름과 모양이 그대로라 부르는 쪽은 안 바꿔도 된다. */
+export function requestClauseSuggestionStream(
+  request: ClauseSuggestionRequest,
+  handlers: ClauseStreamHandlers = {},
+  signal?: AbortSignal,
+): Promise<ClauseSuggestionResponse> {
+  return requestClauseStream(
+    "/api/contracts/clause-suggestions/stream",
+    request,
+    handlers,
+    signal,
+  );
+}
+
+/* ============================================================
+ * 대화형 AI 특약
+ * ============================================================ */
+
+/** 1턴: AI가 이해한 내용·질문을 받는다. */
+export async function startClauseChat(
+  request: ClauseSuggestionRequest,
+  signal?: AbortSignal,
+): Promise<ClauseChatStartResponse> {
+  const response = await authFetch("/api/contracts/clause-chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(request),
+    signal,
+  });
+
+  // 대화형 API가 아직 없는 서버(배포 전 등)일 때만 부르는 쪽이 예전처럼 바로 쓰게 한다.
+  if (STREAM_NOT_SUPPORTED_STATUSES.includes(response.status)) {
+    throw new ClauseStreamUnavailableError(
+      `대화형 API를 사용할 수 없습니다. (${response.status})`,
+    );
+  }
+
+
+  if (!response.ok) {
+    throw new Error(
+      await readErrorMessage(
+        response,
+        `S-AI가 요청을 확인하지 못했어요. (${response.status})`,
+      ),
+    );
+  }
+
+  return (await response.json()) as ClauseChatStartResponse;
+}
+
+/** 답장: 버튼을 누르거나 직접 입력한 말을 보낸다. */
+export async function replyClauseChat(
+  sessionId: string,
+  message: string,
+  signal?: AbortSignal,
+): Promise<ClauseChatReplyResponse> {
+  const response = await authFetch(
+    `/api/contracts/clause-chat/${encodeURIComponent(sessionId)}/reply`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ message }),
+      signal,
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      await readErrorMessage(
+        response,
+        `답장을 보내지 못했어요. (${response.status})`,
+      ),
+    );
+  }
+
+  return (await response.json()) as ClauseChatReplyResponse;
+}
+
+/** 확정 후 작성: 이벤트는 기존 스트리밍과 같다. (progress는 retrieval부터) */
+export function requestClauseChatWriteStream(
+  sessionId: string,
+  handlers: ClauseStreamHandlers = {},
+  signal?: AbortSignal,
+): Promise<ClauseSuggestionResponse> {
+  return requestClauseStream(
+    `/api/contracts/clause-chat/${encodeURIComponent(sessionId)}/write`,
+    undefined,
+    handlers,
+    signal,
+  );
 }
