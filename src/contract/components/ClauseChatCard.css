@@ -1,0 +1,58 @@
+.sai-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.sai-chat__multiline {
+  white-space: pre-line;
+}
+
+.sai-chat__field-edits {
+  margin: 8px 0 0;
+  padding-left: 16px;
+  color: #62786e;
+  font-size: 12px;
+}
+
+.sai-chat__notices {
+  margin-left: 52px;
+}
+
+.sai-chat__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.sai-chat__options button {
+  padding: 8px 12px;
+  color: #326a56;
+  background: #ffffff;
+  border: 1px solid #cfe5da;
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sai-chat__options button:hover:not(:disabled) {
+  background: #e3f3eb;
+}
+
+.sai-chat__options button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.sai-chat__options button.is-subtle {
+  color: #81938b;
+  border-style: dashed;
+}
+
+.sai-chat__waiting {
+  margin: 0 0 0 52px;
+  color: #81938b;
+  font-size: 11px;
+}

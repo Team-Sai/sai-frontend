@@ -155,3 +155,67 @@ export interface DraftContractClause {
   /* 글자가 오기 전, 조항 자리에 보여줄 안내 (예: "관련 법령을 확인하고 있어요") */
   placeholder?: string;
 }
+
+
+/* ============================================================
+ * 대화형 AI 특약 (백엔드 /api/contracts/clause-chat)
+ * ============================================================ */
+
+/** AI가 요청에서 읽어 낸 값 하나 (예: 연속 연체 기간 = 3개월) */
+export interface ClauseChatSlot {
+  name: string;
+  kind: string;
+  value: string;
+  /** 계약서 값과 다를 때 원래 값 (예: 연 5%) */
+  from: string | null;
+  field: string | null;
+  condition: string | null;
+  inMessage: boolean;
+  confirmed: boolean;
+}
+
+/** 버튼으로 답할 수 있는 질문 */
+export interface ClauseChatQuestion {
+  id: string;
+  text: string;
+  options: string[];
+}
+
+/** "이건 특약이 아니라 계약서 칸을 고치세요" 안내 */
+export interface ClauseChatFieldEdit {
+  field: string;
+  label: string;
+  value: string;
+  current: string;
+}
+
+export interface ClauseChatStartResponse {
+  /** 범위 밖이거나 계약서 칸 안내면 null (대화를 이어갈 수 없음) */
+  sessionId: string | null;
+  inScope: boolean;
+  summary: string | null;
+  slots: ClauseChatSlot[];
+  questions: ClauseChatQuestion[];
+  fieldEdits: ClauseChatFieldEdit[];
+  guide: string | null;
+  /** 보증처럼 꼭 알려야 하는 법령 안내 */
+  notices: string[];
+}
+
+export type ClauseChatReplyKind =
+  | "ANSWER"
+  | "VALUE_CHANGE"
+  | "UNKNOWN"
+  | "CONFIRM"
+  | "REJECT"
+  | "AMBIGUOUS";
+
+export interface ClauseChatReplyResponse {
+  kind: ClauseChatReplyKind;
+  /** 화면에 AI 말로 보여줄 짧은 답 (예: "확인했어요. 이대로 특약을 쓸게요.") */
+  echo: string | null;
+  slots: ClauseChatSlot[];
+  pendingQuestions: ClauseChatQuestion[];
+  /** true면 [작성하기]를 누를 수 있다 */
+  readyToWrite: boolean;
+}
