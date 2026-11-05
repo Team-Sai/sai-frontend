@@ -1,0 +1,137 @@
+.scene {
+  --p: 0;
+  --grow: clamp(0, var(--p) / 0.55, 1);
+  --show: clamp(0, (var(--p) - 0.45) / 0.3, 1);
+  position: relative;
+  height: 220vh;
+  height: 220svh;
+  background: #fff;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.teaser {
+  position: absolute;
+  margin: 0;
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  opacity: calc(1 - var(--grow) * 2);
+  transform: scale(calc(1 + var(--grow) * 0.3));
+}
+
+.circle {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(60% 60% at 30% 30%, rgba(108, 248, 187, 0.35), transparent 70%),
+    radial-gradient(50% 60% at 80% 80%, rgba(0, 53, 39, 0.5), transparent 70%),
+    #0f8a5f;
+  clip-path: circle(calc(4% + var(--grow) * 80%) at 50% 50%);
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+  padding: 0 24px;
+  opacity: var(--show);
+  transform: translateY(calc((1 - var(--show)) * 40px));
+}
+
+.eyebrow {
+  margin: 0;
+  color: #b9f5da;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.content h2 {
+  margin: 18px 0 20px;
+  font-size: clamp(34px, 5vw, 68px);
+  line-height: 1.22;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+
+.description {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: clamp(15px, 1.4vw, 19px);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+  width: min(280px, 100%);
+  height: 68px;
+  border-radius: 20px;
+  background: #fff;
+  color: #0f8a5f;
+  font-size: 19px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 14px 34px rgba(0, 40, 25, 0.3);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(0, 40, 25, 0.35);
+}
+
+.button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+.friend {
+  position: absolute;
+  bottom: -4%;
+  width: clamp(140px, 17vw, 260px);
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 24px 40px rgba(0, 30, 20, 0.35));
+}
+
+.left {
+  left: 6vw;
+  transform: translateY(calc((1 - var(--show)) * 110%)) rotate(-6deg);
+}
+
+.right {
+  right: 6vw;
+  transform: translateY(calc((1 - clamp(0, var(--show) * 1.2 - 0.2, 1)) * 110%)) rotate(6deg);
+}
+
+@media (max-width: 900px) {
+  .friend {
+    width: 120px;
+    bottom: -2%;
+  }
+
+  .left {
+    left: -10px;
+  }
+
+  .right {
+    right: -10px;
+  }
+}

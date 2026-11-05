@@ -1,0 +1,497 @@
+.scene {
+  --p: 0;
+  --s: 0;
+  position: relative;
+  height: 480vh;
+  height: 480svh;
+  background: var(--ai-bg);
+  color: #fff;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  min-height: 680px;
+  overflow: hidden;
+}
+
+.inner {
+  width: min(1200px, calc(100% - 64px));
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: max(28px, 4svh) 0 max(28px, 4svh);
+}
+
+/* ── 머리: 탭 + 단계 제목 ─────────────────── */
+.head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'kicker tabs'
+    'title title';
+  align-items: center;
+  gap: 18px 32px;
+}
+
+.kicker {
+  grid-area: kicker;
+  margin: 0;
+  color: var(--ai-mint);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tabs {
+  grid-area: tabs;
+  justify-self: end;
+  display: flex;
+  gap: 6px;
+}
+
+.tab {
+  --on: clamp(0, var(--p) * 4 - var(--k), 1);
+  position: relative;
+  min-width: 76px;
+  padding: 8px 4px 12px;
+  border: 0;
+  background: none;
+  color: rgba(255, 255, 255, 0.45);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.tab i {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.tab i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ai-mint);
+  transform-origin: left;
+  transform: scaleX(var(--on));
+}
+
+.scene[data-step='0'] .tab:nth-child(1),
+.scene[data-step='1'] .tab:nth-child(2),
+.scene[data-step='2'] .tab:nth-child(3),
+.scene[data-step='3'] .tab:nth-child(4) {
+  color: #fff;
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--ai-mint);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.titles {
+  grid-area: title;
+  position: relative;
+  height: clamp(96px, 12svh, 128px);
+}
+
+.title,
+.slide,
+.oursSlide {
+  /* 스크롤 위치(--s)에 따라 연속으로 섞인다: 단계 한가운데 근처에선 또렷하고, 단계 사이에선 겹쳐 바뀐다 */
+  --d: calc(var(--k) - var(--s));
+  --ad: max(var(--d), calc(var(--d) * -1));
+  --hidden: clamp(0, (var(--ad) - 0.18) / 0.3, 1);
+  opacity: calc(1 - var(--hidden));
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.title {
+  position: absolute;
+  inset: 0 auto auto 0;
+  margin: 0;
+  font-size: clamp(28px, 3.3vw, 46px);
+  line-height: 1.25;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  transform: translateY(calc(var(--d) * 44px));
+}
+
+/* ── 본문: 두 칸 비교 ─────────────────────── */
+.body {
+  flex: 1;
+  min-height: 0;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  gap: 24px;
+}
+
+.generic,
+.ours {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-radius: 24px;
+  padding: 22px;
+}
+
+.generic {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ours {
+  background: linear-gradient(160deg, rgba(108, 227, 176, 0.12), rgba(108, 227, 176, 0.03));
+  border: 1px solid rgba(108, 227, 176, 0.25);
+}
+
+.sideLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sideLabel small {
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.grayDot,
+.mintDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8b95a1;
+}
+
+.mintDot {
+  background: var(--ai-mint);
+  box-shadow: 0 0 12px var(--ai-mint);
+}
+
+.slides {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.slide,
+.oursSlide {
+  position: absolute;
+  inset: 0;
+}
+
+.slide {
+  transform: translateY(calc(var(--d) * 32px));
+}
+
+.oursSlide {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transform: translateX(calc(var(--d) * 8%)) scale(calc(1 - var(--hidden) * 0.04));
+}
+
+/* 일반 챗봇 대화 */
+.userBubble,
+.botBubble {
+  margin: 0;
+  padding: 13px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.userBubble {
+  margin-left: auto;
+  width: fit-content;
+  max-width: 88%;
+  border-radius: 16px 16px 4px 16px;
+  background: #3a4542;
+}
+
+.botBubble {
+  margin-top: 12px;
+  max-width: 94%;
+  border-radius: 16px 16px 16px 4px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.botBubble mark {
+  color: #ffd2d6;
+  background: rgba(240, 68, 82, 0.28);
+  border-radius: 4px;
+  padding: 0 3px;
+  box-decoration-break: clone;
+}
+
+.flags {
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.flags li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  color: #ffb1b8;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.flags li::before {
+  content: '!';
+  flex: 0 0 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(240, 68, 82, 0.25);
+  color: #ff8a94;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* 사이원장 쪽 */
+.visual {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.shot {
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.6);
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.points li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.points li::before {
+  content: '✓';
+  flex: 0 0 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ai-mint);
+  color: #0b2a20;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* 단계별 화면 배치 */
+.vLaw {
+  height: 100%;
+  position: relative;
+}
+
+.vLaw .shot {
+  height: 100%;
+}
+
+.callout {
+  position: absolute;
+  left: -14px;
+  bottom: 22px;
+  display: grid;
+  gap: 2px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--ai-mint);
+  color: #0b2a20;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+.callout b {
+  font-size: 15px;
+}
+
+.callout span {
+  font-size: 12px;
+}
+
+.vSlots {
+  position: relative;
+  height: 100%;
+}
+
+.slotsClause {
+  position: relative;
+  z-index: 1;
+  width: 92%;
+}
+
+.slotsModal {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  top: 36%;
+  width: 54%;
+  height: 64%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+.vCheck {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.vCheck .shot {
+  max-height: 100%;
+}
+
+.checkResult {
+  height: 100%;
+}
+
+.vScope {
+  height: 100%;
+  display: grid;
+  place-items: start center;
+}
+
+.vScope .shot {
+  width: min(380px, 70%);
+}
+
+/* 활성 단계일 때 화면이 살짝 떠오른다 */
+.oursSlide .shot {
+  transform: translateY(calc(var(--hidden) * 24px));
+}
+
+/* ── 반응형 ───────────────────────────────── */
+@media (max-width: 960px) {
+  .inner {
+    width: calc(100% - 32px);
+  }
+
+  .head {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'kicker'
+      'tabs'
+      'title';
+    gap: 10px;
+  }
+
+  .tabs {
+    justify-self: stretch;
+  }
+
+  .tab {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+  }
+
+  .titles {
+    height: 76px;
+  }
+
+  .title {
+    font-size: clamp(22px, 6vw, 30px);
+  }
+
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .generic,
+  .ours {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .generic .slides {
+    flex: none;
+    height: 104px;
+  }
+
+  .generic .userBubble,
+  .generic .flags li:nth-child(n + 2) {
+    display: none;
+  }
+
+  .botBubble {
+    margin-top: 0;
+    font-size: 12.5px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .flags {
+    margin-top: 8px;
+  }
+
+  .sideLabel {
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+
+  .points li:nth-child(n + 2) {
+    display: none;
+  }
+
+  .points li {
+    font-size: 13px;
+  }
+
+  .callout {
+    left: 8px;
+  }
+}

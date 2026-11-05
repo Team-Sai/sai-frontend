@@ -1,0 +1,589 @@
+.scene {
+  padding: 140px 24px 160px;
+  background: #f7f9fa;
+}
+
+.head {
+  max-width: 760px;
+  margin: 0 auto 64px;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--mint);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.head h2 {
+  margin: 20px 0;
+  font-size: clamp(30px, 4.2vw, 56px);
+  line-height: 1.28;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  color: var(--ink);
+  word-break: keep-all;
+}
+
+.description {
+  margin: 0;
+  color: var(--sub);
+  font-size: clamp(16px, 1.4vw, 19px);
+  line-height: 1.65;
+}
+
+.head > * {
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.head > :nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.head > :nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+.isIn .head > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── 벤토 그리드 ──────────────────────────── */
+.grid {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-areas:
+    'fds tax'
+    'fds legal';
+  gap: 20px;
+}
+
+.card {
+  position: relative;
+  padding: 32px;
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(60px) scale(0.97);
+  transition:
+    opacity 0.7s ease,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(0.25s + var(--c) * 0.12s);
+}
+
+.isIn .card {
+  opacity: 1;
+  transform: none;
+}
+
+.fds {
+  grid-area: fds;
+  display: flex;
+  flex-direction: column;
+}
+
+.tax {
+  grid-area: tax;
+}
+
+.legal {
+  grid-area: legal;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tag span {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.cardHead h3 {
+  margin: 10px 0 8px;
+  font-size: clamp(21px, 2vw, 26px);
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.cardText {
+  margin: 0;
+  color: #6b7684;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── FDS ─────────────────────────────────── */
+.fdsBody {
+  margin-top: 28px;
+  display: grid;
+  gap: 16px;
+  flex: 1;
+  align-content: center;
+}
+
+.feed {
+  position: relative;
+  padding: 10px;
+  border-radius: 22px;
+  background: #f2f4f6;
+  overflow: hidden;
+}
+
+.beam {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: -40px;
+  height: 40px;
+  background: linear-gradient(180deg, transparent, rgba(0, 168, 120, 0.22) 80%, rgba(0, 168, 120, 0.7));
+  pointer-events: none;
+  opacity: 0;
+}
+
+.isIn .beam {
+  animation: scan 3.4s cubic-bezier(0.45, 0, 0.55, 1) 0.9s infinite;
+}
+
+@keyframes scan {
+  0% {
+    top: -40px;
+    opacity: 1;
+  }
+  70% {
+    top: 100%;
+    opacity: 1;
+  }
+  71%,
+  100% {
+    opacity: 0;
+    top: 100%;
+  }
+}
+
+.tx {
+  position: relative;
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1.5px solid transparent;
+  font-size: 14px;
+}
+
+.tx:last-of-type {
+  margin-bottom: 0;
+}
+
+.tx b {
+  display: block;
+  color: #333d4b;
+}
+
+.tx small {
+  color: #8b95a1;
+  font-size: 12px;
+}
+
+.tx strong {
+  color: #333d4b;
+}
+
+.txIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #e8f8f2;
+}
+
+.flagged .txIcon {
+  background: #ffeef0;
+}
+
+.isIn .flagged {
+  animation: flag 0.6s ease 2.4s both;
+}
+
+@keyframes flag {
+  0% {
+    border-color: transparent;
+    translate: 0;
+  }
+  20% {
+    translate: -5px;
+  }
+  40% {
+    translate: 5px;
+  }
+  60% {
+    translate: -3px;
+  }
+  100% {
+    border-color: var(--red);
+    background: #fff7f8;
+    translate: 0;
+  }
+}
+
+.flag {
+  position: absolute;
+  right: 12px;
+  top: -9px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.isIn .flag {
+  animation: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 2.7s both;
+}
+
+@keyframes pop {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.alert {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: #fff4f5;
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.isIn .alert {
+  animation: pop 0.6s ease 3s both;
+}
+
+.gauge {
+  position: relative;
+  text-align: center;
+}
+
+.gauge svg {
+  width: 140px;
+  height: 82px;
+}
+
+.gauge path {
+  fill: none;
+  stroke-width: 11;
+  stroke-linecap: round;
+}
+
+.track {
+  stroke: #ffd9dd;
+}
+
+.value {
+  stroke: var(--red);
+  stroke-dasharray: 158;
+  stroke-dashoffset: 158;
+}
+
+.isIn .value {
+  transition: stroke-dashoffset 1.3s cubic-bezier(0.22, 1, 0.36, 1) 3.1s;
+  stroke-dashoffset: calc(158 * 0.18);
+}
+
+.gauge b {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 34px;
+  font-size: 28px;
+  color: var(--red);
+}
+
+.gauge small {
+  display: block;
+  margin-top: -4px;
+  color: #8b95a1;
+  font-size: 12px;
+}
+
+.signals p {
+  margin: 0 0 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #333d4b;
+}
+
+.signals span {
+  display: inline-block;
+  margin: 0 6px 6px 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0;
+}
+
+.isIn .signals span {
+  animation: pop 0.4s ease calc(3.3s + var(--r) * 0.15s) both;
+}
+
+/* ── 증여세 진단 ───────────────────────────── */
+.taxBody {
+  margin-top: 26px;
+  padding: 20px;
+  border-radius: 22px;
+  background: #f2f4f6;
+}
+
+.taxTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: #333d4b;
+}
+
+.badges {
+  position: relative;
+  display: grid;
+}
+
+.badges em {
+  grid-area: 1 / 1;
+  justify-self: end;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-style: normal;
+  transition: opacity 0.3s ease 1.9s;
+}
+
+.danger {
+  background: #ffeef0;
+  color: var(--red);
+}
+
+.safe {
+  background: #e8f8f2;
+  color: #008c67;
+  opacity: 0;
+}
+
+.isIn .danger {
+  opacity: 0;
+}
+
+.isIn .safe {
+  opacity: 1;
+}
+
+.slider {
+  margin-top: 34px;
+}
+
+.rail {
+  position: relative;
+  height: 10px;
+  border-radius: 6px;
+  background: #ffd9dd;
+}
+
+.safeZone {
+  position: absolute;
+  left: 30%;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 0 6px 6px 0;
+  background: #b7ebd6;
+}
+
+.knob {
+  position: absolute;
+  top: 50%;
+  left: 20%;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--red);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition:
+    left 0.9s cubic-bezier(0.65, 0, 0.35, 1) 1.2s,
+    border-color 0.3s ease 1.9s;
+}
+
+.isIn .knob {
+  left: 30%;
+  border-color: #00a878;
+}
+
+.knob b {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  translate: -50% 0;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: opacity 0.2s ease 1.6s;
+}
+
+.rateHigh {
+  opacity: 0;
+}
+
+.isIn .rateLow {
+  opacity: 0;
+}
+
+.isIn .rateHigh {
+  opacity: 1;
+}
+
+.scale {
+  position: relative;
+  height: 18px;
+  margin-top: 10px;
+  color: #8b95a1;
+  font-size: 11px;
+}
+
+.scale span {
+  position: absolute;
+  white-space: nowrap;
+}
+
+.scale span:nth-child(2) {
+  left: 30%;
+  translate: -50% 0;
+  color: #008c67;
+  font-weight: 700;
+}
+
+.scale span:nth-child(3) {
+  right: 0;
+}
+
+/* ── 법령 검토 ────────────────────────────── */
+.checks {
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checks li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  background: #f7f9fa;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(0.9s + var(--r) * 0.15s);
+}
+
+.isIn .checks li {
+  opacity: 1;
+  transform: none;
+}
+
+.checks b {
+  display: block;
+  font-size: 15px;
+  color: #333d4b;
+}
+
+.checks small {
+  color: #8b95a1;
+  font-size: 12px;
+}
+
+.checks em {
+  flex: 0 0 auto;
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--mint);
+}
+
+.checks em.warn {
+  color: #f59f00;
+}
+
+/* ── 반응형 ───────────────────────────────── */
+@media (max-width: 900px) {
+  .scene {
+    padding: 90px 20px 100px;
+  }
+
+  .head {
+    margin-bottom: 40px;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'fds'
+      'tax'
+      'legal';
+    gap: 14px;
+  }
+
+  .card {
+    padding: 24px 20px;
+    border-radius: 26px;
+  }
+
+  .alert {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    text-align: center;
+  }
+}
