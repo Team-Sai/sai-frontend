@@ -512,6 +512,14 @@ export async function startClauseChat(
     signal,
   });
 
+  // 대화형 API가 아직 없는 서버(배포 전 등)일 때만 부르는 쪽이 예전처럼 바로 쓰게 한다.
+  if (STREAM_NOT_SUPPORTED_STATUSES.includes(response.status)) {
+    throw new ClauseStreamUnavailableError(
+      `대화형 API를 사용할 수 없습니다. (${response.status})`,
+    );
+  }
+
+
   if (!response.ok) {
     throw new Error(
       await readErrorMessage(

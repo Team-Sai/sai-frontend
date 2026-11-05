@@ -926,10 +926,14 @@ export default function ClauseAgentPanel({
       return;
     }
 
-    // 대화 중이면 입력창에 쓴 말은 답장으로 보낸다.
-    if (chat?.sessionId) {
+    // 확정 전 대화 중이면 입력창에 쓴 말은 답장으로 보낸다. (실패하면 입력을 되돌린다)
+    if (chat?.sessionId && !chat.readyToWrite) {
       setInput("");
-    await handleReply(message);
+
+      if (!(await handleReply(message))) {
+        setInput(message);
+      }
+
       return;
     }
 
@@ -1056,6 +1060,13 @@ export default function ClauseAgentPanel({
       setDraft(null);
       onDraftChange(null);
       resetLive();
+      
+      // 확정한 대화로 쓰다 실패하면 그 대화는 다시 쓸 수 없으니 정리한다. (입력창이 새 요청으로 돌아간다)
+      if (sessionId) {
+        setChat(null);
+        pendingRequest.current = null;
+      }
+
 
       setError(
         requestError instanceof Error
@@ -1095,13 +1106,22 @@ export default function ClauseAgentPanel({
         replies: [],
         readyToWrite: false,
       });
-    } catch {
+        } catch (chatError) {
       if (controller.signal.aborted) {
         return;
       }
 
-      // 대화형 API를 쓸 수 없으면(배포 전 등) 예전처럼 바로 쓴다.
-      console.info("[S-AI CHAT] 대화형 시작 실패 - 바로 작성합니다.");
+      // 주소가 없을 때(배포 전 등)만 예전처럼 바로 쓴다. 그 밖의 오류는 보여 준다.
+      if (!(chatError instanceof ClauseStreamUnavailableError)) {
+        setError(
+          chatError instanceof Error
+            ? chatError.message
+            : "요청 내용을 확인하지 못했어요.",
+        );
+        return;
+      }
+
+      console.info(`[S-AI CHAT] ${chatError.message} - 바로 작성합니다.`);
       void writeClause(request, null);
     } finally {
       if (abortController.current === controller) {
@@ -1111,19 +1131,28 @@ export default function ClauseAgentPanel({
     }
   }
 
-  /** 답장: 버튼을 누르거나 입력창에 쓴 말. 확정되면 바로 작성한다. */
-  async function handleReply(text: string) {
+  /** 답장: 버튼을 누르거나 입력창에 쓴 말. 확정되면 바로 작성한다. 성공하면 true. */
+  async function handleReply(text: string): Promise<boolean> {
     const sessionId = chat?.sessionId;
 
     if (!sessionId || isChatWaiting || isLoading) {
-      return;
+      return false;
     }
+
+    // 취소(handleCancel)하면 이 요청도 멈추도록 등록한다.
+    const controller = new AbortController();
+    abortController.current = controller;
 
     setIsChatWaiting(true);
     setError(null);
 
     try {
-      const replied = await replyClauseChat(sessionId, text);
+      const replied = await replyClauseChat(sessionId, text, controller.signal);
+
+      // 기다리는 사이 취소됐으면 늦게 온 응답은 무시한다.
+      if (controller.signal.aborted) {
+        return false;
+      }
 
       setChat((current) =>
         current && {
@@ -1137,13 +1166,23 @@ export default function ClauseAgentPanel({
       if (replied.readyToWrite && pendingRequest.current) {
         void writeClause(pendingRequest.current, sessionId);
       }
+
+      return true;
     } catch (replyError) {
+      if (controller.signal.aborted) {
+        return false;
+      }
+
       setError(
         replyError instanceof Error
           ? replyError.message
           : "답장을 보내지 못했어요.",
       );
+      return false;
     } finally {
+      if (abortController.current === controller) {
+        abortController.current = null;
+      }
       setIsChatWaiting(false);
     }
   }
