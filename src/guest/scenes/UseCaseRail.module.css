@@ -25,6 +25,8 @@
   z-index: 2;
   padding-right: 32px;
   background: #fff;
+  align-items: center;
+  text-align: center;
   align-self: stretch;
   display: flex;
   flex-direction: column;
