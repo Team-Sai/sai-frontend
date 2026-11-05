@@ -3,12 +3,18 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "../../common/components";
 import {
   ClauseStreamUnavailableError,
+  replyClauseChat,
+  requestClauseChatWriteStream,
   requestClauseSuggestion,
   requestClauseSuggestionStream,
+  startClauseChat,
 } from "../api/clauseAgentApi";
+import type { ClauseStreamHandlers } from "../api/clauseAgentApi";
 import type { ContractFormData } from "../types/contract";
 import type {
   AppliedContractClause,
+  ClauseChatFieldEdit,
+  ClauseChatQuestion,
   ClauseDraft,
   ClauseReference,
   ClauseStreamStep,
@@ -24,6 +30,7 @@ import {
   LIVE_CATCH_UP_MS,
   LIVE_TICK_MS,
 } from "../utils/draftTyping";
+import ClauseChatCard from "./ClauseChatCard";
 import "./ClauseAgentPanel.css";
 
 interface ClauseAgentPanelProps {
@@ -33,6 +40,22 @@ interface ClauseAgentPanelProps {
   disabled?: boolean;
   onDraftChange: (clause: DraftContractClause | null) => void;
   onApprove: (response: ClauseSuggestionResponse) => void;
+}
+
+
+/** 대화형 특약: 쓰기 전에 AI가 이해한 내용과 주고받은 답 */
+interface ClauseChatState {
+  /** 범위 밖이거나 계약서 칸 안내면 null (이어갈 대화 없음) */
+  sessionId: string | null;
+  summary: string | null;
+  notices: string[];
+  guide: string | null;
+  fieldEdits: ClauseChatFieldEdit[];
+  /** 아직 답하지 않은 질문 */
+  questions: ClauseChatQuestion[];
+  /** 지금까지 주고받은 답 */
+  replies: { user: string; ai: string | null }[];
+  readyToWrite: boolean;
 }
 
 interface StoredAgentSession {
@@ -384,6 +407,13 @@ export default function ClauseAgentPanel({
   /* 초안은 보이지만 아직 검증(최종 결과)을 기다리는 중 */
   const isReviewing = isLoading && draft !== null && result === null;
   const [error, setError] = useState<string | null>(null);
+
+  
+  // 대화형 특약
+  const [chat, setChat] = useState<ClauseChatState | null>(null);
+  const [isChatWaiting, setIsChatWaiting] = useState(false);
+  /** 확정되면 이 요청으로 작성한다. (대화형 작성은 백엔드가 저장한 값을 쓰지만, 화면 저장에 원문이 필요하다) */
+  const pendingRequest = useRef<ClauseSuggestionRequest | null>(null);
 
   const [justApplied, setJustApplied] = useState<{
     title: string;
@@ -738,6 +768,7 @@ export default function ClauseAgentPanel({
     request: ClauseSuggestionRequest,
     requestStartedAt: number,
     controller: AbortController,
+    sessionId: string | null = null,
   ): Promise<{
     response: ClauseSuggestionResponse;
     shownDraft: ClauseDraft | null;
@@ -745,8 +776,14 @@ export default function ClauseAgentPanel({
     let shownDraft: ClauseDraft | null = null;
 
     try {
-      const response = await requestClauseSuggestionStream(
-        request, 
+      // 대화형이면 확정한 대화로 작성하고, 아니면 예전처럼 한 번에 쓴다. (이벤트 처리는 같다)
+      const streamRequest = sessionId
+        ? (handlers: ClauseStreamHandlers, signal: AbortSignal) =>
+            requestClauseChatWriteStream(sessionId, handlers, signal)
+        : (handlers: ClauseStreamHandlers, signal: AbortSignal) =>
+            requestClauseSuggestionStream(request, handlers, signal);
+
+      const response = await streamRequest(
         {
           onProgress: (step) => {
             setStreamStep(step);
@@ -808,6 +845,16 @@ export default function ClauseAgentPanel({
         throw streamError;
       }
 
+      
+      // 대화형 작성에서 404/409는 "대화가 끝났거나 확정 전"이라 예전 API로 다시 쓰면 안 된다.
+      if (sessionId) {
+        throw new Error("대화가 끝났어요. 처음부터 다시 요청해 주세요.",
+          {
+            cause: streamError,
+          });
+
+      }
+
       // 스트리밍 API를 쓸 수 없으면 기존 API로 한 번에 받는다.
       console.info(
         `[S-AI STREAM] ${streamError.message} - 기존 API로 요청합니다.`,
@@ -834,6 +881,36 @@ export default function ClauseAgentPanel({
   );
   const isAgentLocked = missingAgentFields.length > 0;
 
+  function buildRequest(message: string): ClauseSuggestionRequest {
+   const principal = Number(formData.principalAmount);
+   const interestRate = Number(formData.interestRate);
+   const repaymentDay = Number(formData.repaymentDay);
+
+    return {
+      principalAmount:
+        Number.isFinite(principal) && principal > 0
+          ? principal
+          : null,
+
+      interestRate: Number.isFinite(interestRate)
+        ? interestRate
+        : null,
+
+      lateInterestRate: null,
+      startDate: formData.startDate || null,
+      maturityDate: formData.maturityDate || null,
+
+      repaymentDay: Number.isFinite(repaymentDay)
+        ? repaymentDay
+        : null,
+
+      repaymentType: formData.repaymentType || null,
+      contractAlias: formData.contractAlias.trim() || null,
+      terms: formData.terms.trim() || null,
+      message,
+    };
+  }
+
   async function handleSend() {
     const message = input.trim();
 
@@ -843,8 +920,16 @@ export default function ClauseAgentPanel({
       isAgentLocked ||
       isLoading ||
       isStreaming ||
+      isChatWaiting ||
       result
     ) {
+      return;
+    }
+
+    // 대화 중이면 입력창에 쓴 말은 답장으로 보낸다.
+    if (chat?.sessionId) {
+      setInput("");
+    await handleReply(message);
       return;
     }
 
@@ -874,6 +959,17 @@ export default function ClauseAgentPanel({
     setResult(null);
     clearStoredAgentSession();
     onDraftChange(null);
+    setChat(null);
+
+    await startChat(buildRequest(message));
+  }
+
+  async function writeClause(
+    request: ClauseSuggestionRequest,
+    sessionId: string | null,
+  ) {
+    const message = request.message;
+
 
     setIsLoading(true);
     setStepMode("stream");
@@ -891,38 +987,11 @@ export default function ClauseAgentPanel({
     abortController.current = controller;
 
     try {
-      const principal = Number(formData.principalAmount);
-      const interestRate = Number(formData.interestRate);
-      const repaymentDay = Number(formData.repaymentDay);
-
-      const request: ClauseSuggestionRequest = {
-        principalAmount:
-          Number.isFinite(principal) && principal > 0
-            ? principal
-            : null,
-
-        interestRate: Number.isFinite(interestRate)
-          ? interestRate
-          : null,
-
-        lateInterestRate: null,
-        startDate: formData.startDate || null,
-        maturityDate: formData.maturityDate || null,
-
-        repaymentDay: Number.isFinite(repaymentDay)
-          ? repaymentDay
-          : null,
-
-        repaymentType: formData.repaymentType || null,
-        contractAlias: formData.contractAlias.trim() || null,
-        terms: formData.terms.trim() || null,
-        message,
-      };
-
       const { response, shownDraft } = await fetchSuggestion(
         request,
         requestStartedAt,
         controller,
+        sessionId,
       );
       // 응답을 받는 사이에 취소됐다면 결과를 화면에 붙이지 않는다.
       if (controller.signal.aborted) {
@@ -1002,6 +1071,84 @@ export default function ClauseAgentPanel({
     }
   }
 
+    /** 대화형 1턴: 바로 쓰지 않고 AI가 이해한 내용을 먼저 보여 준다. */
+  async function startChat(request: ClauseSuggestionRequest) {
+    const controller = new AbortController();
+    abortController.current = controller;
+    pendingRequest.current = request;
+    setIsChatWaiting(true);
+
+    try {
+      const started = await startClauseChat(request, controller.signal);
+
+      if (controller.signal.aborted) {
+        return;
+      }
+
+      setChat({
+        sessionId: started.sessionId,
+        summary: started.summary,
+        notices: started.notices ?? [],
+        guide: started.guide,
+        fieldEdits: started.fieldEdits ?? [],
+        questions: started.questions ?? [],
+        replies: [],
+        readyToWrite: false,
+      });
+    } catch {
+      if (controller.signal.aborted) {
+        return;
+      }
+
+      // 대화형 API를 쓸 수 없으면(배포 전 등) 예전처럼 바로 쓴다.
+      console.info("[S-AI CHAT] 대화형 시작 실패 - 바로 작성합니다.");
+      void writeClause(request, null);
+    } finally {
+      if (abortController.current === controller) {
+        abortController.current = null;
+      }
+      setIsChatWaiting(false);
+    }
+  }
+
+  /** 답장: 버튼을 누르거나 입력창에 쓴 말. 확정되면 바로 작성한다. */
+  async function handleReply(text: string) {
+    const sessionId = chat?.sessionId;
+
+    if (!sessionId || isChatWaiting || isLoading) {
+      return;
+    }
+
+    setIsChatWaiting(true);
+    setError(null);
+
+    try {
+      const replied = await replyClauseChat(sessionId, text);
+
+      setChat((current) =>
+        current && {
+          ...current,
+          questions: replied.pendingQuestions ?? [],
+          replies: [...current.replies, { user: text, ai: replied.echo }],
+          readyToWrite: replied.readyToWrite,
+        },
+      );
+
+      if (replied.readyToWrite && pendingRequest.current) {
+        void writeClause(pendingRequest.current, sessionId);
+      }
+    } catch (replyError) {
+      setError(
+        replyError instanceof Error
+          ? replyError.message
+          : "답장을 보내지 못했어요.",
+      );
+    } finally {
+      setIsChatWaiting(false);
+    }
+  }
+
+
   function handleCancel() {
     abortController.current?.abort();
     resetLive();
@@ -1019,6 +1166,8 @@ export default function ClauseAgentPanel({
     setResult(null);
     setDuplicateClause(null);
     setError(null);
+    setChat(null);
+    pendingRequest.current = null;
 
     onDraftChange(null);
   }
@@ -1043,6 +1192,8 @@ export default function ClauseAgentPanel({
     setQuestion(null);
     setResult(null);
     setDuplicateClause(null);
+    setChat(null);
+    pendingRequest.current = null;
     onDraftChange(null);
   }
 
@@ -1258,6 +1409,36 @@ export default function ClauseAgentPanel({
             </div>
           </div>
         )}
+
+                {isChatWaiting && !chat && (
+          <section className="sai-chat-row">
+            <AgentAvatar
+              visible={headImageVisible}
+              onError={() => setHeadImageVisible(false)}
+            />
+
+            <div className="sai-chat-bubble sai-chat-bubble--assistant">
+              <strong>요청 내용을 확인하고 있어요.</strong>
+              <p>바로 쓰기 전에, 이해한 내용을 먼저 보여 드릴게요.</p>
+            </div>
+          </section>
+        )}
+
+        {chat && (
+          <ClauseChatCard
+            {...chat}
+            waiting={isChatWaiting}
+            writing={isLoading || isStreaming || Boolean(result)}
+            avatar={
+              <AgentAvatar
+                visible={headImageVisible}
+                onError={() => setHeadImageVisible(false)}
+              />
+            }
+            onReply={(text) => void handleReply(text)}
+          />
+        )}
+
 
         {isLoading && !draft && (
           <section className="sai-chat-row sai-working">
@@ -1516,12 +1697,15 @@ export default function ClauseAgentPanel({
             isAgentLocked ||
             isLoading ||
             isStreaming ||
+            isChatWaiting ||
             Boolean(result)
           }
           placeholder={
             isAgentLocked
               ? "계약 조건 추가가 잠겨 있습니다."
-              : "추가하고 싶은 계약 조건을 말씀해 주세요."
+              : chat?.sessionId && !chat.readyToWrite
+                ? "답을 직접 써도 돼요. (예: 연 7%로 바꿔 주세요)"
+                : "추가하고 싶은 계약 조건을 말씀해 주세요."
           }
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={(event) => {
@@ -1544,6 +1728,7 @@ export default function ClauseAgentPanel({
             isLoading ||
             isStreaming ||
             Boolean(result) ||
+            isChatWaiting ||
             !input.trim()
           }
           onClick={() => void handleSend()}
