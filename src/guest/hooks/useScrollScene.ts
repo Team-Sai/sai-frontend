@@ -27,7 +27,9 @@ const EASE = 0.14;
 export function useScrollScene<T extends HTMLElement>({ steps, onProgress }: ScrollSceneOptions = {}) {
   const ref = useRef<T>(null);
   const onProgressRef = useRef(onProgress);
-  onProgressRef.current = onProgress;
+  useEffect(() => {
+    onProgressRef.current = onProgress;
+  }, [onProgress]);
 
   useEffect(() => {
     const element = ref.current;
