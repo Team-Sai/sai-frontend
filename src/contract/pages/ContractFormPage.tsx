@@ -608,18 +608,12 @@ export default function ContractFormPage() {
             slot.value.trim() !== (clause.slots[slotIndex]?.value ?? "").trim(),
         );
 
-        const allFilled =
-          slots.length > 0 && slots.every((slot) => slot.value.trim());
-
-        let review = clause.review;
-
-        if (allFilled) {
-          // 칸을 모두 채웠으면 채운 값으로 문장이 맞는지 다시 검토하도록 안내한다.
-          review = { status: "NEEDS_REVIEW" };
-        } else if (changed && clause.review?.status === "DONE") {
-          // 값이 바뀌었는데 예전 문장의 결과(수정 제안 포함)가 남지 않게 되돌린다.
-          review = { status: "NEEDS_REVIEW" };
-        }
+        // 칸 채우기만으로는 다시 검토를 안내하지 않는다. ([입력 필요]는 원래 채우는 칸이다)
+        // 다만 [수정] 뒤에 받아 둔 검토 결과가 있으면, 값이 바뀐 문장과 맞지 않으니 되돌린다.
+        const review =
+          changed && clause.review?.status === "DONE"
+            ? { status: "NEEDS_REVIEW" as const }
+            : clause.review;
 
         return {
           ...clause,

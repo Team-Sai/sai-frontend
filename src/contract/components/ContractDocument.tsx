@@ -1022,7 +1022,7 @@ export default function ContractDocument({
                 <div className="document-clause__review-notice">
                   {clause.review.status === "NEEDS_REVIEW" && (
                     <>
-                      <strong>직접 고치거나 채운 내용이 있어요.</strong>
+                      <strong>직접 고친 문장이에요.</strong>
                       <p>원래 요청·계약과 맞는지 AI로 다시 확인할 수 있어요.</p>
 
                       {clause.review.error && (
