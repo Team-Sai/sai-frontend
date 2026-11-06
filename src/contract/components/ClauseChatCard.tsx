@@ -131,7 +131,11 @@ export default function ClauseChatCard({
               )}
             </div>
 
-            <small>버튼 대신 아래 입력창에 직접 써도 돼요.</small>
+              <small>
+              {current.options.length > 0
+                ? "버튼 대신 아래 입력창에 직접 써도 돼요."
+                : "아래 입력창에 직접 적어 주세요."}
+            </small>
           </div>
         </div>
       )}

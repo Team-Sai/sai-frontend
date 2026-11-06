@@ -60,7 +60,8 @@ function inferSlotType(rawLabel: string): {
     label.includes("%") ||
     label.includes("비율") ||
     label.includes("이율") ||
-    label.includes("위약금률")
+    label.includes("위약금률") ||
+    label.endsWith("율")
   ) {
     return {
       type: "PERCENT",
@@ -133,6 +134,7 @@ function inferSlotType(rawLabel: string): {
     label.includes("날짜") ||
     label.includes("일자") ||
     label.includes("지급일") ||
+    label.includes("기일") ||
     label.includes("변제기")
   ) {
     if (!label.includes("및") && label.length < 20) {
@@ -340,6 +342,37 @@ export function renderClauseContent(clause: AppliedContractClause): string {
   result += clause.templateContent.slice(cursor);
 
   return result;
+}
+
+/*
+ * 문장 고치기 칸에 넣을 글.
+ * 채운 값은 값으로, 아직 비어 있는 칸은 [입력 필요: 이름] 모양 그대로 둔다.
+ */
+export function toEditableClauseText(clause: AppliedContractClause): string {
+  const placeholders = extractPlaceholders(clause.templateContent);
+
+  let cursor = 0;
+  let result = "";
+
+  placeholders.forEach((placeholder, index) => {
+    result += clause.templateContent.slice(cursor, placeholder.start);
+
+    const slot = clause.slots[index];
+    const value = slot ? formatClauseSlotValue(slot) : "";
+
+    result += value || `[입력 필요: ${slot?.label ?? placeholder.label}]`;
+
+    cursor = placeholder.end;
+  });
+
+  return result + clause.templateContent.slice(cursor);
+}
+
+/* 띄어쓰기·줄바꿈만 다르면 같은 문장으로 본다. */
+export function isSameClauseText(left: string, right: string): boolean {
+  const normalize = (text: string) => text.replace(/\s+/g, " ").trim();
+
+  return normalize(left) === normalize(right);
 }
 
 /* =========================================

@@ -29,16 +29,22 @@ import {
 
 import type {
   AppliedContractClause,
+  ClauseReviewState,
   ClauseSlot,
   ClauseSuggestionResponse,
   DraftContractClause,
 } from "../types/clauseAgent";
+
+import { reviewClause } from "../api/clauseAgentApi";
+import { toClauseSuggestionRequest } from "../utils/clauseRequest";
 
 import type { ContractFieldWarning } from "../utils/contractValidation";
 
 import {
   countUnresolvedClauseSlots,
   createClauseSlots,
+  isSameClauseText,
+  toEditableClauseText,
   renderClauseContent,
   repairAppliedClauseSlots,
 } from "../utils/clauseSlots";
@@ -526,6 +532,36 @@ export default function ContractFormPage() {
   }
 
   /* =========================================================
+     Edit clause text
+  ========================================================= */
+
+  function handleEditClauseText(clauseId: string, nextText: string) {
+    setAppliedClauses((previous) =>
+      previous.map((clause) => {
+        if (clause.id !== clauseId) {
+          return clause;
+        }
+
+        const text = nextText.trim();
+
+        // 비었거나 띄어쓰기·줄바꿈만 바뀌었으면 그대로 둔다.
+        if (!text || isSameClauseText(text, toEditableClauseText(clause))) {
+          return clause;
+        }
+
+        return {
+          ...clause,
+          templateContent: text,
+          // 채운 값은 이미 문장에 들어갔으므로, 남은 [입력 필요] 칸만 다시 만든다.
+          slots: createClauseSlots(text),
+          review: { status: "NEEDS_REVIEW" },
+        };
+      }),
+    );
+  }
+
+
+  /* =========================================================
      Remove clause
   ========================================================= */
 
@@ -561,18 +597,139 @@ export default function ContractFormPage() {
     slots: ClauseSlot[],
   ) {
     setAppliedClauses((previous) =>
-      previous.map((clause) =>
-        clause.id === clauseId
-          ? {
-              ...clause,
+      previous.map((clause) => {
+        if (clause.id !== clauseId) {
+          return clause;
+        }
 
-              slots,
-            }
-          : clause,
-      ),
+        // 칸 값이 하나라도 바뀌었는지 (같은 순서의 칸끼리 비교)
+        const changed = slots.some(
+          (slot, slotIndex) =>
+            slot.value.trim() !== (clause.slots[slotIndex]?.value ?? "").trim(),
+        );
+
+        // 칸 채우기만으로는 다시 검토를 안내하지 않는다. ([입력 필요]는 원래 채우는 칸이다)
+        // 다만 [수정] 뒤에 받아 둔 검토 결과가 있으면, 값이 바뀐 문장과 맞지 않으니 되돌린다.
+        const review =
+          changed && clause.review?.status === "DONE"
+            ? { status: "NEEDS_REVIEW" as const }
+            : clause.review;
+
+        return {
+          ...clause,
+
+          slots,
+
+          review,
+        };
+      }),
     );
 
     setEditingClauseId(null);
+  }
+  
+  /* =========================================================
+     Clause review (AI 다시 검토)
+  ========================================================= */
+
+  function updateClauseReview(clauseId: string, review: ClauseReviewState) {
+    setAppliedClauses((previous) =>
+      previous.map((clause) =>
+        clause.id === clauseId ? { ...clause, review } : clause,
+      ),
+    );
+  }
+
+  /* 검토하는 사이 문장이 바뀌었으면(수정·칸 채우기) 그 결과는 버리고 다시 검토할 수 있게 둔다. */
+  function applyReviewIfUnchanged(
+    clauseId: string,
+    reviewedText: string,
+    review: ClauseReviewState,
+  ) {
+    setAppliedClauses((previous) =>
+      previous.map((clause) => {
+        if (clause.id !== clauseId) {
+          return clause;
+        }
+
+        if (isSameClauseText(toEditableClauseText(clause), reviewedText)) {
+          return { ...clause, review };
+        }
+
+        return clause.review?.status === "REVIEWING"
+          ? { ...clause, review: { status: "NEEDS_REVIEW" } }
+          : clause;
+      }),
+    );
+  }
+
+
+  async function handleReviewClause(clauseId: string) {
+    const clause = appliedClauses.find((item) => item.id === clauseId);
+
+    if (!clause || clause.review?.status === "REVIEWING") {
+      return;
+    }
+
+    // 보낸 그때의 문장. 응답이 왔을 때 문장이 바뀌었으면 결과를 버린다.
+    const reviewedText = toEditableClauseText(clause);
+
+    updateClauseReview(clauseId, { status: "REVIEWING" });
+
+    try {
+      const result = await reviewClause({
+        // 조항을 만들 때의 요청이 없으면(예전 조항) 제목으로 대신한다.
+        request: toClauseSuggestionRequest(
+          formData,
+          clause.sourceRequest?.trim() || clause.title,
+        ),
+        issues:
+          clause.issues.length > 0
+            ? clause.issues
+            : [{ type: "OTHER" }],
+        // 화면에 보이는 그대로(채운 값 포함) 검토한다.
+        clause: reviewedText,
+      });
+
+      applyReviewIfUnchanged(clauseId, reviewedText, { status: "DONE", result });
+    } catch (reviewError) {
+      applyReviewIfUnchanged(clauseId, reviewedText, {
+        status: "NEEDS_REVIEW",
+        error:
+          reviewError instanceof Error
+            ? reviewError.message
+            : "다시 검토하지 못했어요.",
+      });
+    }
+  }
+
+  /* 수정 제안: apply면 제안 문장으로 바꾸고, 아니면 제안만 닫는다. */
+  function handleResolveReviewSuggestion(clauseId: string, apply: boolean) {
+    setAppliedClauses((previous) =>
+      previous.map((clause) => {
+        const result = clause.review?.result;
+
+        if (clause.id !== clauseId || !result?.suggestedClause) {
+          return clause;
+        }
+
+        const closedReview: ClauseReviewState = {
+          status: "DONE",
+          result: { ...result, suggestedClause: null },
+        };
+
+        if (!apply) {
+          return { ...clause, review: closedReview };
+        }
+
+        return {
+          ...clause,
+          templateContent: result.suggestedClause,
+          slots: createClauseSlots(result.suggestedClause),
+          review: closedReview,
+        };
+      }),
+    );
   }
 
   /* =========================================================
@@ -709,6 +866,9 @@ export default function ContractFormPage() {
             fieldWarnings={fieldWarnings}
             onOpenClauseSettings={setEditingClauseId}
             onRemoveClause={handleRemoveClause}
+            onEditClauseText={handleEditClauseText}
+            onReviewClause={handleReviewClause}
+            onResolveReviewSuggestion={handleResolveReviewSuggestion}
             disabled={isChecking}
           />
 
