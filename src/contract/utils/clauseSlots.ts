@@ -133,6 +133,7 @@ function inferSlotType(rawLabel: string): {
     label.includes("날짜") ||
     label.includes("일자") ||
     label.includes("지급일") ||
+    label.includes("기일") ||
     label.includes("변제기")
   ) {
     if (!label.includes("및") && label.length < 20) {

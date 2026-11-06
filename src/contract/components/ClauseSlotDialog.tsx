@@ -11,6 +11,35 @@ import {
 
 import "./ClauseSlotDialog.css";
 
+/* 칸 종류별 안내. 모든 칸은 문장이 아니라 "값 하나"를 넣는 자리다. */
+function getSlotHint(slot: ClauseSlot): string {
+  switch (slot.type) {
+    case "METHOD":
+      return "하나를 골라 주세요.";
+    case "DATE":
+      return "날짜를 골라 주세요.";
+    case "PERCENT":
+      return "숫자만 적어 주세요. · 예: 1 → 1%";
+    case "MONEY":
+      return "숫자만 적어 주세요. · 예: 50000 → 50,000원";
+    case "MONTHS":
+    case "COUNT":
+    case "DAYS":
+      return `숫자만 적어 주세요. (단위: ${slot.unit ?? ""})`;
+    default:
+      return slot.label.includes("수수료")
+        ? "값만 적어 주세요. · 예: 해당 금액의 1%, 50,000원"
+        : "문장이 아니라 값만 적어 주세요.";
+  }
+}
+
+/* 자유 입력 칸에 문장을 쓴 것처럼 보이면 true ("…한다.", "…로 한다" 등) */
+function looksLikeSentence(value: string): boolean {
+  const text = value.trim();
+
+  return /(다|다\.|요|요\.)$/.test(text) || /한다|된다|있다/.test(text);
+}
+
 interface ClauseSlotDialogProps {
   clause: AppliedContractClause | null;
 
@@ -187,6 +216,8 @@ function ClauseSlotInput({
 
           {slot.required && <span>필수</span>}
         </div>
+        
+        <p className="clause-slot-row__hint">{getSlotHint(slot)}</p>
 
         {slot.type === "METHOD" && (
           <div className="clause-slot-options">
@@ -213,13 +244,25 @@ function ClauseSlotInput({
         )}
 
         {slot.type === "TEXT" && (
-          <input
-            type="text"
-            className="clause-slot-standard-input"
-            placeholder={`${slot.label} 입력`}
-            value={slot.value}
-            onChange={(event) => onChange(event.target.value)}
-          />
+          <>
+            <input
+              type="text"
+              className="clause-slot-standard-input"
+              placeholder={
+                slot.label.includes("수수료")
+                  ? "예: 해당 금액의 1%"
+                  : `${slot.label} (값만)`
+              }
+              value={slot.value}
+              onChange={(event) => onChange(event.target.value)}
+            />
+
+            {looksLikeSentence(slot.value) && (
+              <p className="clause-slot-row__warning">
+                문장처럼 보여요. 이 칸에는 값만 넣고, 문장을 바꾸려면 조항의 [수정]을 써 주세요.
+              </p>
+            )}
+          </>
         )}
 
         {(slot.type === "PERCENT" ||
