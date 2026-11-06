@@ -630,12 +630,39 @@ export default function ContractFormPage() {
     );
   }
 
+  /* 검토하는 사이 문장이 바뀌었으면(수정·칸 채우기) 그 결과는 버리고 다시 검토할 수 있게 둔다. */
+  function applyReviewIfUnchanged(
+    clauseId: string,
+    reviewedText: string,
+    review: ClauseReviewState,
+  ) {
+    setAppliedClauses((previous) =>
+      previous.map((clause) => {
+        if (clause.id !== clauseId) {
+          return clause;
+        }
+
+        if (isSameClauseText(toEditableClauseText(clause), reviewedText)) {
+          return { ...clause, review };
+        }
+
+        return clause.review?.status === "REVIEWING"
+          ? { ...clause, review: { status: "NEEDS_REVIEW" } }
+          : clause;
+      }),
+    );
+  }
+
+
   async function handleReviewClause(clauseId: string) {
     const clause = appliedClauses.find((item) => item.id === clauseId);
 
     if (!clause || clause.review?.status === "REVIEWING") {
       return;
     }
+
+    // 보낸 그때의 문장. 응답이 왔을 때 문장이 바뀌었으면 결과를 버린다.
+    const reviewedText = toEditableClauseText(clause);
 
     updateClauseReview(clauseId, { status: "REVIEWING" });
 
@@ -651,12 +678,12 @@ export default function ContractFormPage() {
             ? clause.issues
             : [{ type: "OTHER" }],
         // 화면에 보이는 그대로(채운 값 포함) 검토한다.
-        clause: toEditableClauseText(clause),
+        clause: reviewedText,
       });
 
-      updateClauseReview(clauseId, { status: "DONE", result });
+      applyReviewIfUnchanged(clauseId, reviewedText, { status: "DONE", result });
     } catch (reviewError) {
-      updateClauseReview(clauseId, {
+      applyReviewIfUnchanged(clauseId, reviewedText, {
         status: "NEEDS_REVIEW",
         error:
           reviewError instanceof Error

@@ -1241,13 +1241,18 @@ export default function ClauseAgentPanel({
       }
 
       return true;
+      /** 답장: 버튼을 누르거나 입력창에 쓴 말. 확정되면 바로 작성한다. 입력창에 되돌릴 필요가 없으면 true. */
     } catch (replyError) {
-      
+      // 취소했으면 오류로 보여 주지 않는다. (되돌릴 입력도 없다)
+      if (controller.signal.aborted) {
+        return true;
+      }
+
       if (replyError instanceof ClauseChatExpiredError) {
         setChat(null);
         setRestartRequest(pendingRequest.current);
         pendingRequest.current = null;
-        return false;
+        return true;
       }
 
       setError(
@@ -1654,10 +1659,7 @@ export default function ClauseAgentPanel({
 
             <div className="sai-chat-bubble sai-chat-bubble--assistant">
               <p>
-                대화 시간이 지났거나 작성이 중간에 멈췄어요. 같은 요청으로 다시 시작할 수 있어요.
-              </p>
-              <p>
-                30분이 지났거나 이미 작성을 마친 대화예요. 같은 요청으로 다시 시작할 수 있어요.
+                대화 시간이 지났거나 작성이 중간에 멈췄어요. 같은 요청으로 다시 시작할 수 있어요.                          
               </p>
 
               <div className="sai-chat__options">
