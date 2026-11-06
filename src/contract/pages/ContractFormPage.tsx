@@ -29,10 +29,14 @@ import {
 
 import type {
   AppliedContractClause,
+  ClauseReviewState,
   ClauseSlot,
   ClauseSuggestionResponse,
   DraftContractClause,
 } from "../types/clauseAgent";
+
+import { reviewClause } from "../api/clauseAgentApi";
+import { toClauseSuggestionRequest } from "../utils/clauseRequest";
 
 import type { ContractFieldWarning } from "../utils/contractValidation";
 
@@ -599,12 +603,96 @@ export default function ContractFormPage() {
               ...clause,
 
               slots,
+
+              // 칸을 모두 채웠으면 채운 값으로 문장이 맞는지 다시 검토하도록 안내한다.
+              review:
+                slots.length > 0 &&
+                slots.every((slot) => slot.value.trim())
+                  ? { status: "NEEDS_REVIEW" as const }
+                  : clause.review,
             }
           : clause,
       ),
     );
 
     setEditingClauseId(null);
+  }
+  
+  /* =========================================================
+     Clause review (AI 다시 검토)
+  ========================================================= */
+
+  function updateClauseReview(clauseId: string, review: ClauseReviewState) {
+    setAppliedClauses((previous) =>
+      previous.map((clause) =>
+        clause.id === clauseId ? { ...clause, review } : clause,
+      ),
+    );
+  }
+
+  async function handleReviewClause(clauseId: string) {
+    const clause = appliedClauses.find((item) => item.id === clauseId);
+
+    if (!clause || clause.review?.status === "REVIEWING") {
+      return;
+    }
+
+    updateClauseReview(clauseId, { status: "REVIEWING" });
+
+    try {
+      const result = await reviewClause({
+        // 조항을 만들 때의 요청이 없으면(예전 조항) 제목으로 대신한다.
+        request: toClauseSuggestionRequest(
+          formData,
+          clause.sourceRequest?.trim() || clause.title,
+        ),
+        issues:
+          clause.issues.length > 0
+            ? clause.issues
+            : [{ type: "OTHER" }],
+        // 화면에 보이는 그대로(채운 값 포함) 검토한다.
+        clause: toEditableClauseText(clause),
+      });
+
+      updateClauseReview(clauseId, { status: "DONE", result });
+    } catch (reviewError) {
+      updateClauseReview(clauseId, {
+        status: "NEEDS_REVIEW",
+        error:
+          reviewError instanceof Error
+            ? reviewError.message
+            : "다시 검토하지 못했어요.",
+      });
+    }
+  }
+
+  /* 수정 제안: apply면 제안 문장으로 바꾸고, 아니면 제안만 닫는다. */
+  function handleResolveReviewSuggestion(clauseId: string, apply: boolean) {
+    setAppliedClauses((previous) =>
+      previous.map((clause) => {
+        const result = clause.review?.result;
+
+        if (clause.id !== clauseId || !result?.suggestedClause) {
+          return clause;
+        }
+
+        const closedReview: ClauseReviewState = {
+          status: "DONE",
+          result: { ...result, suggestedClause: null },
+        };
+
+        if (!apply) {
+          return { ...clause, review: closedReview };
+        }
+
+        return {
+          ...clause,
+          templateContent: result.suggestedClause,
+          slots: createClauseSlots(result.suggestedClause),
+          review: closedReview,
+        };
+      }),
+    );
   }
 
   /* =========================================================
@@ -742,6 +830,8 @@ export default function ContractFormPage() {
             onOpenClauseSettings={setEditingClauseId}
             onRemoveClause={handleRemoveClause}
             onEditClauseText={handleEditClauseText}
+            onReviewClause={handleReviewClause}
+            onResolveReviewSuggestion={handleResolveReviewSuggestion}
             disabled={isChecking}
           />
 

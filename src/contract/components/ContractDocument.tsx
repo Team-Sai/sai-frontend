@@ -45,6 +45,10 @@ interface ContractDocumentProps {
   onRemoveClause: (clauseId: string) => void;
   /** 반영한 조항 문장을 직접 고친다. 없으면 [수정] 버튼을 숨긴다. (읽기 전용 화면 등) */
   onEditClauseText?: (clauseId: string, text: string) => void;
+  /** [AI 다시 검토]. 없으면 버튼을 숨긴다. */
+  onReviewClause?: (clauseId: string) => void;
+  /** 수정 제안: apply면 제안대로 바꾸고, 아니면 제안을 닫는다. */
+  onResolveReviewSuggestion?: (clauseId: string, apply: boolean) => void;
   disabled?: boolean;
   readOnly?: boolean;
   documentStatusText?: string;
@@ -318,6 +322,8 @@ export default function ContractDocument({
   onOpenClauseSettings,
   onRemoveClause,
   onEditClauseText,
+  onReviewClause,
+  onResolveReviewSuggestion,
   disabled = false,
   readOnly = false,
   documentStatusText,
@@ -1021,17 +1027,87 @@ export default function ContractDocument({
               />
               )}
 
-              {!readOnly &&
-                clause.review?.status === "NEEDS_REVIEW" &&  (
-                  <div className="document-clause__reivew-notice">
+              {!readOnly && clause.review && (
+                <div className="document-clause__review-notice">
+                  {clause.review.status === "NEEDS_REVIEW" && (
+                    <>
+                      <strong>직접 고치거나 채운 내용이 있어요.</strong>
+                      <p>원래 요청·계약과 맞는지 AI로 다시 확인할 수 있어요.</p>
+
+                      {clause.review.error && (
+                        <p className="is-error">{clause.review.error}</p>
+                      )}
+
+                      {onReviewClause && (
+                        <button
+                          type="button"
+                          className="document-clause__edit-button"
+                          onClick={() => onReviewClause(clause.id)}
+                        >
+                          AI 다시 검토
+                        </button>
+                      )}
+                    </>
+                  )}
+
+                  {clause.review.status === "REVIEWING" && (
+                    <strong>AI가 다시 검토하고 있어요… (20초쯤 걸릴 수 있어요)</strong>
+                  )}
+
+                  {clause.review.status === "DONE" && clause.review.result && (
+                    <>
                       <strong>
-                        직접 고친 문장이에요.
+                        {clause.review.result.status === "PASS"
+                          ? "✅ 문제없어요"
+                          : "⚠ 확인해 주세요"}
                       </strong>
-                      <p>
-                        원래 요청·계약과 맞는지 AI로 다시 확인할 수 있어요.
-                      </p>
-                  </div>
-                )}    
+
+                      {clause.review.result.checks
+                        .filter((check) => check.status !== "PASS" && check.message)
+                        .map((check, checkIndex) => (
+                          <p key={`check-${checkIndex}`}>{check.message}</p>
+                        ))}
+
+                      {clause.review.result.warnings.map((warning, warningIndex) => (
+                        <p key={`warning-${warningIndex}`}>{warning}</p>
+                      ))}
+
+                      {clause.review.result.openSlots.length > 0 && (
+                        <p>
+                          아직 채우지 않은 칸: {clause.review.result.openSlots.join(", ")}
+                        </p>
+                      )}
+
+                      {clause.review.result.suggestedClause && (
+                        <div className="document-clause__review-suggestion">
+                          <span>이렇게 고치면 더 정확해요</span>
+                          <p>{clause.review.result.suggestedClause}</p>
+
+                          {onResolveReviewSuggestion && (
+                            <div>
+                              <button
+                                type="button"
+                                className="document-clause__edit-button"
+                                onClick={() => onResolveReviewSuggestion(clause.id, false)}
+                              >
+                                그대로 두기
+                              </button>
+
+                              <button
+                                type="button"
+                                className="document-clause__edit-button"
+                                onClick={() => onResolveReviewSuggestion(clause.id, true)}
+                              >
+                                제안대로 바꾸기
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
               {!readOnly &&
                 unresolved.length > 0 && (
                   <div className="document-clause__slot-notice">

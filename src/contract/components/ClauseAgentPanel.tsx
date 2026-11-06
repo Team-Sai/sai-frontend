@@ -31,6 +31,7 @@ import {
   LIVE_TICK_MS,
 } from "../utils/draftTyping";
 import ClauseChatCard from "./ClauseChatCard";
+import { toClauseSuggestionRequest } from "../utils/clauseRequest";
 import "./ClauseAgentPanel.css";
 
 interface ClauseAgentPanelProps {
@@ -881,34 +882,8 @@ export default function ClauseAgentPanel({
   );
   const isAgentLocked = missingAgentFields.length > 0;
 
-  function buildRequest(message: string): ClauseSuggestionRequest {
-   const principal = Number(formData.principalAmount);
-   const interestRate = Number(formData.interestRate);
-   const repaymentDay = Number(formData.repaymentDay);
-
-    return {
-      principalAmount:
-        Number.isFinite(principal) && principal > 0
-          ? principal
-          : null,
-
-      interestRate: Number.isFinite(interestRate)
-        ? interestRate
-        : null,
-
-      lateInterestRate: null,
-      startDate: formData.startDate || null,
-      maturityDate: formData.maturityDate || null,
-
-      repaymentDay: Number.isFinite(repaymentDay)
-        ? repaymentDay
-        : null,
-
-      repaymentType: formData.repaymentType || null,
-      contractAlias: formData.contractAlias.trim() || null,
-      terms: formData.terms.trim() || null,
-      message,
-    };
+    function buildRequest(message: string): ClauseSuggestionRequest {
+    return toClauseSuggestionRequest(formData, message);
   }
 
   async function handleSend() {
