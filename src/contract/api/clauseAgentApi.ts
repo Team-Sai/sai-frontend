@@ -254,6 +254,17 @@ export class ClauseStreamUnavailableError extends Error {
   }
 }
 
+/** 대화가 없거나 30분이 지나 끝났다. 같은 요청으로 새 대화를 시작해야 한다. */
+export class ClauseChatExpiredError extends Error {
+  constructor(
+    message = "대화가 끝났어요. 같은 요청으로 다시 시작해 주세요.",
+    options?: ErrorOptions,
+  ) {
+    super(message, options);
+    this.name = "ClauseChatExpiredError";
+  }
+}
+
 export interface ClauseStreamHandlers {
   onProgress?: (step: ClauseStreamStep) => void;
   /** 순위 매기기가 끝난 뒤, 조항을 쓰기 전에 먼저 받는 근거 법령 */
@@ -363,6 +374,12 @@ async function requestClauseStream(
       `스트리밍 API를 사용할 수 없습니다. (${response.status})`,
     );
   }
+
+  // 대화가 없거나 만료됐다(30분). 같은 요청으로 새로 시작하게 한다.
+  if (response.status === 404) {
+    throw new ClauseChatExpiredError();
+  }
+
 
   if (!response.ok) {
     throw new Error(

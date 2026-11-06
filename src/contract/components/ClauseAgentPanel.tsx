@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../../common/components";
 import {
+  ClauseChatExpiredError,
   ClauseStreamUnavailableError,
   replyClauseChat,
   requestClauseChatWriteStream,
@@ -59,6 +60,13 @@ interface ClauseChatState {
   readyToWrite: boolean;
 }
 
+/** 새로고침해도 이어 가도록 탭에 잠깐 두는 대화 (확정 전 대화만) */
+interface StoredChatSession {
+  question: string;
+  chat: ClauseChatState;
+  request: ClauseSuggestionRequest;
+}
+
 interface StoredAgentSession {
   question: string;
   result: ClauseSuggestionResponse;
@@ -67,6 +75,8 @@ interface StoredAgentSession {
 const FULL_IMAGE_PATH = "/images/guest/sai-guide-full.avif";
 const HEAD_IMAGE_PATH = "/images/guest/sai-guide-head.avif";
 const AGENT_SESSION_KEY = "sai.contract.agent.pending";
+const CHAT_WRITING_KEY = "sai.contract.agent.chat-writing";
+const CHAT_SESSION_KEY = "sai.contract.agent.chat";
 
 /*
  * 스트리밍 API를 쓸 수 없을 때(기존 API로 대체할 때)만 쓰는 단계 표시.
@@ -348,6 +358,48 @@ function clearStoredAgentSession() {
   sessionStorage.removeItem(AGENT_SESSION_KEY);
 }
 
+function loadStoredChatSession(): StoredChatSession | null {
+  try {
+    const raw = sessionStorage.getItem(CHAT_SESSION_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as StoredChatSession;
+
+    if (!parsed?.chat?.sessionId || !parsed.request || !parsed.question) {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    sessionStorage.removeItem(CHAT_SESSION_KEY);
+    return null;
+  }
+}
+
+/** 작성 도중 새로고침되면 남아 있는 요청 (다시 시작에 쓴다) */
+function loadInterruptedWrite(): { question: string; request: ClauseSuggestionRequest } | null {
+  try {
+    const raw = sessionStorage.getItem(CHAT_WRITING_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as { question?: string; request?: ClauseSuggestionRequest };
+
+    return parsed?.question && parsed.request
+      ? { question: parsed.question, request: parsed.request }
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearInterruptedWrite() {
+  try {
+    sessionStorage.removeItem(CHAT_WRITING_KEY);
+  } catch {
+    // 저장소를 쓸 수 없으면 무시한다.
+  }
+}
+
 /* 검증이 끝나기 전 초안을 결과 영역에 보여주기 위한 임시 응답 */
 function draftToPendingResult(
   draft: ClauseDraft,
@@ -380,9 +432,11 @@ export default function ClauseAgentPanel({
   const [input, setInput] = useState("");
 
   const [initialSession] = useState(loadStoredAgentSession);
+  const [interruptedWrite] = useState(loadInterruptedWrite);
+  const [initialChat] = useState(loadStoredChatSession);
 
   const [question, setQuestion] = useState<string | null>(
-    initialSession?.question ?? null,
+      initialSession?.question ?? initialChat?.question ?? interruptedWrite?.question ?? null,
   );
 
   const [result, setResult] =
@@ -411,11 +465,28 @@ export default function ClauseAgentPanel({
 
   
   // 대화형 특약
-  const [chat, setChat] = useState<ClauseChatState | null>(null);
-  const [isChatWaiting, setIsChatWaiting] = useState(false);
+  const [chat, setChat] = useState<ClauseChatState | null>(initialChat?.chat ?? null);  const [isChatWaiting, setIsChatWaiting] = useState(false);
   /** 확정되면 이 요청으로 작성한다. (대화형 작성은 백엔드가 저장한 값을 쓰지만, 화면 저장에 원문이 필요하다) */
-  const pendingRequest = useRef<ClauseSuggestionRequest | null>(null);
+  const pendingRequest = useRef<ClauseSuggestionRequest | null>(initialChat?.request ?? null);
+    /** 대화가 끝났을 때 [같은 요청으로 다시 시작]에 쓸 요청 */
+  const [restartRequest, setRestartRequest] =
+    useState<ClauseSuggestionRequest | null>(interruptedWrite?.request ?? null);
 
+  // 새로고침해도 이어 가도록, 확정 전 대화만 이 탭(sessionStorage)에 둔다.
+  useEffect(() => {
+    try {
+      if (chat?.sessionId && !chat.readyToWrite && pendingRequest.current && question) {
+        sessionStorage.setItem(
+          CHAT_SESSION_KEY,
+          JSON.stringify({ question, chat, request: pendingRequest.current }),
+        );
+      } else {
+        sessionStorage.removeItem(CHAT_SESSION_KEY);
+      }
+    } catch {
+      // 저장소를 쓸 수 없으면 새로고침 이어 가기만 안 될 뿐이다.
+    }
+  }, [chat, question]);
   const [justApplied, setJustApplied] = useState<{
     title: string;
     slotCount: number;
@@ -849,11 +920,7 @@ export default function ClauseAgentPanel({
       
       // 대화형 작성에서 404/409는 "대화가 끝났거나 확정 전"이라 예전 API로 다시 쓰면 안 된다.
       if (sessionId) {
-        throw new Error("대화가 끝났어요. 처음부터 다시 요청해 주세요.",
-          {
-            cause: streamError,
-          });
-
+        throw new ClauseChatExpiredError(undefined, { cause: streamError });
       }
 
       // 스트리밍 API를 쓸 수 없으면 기존 API로 한 번에 받는다.
@@ -939,6 +1006,8 @@ export default function ClauseAgentPanel({
     clearStoredAgentSession();
     onDraftChange(null);
     setChat(null);
+    setRestartRequest(null);
+    clearInterruptedWrite();
 
     await startChat(buildRequest(message));
   }
@@ -948,6 +1017,15 @@ export default function ClauseAgentPanel({
     sessionId: string | null,
   ) {
     const message = request.message;
+    
+    // 대화로 쓰는 중에 새로고침되면 다시 시작할 수 있게 표시해 둔다.
+    if (sessionId) {
+      try {
+        sessionStorage.setItem(CHAT_WRITING_KEY, JSON.stringify({ question: message, request }));
+      } catch {
+        // 저장소를 쓸 수 없으면 새로고침 다시 시작만 안 될 뿐이다.
+      }
+    }
 
 
     setIsLoading(true);
@@ -1040,6 +1118,13 @@ export default function ClauseAgentPanel({
       if (sessionId) {
         setChat(null);
         pendingRequest.current = null;
+        // 같은 요청으로 새 대화를 시작할 수 있게 남겨 둔다.
+        setRestartRequest(request);
+
+        // "대화 끝"은 아래 [다시 시작] 안내로 보여 주므로 오류 문장은 따로 띄우지 않는다.
+        if (requestError instanceof ClauseChatExpiredError) {
+          return;
+        }
       }
 
 
@@ -1049,6 +1134,10 @@ export default function ClauseAgentPanel({
           : "계약 조항을 검토하는 중 오류가 발생했습니다.",
       );
     } finally {
+      // 끝났으면(성공·실패·취소) 표시를 지운다. 새로고침되면 여기까지 오지 않아 표시가 남는다.
+      if (sessionId) {
+        clearInterruptedWrite();
+      }
       // 취소 후 새 요청이 시작됐다면 그 요청의 상태는 건드리지 않는다.
       if (abortController.current === controller) {
         abortController.current = null;
@@ -1082,7 +1171,8 @@ export default function ClauseAgentPanel({
         readyToWrite: false,
       });
         } catch (chatError) {
-      if (controller.signal.aborted) {
+      if (controller.signal.aborted)
+         {
         return;
       }
 
@@ -1152,7 +1242,11 @@ export default function ClauseAgentPanel({
 
       return true;
     } catch (replyError) {
-      if (controller.signal.aborted) {
+      
+      if (replyError instanceof ClauseChatExpiredError) {
+        setChat(null);
+        setRestartRequest(pendingRequest.current);
+        pendingRequest.current = null;
         return false;
       }
 
@@ -1168,6 +1262,24 @@ export default function ClauseAgentPanel({
       }
       setIsChatWaiting(false);
     }
+  }
+
+  /** 대화가 끝났을 때: 같은 요청으로 새 대화를 시작한다. */
+  function handleRestartChat() {
+    const request = restartRequest;
+
+    if (!request || isChatWaiting || isLoading) {
+      return;
+    }
+
+    setRestartRequest(null);
+    clearInterruptedWrite();
+    setError(null);
+    setResult(null);
+    clearStoredAgentSession();
+    onDraftChange(null);
+    setQuestion(request.message);
+    void startChat(request);
   }
 
 
@@ -1189,6 +1301,8 @@ export default function ClauseAgentPanel({
     setDuplicateClause(null);
     setError(null);
     setChat(null);
+    setRestartRequest(null);
+    clearInterruptedWrite();
     pendingRequest.current = null;
 
     onDraftChange(null);
@@ -1215,6 +1329,8 @@ export default function ClauseAgentPanel({
     setResult(null);
     setDuplicateClause(null);
     setChat(null);
+    setRestartRequest(null);
+    clearInterruptedWrite();
     pendingRequest.current = null;
     onDraftChange(null);
   }
@@ -1528,6 +1644,31 @@ export default function ClauseAgentPanel({
             </div>
           </section>
         )}
+
+        {restartRequest && !chat && !isChatWaiting && !isLoading && (
+          <section className="sai-chat-row">
+            <AgentAvatar
+              visible={headImageVisible}
+              onError={() => setHeadImageVisible(false)}
+            />
+
+            <div className="sai-chat-bubble sai-chat-bubble--assistant">
+              <p>
+                대화 시간이 지났거나 작성이 중간에 멈췄어요. 같은 요청으로 다시 시작할 수 있어요.
+              </p>
+              <p>
+                30분이 지났거나 이미 작성을 마친 대화예요. 같은 요청으로 다시 시작할 수 있어요.
+              </p>
+
+              <div className="sai-chat__options">
+                <button type="button" onClick={handleRestartChat}>
+                  같은 요청으로 다시 시작
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
 
         {error && (
           <section className="sai-chat-row">

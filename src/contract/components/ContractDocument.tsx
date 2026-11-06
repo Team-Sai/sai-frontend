@@ -909,17 +909,27 @@ export default function ContractDocument({
                 .join(" ")}
             >
               {!readOnly && (
-                <button
-                  type="button"
-                  className="document-clause__remove-rail"
-                  aria-label={`${clause.title} 조항 삭제`}
-                  title="조항 삭제"
-                  onClick={() =>
-                    handleRemoveClause(clause)
-                  }
-                >
-                  <span aria-hidden="true">−</span>
-                </button>
+                <div className="document-clause__hover-actions">
+                  {onEditClauseText && (
+                    <button
+                      type="button"
+                      className="document-clause__edit-button"
+                      disabled={editingTextClauseId === clause.id}
+                      onClick={() => startEditClauseText(clause)}
+                    >
+                      수정
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    className="document-clause__edit-button is-danger"
+                    aria-label={`${clause.title} 조항 삭제`}
+                    onClick={() => handleRemoveClause(clause)}
+                  >
+                    삭제
+                  </button>
+                </div>
               )}
 
               <div className="document-clause__generated-head">
@@ -959,26 +969,7 @@ export default function ContractDocument({
                         왜 이 조항인가요?
                         <span>→</span>
                       </button>
-                    )}
-
-                    {onEditClauseText && (
-                      <button
-                        type="button"
-                        className="document-clause__edit-button"
-                        disabled={editingTextClauseId === clause.id}
-                        onClick={() => startEditClauseText(clause)}
-                      >
-                        수정
-                      </button>
-                    )}
-
-                    <button
-                      type="button"
-                      className="document-clause__edit-button is-danger"
-                      onClick={() => handleRemoveClause(clause)}
-                    >
-                      삭제
-                    </button>
+                    )}                          
                   </div>
                 )}
               </div>
@@ -1007,7 +998,7 @@ export default function ContractDocument({
 
                     <button
                       type="button"
-                      className="document-clause__edit-button"
+                      className="document-clause__edit-button is-primary"
                       disabled={!editingText.trim()}
                       onClick={() => saveClauseText(clause.id)}
                     >
@@ -1041,7 +1032,7 @@ export default function ContractDocument({
                       {onReviewClause && (
                         <button
                           type="button"
-                          className="document-clause__edit-button"
+                          className="document-clause__edit-button is-primary"
                           onClick={() => onReviewClause(clause.id)}
                         >
                           AI 다시 검토
@@ -1095,7 +1086,7 @@ export default function ContractDocument({
 
                               <button
                                 type="button"
-                                className="document-clause__edit-button"
+                                className="document-clause__edit-button is-primary"
                                 onClick={() => onResolveReviewSuggestion(clause.id, true)}
                               >
                                 제안대로 바꾸기
