@@ -60,7 +60,8 @@ function inferSlotType(rawLabel: string): {
     label.includes("%") ||
     label.includes("비율") ||
     label.includes("이율") ||
-    label.includes("위약금률")
+    label.includes("위약금률") ||
+    label.endsWith("율")
   ) {
     return {
       type: "PERCENT",
