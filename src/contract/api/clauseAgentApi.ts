@@ -5,6 +5,8 @@ import { createSseParser } from "../utils/sseParser";
 import type {
   ClauseChatReplyResponse,
   ClauseChatStartResponse,
+  ClauseReviewRequest,
+  ClauseReviewResponse,
   ClauseDraft,
   ClauseIssue,
   ClauseReference,
@@ -575,4 +577,51 @@ export function requestClauseChatWriteStream(
     handlers,
     signal,
   );
+}
+
+/* ============================================================
+ * 반영한 AI 조항 다시 검토
+ * ============================================================ */
+
+/** 사용자가 고치거나 채운 조항을 다시 검토한다. (생성 없이 검증만, 길면 20초 이상) */
+export async function reviewClause(
+  request: ClauseReviewRequest,
+  signal?: AbortSignal,
+): Promise<ClauseReviewResponse> {
+  const response = await authFetch("/api/contracts/clause-review", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      ...request,
+      // 백엔드는 type만 쓰므로 다른 칸은 보내지 않는다.
+      issues: request.issues.map((issue) => ({ type: issue.type })),
+    }),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      await readErrorMessage(
+        response,
+        `조항을 다시 검토하지 못했어요. (${response.status})`,
+      ),
+    );
+  }
+
+  const body = (await response.json()) as Record<string, unknown>;
+
+  return {
+    status: normalizeStatus(body.status),
+    isSafeToSuggest: body.isSafeToSuggest !== false,
+    checks: normalizeValidationChecks(body.checks),
+    warnings: normalizeWarnings(body.warnings),
+    openSlots: normalizeWarnings(body.openSlots),
+    suggestedClause:
+      typeof body.suggestedClause === "string" && body.suggestedClause.trim()
+        ? body.suggestedClause.trim()
+        : null,
+  };
 }

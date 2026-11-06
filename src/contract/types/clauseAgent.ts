@@ -219,3 +219,27 @@ export interface ClauseChatReplyResponse {
   /** true면 [작성하기]를 누를 수 있다 */
   readyToWrite: boolean;
 }
+
+/* ============================================================
+ * 반영한 AI 조항 다시 검토 (백엔드 /api/contracts/clause-review)
+ * ============================================================ */
+
+export interface ClauseReviewRequest {
+  /** 조항을 만들 때 보낸 계약 정보와 원래 요청 */
+  request: ClauseSuggestionRequest;
+  /** 그때 받은 쟁점 (type만 보낸다) */
+  issues: { type: string }[];
+  /** 사용자가 채우거나 고친 조항 문장 */
+  clause: string;
+}
+
+export interface ClauseReviewResponse {
+  status: ClauseValidationStatus;
+  isSafeToSuggest: boolean;
+  checks: ClauseValidationCheck[];
+  warnings: string[];
+  /** 아직 채우지 않은 [입력 필요] 칸 이름 */
+  openSlots: string[];
+  /** 검증에서 문장을 고쳤을 때만 있다 (반영은 사용자가 고른다) */
+  suggestedClause: string | null;
+}
