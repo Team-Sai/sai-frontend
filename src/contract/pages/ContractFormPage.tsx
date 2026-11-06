@@ -39,6 +39,8 @@ import type { ContractFieldWarning } from "../utils/contractValidation";
 import {
   countUnresolvedClauseSlots,
   createClauseSlots,
+  isSameClauseText,
+  toEditableClauseText,
   renderClauseContent,
   repairAppliedClauseSlots,
 } from "../utils/clauseSlots";
@@ -526,6 +528,36 @@ export default function ContractFormPage() {
   }
 
   /* =========================================================
+     Edit clause text
+  ========================================================= */
+
+  function handleEditClauseText(clauseId: string, nextText: string) {
+    setAppliedClauses((previous) =>
+      previous.map((clause) => {
+        if (clause.id !== clauseId) {
+          return clause;
+        }
+
+        const text = nextText.trim();
+
+        // 비었거나 띄어쓰기·줄바꿈만 바뀌었으면 그대로 둔다.
+        if (!text || isSameClauseText(text, toEditableClauseText(clause))) {
+          return clause;
+        }
+
+        return {
+          ...clause,
+          templateContent: text,
+          // 채운 값은 이미 문장에 들어갔으므로, 남은 [입력 필요] 칸만 다시 만든다.
+          slots: createClauseSlots(text),
+          review: { status: "NEEDS_REVIEW" },
+        };
+      }),
+    );
+  }
+
+
+  /* =========================================================
      Remove clause
   ========================================================= */
 
@@ -709,6 +741,7 @@ export default function ContractFormPage() {
             fieldWarnings={fieldWarnings}
             onOpenClauseSettings={setEditingClauseId}
             onRemoveClause={handleRemoveClause}
+            onEditClauseText={handleEditClauseText}
             disabled={isChecking}
           />
 

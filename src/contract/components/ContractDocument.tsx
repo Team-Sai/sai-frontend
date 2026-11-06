@@ -19,6 +19,7 @@ import {
   formatClauseSlotValue,
   getUnresolvedClauseSlots,
   parseClauseTemplate,
+  toEditableClauseText,
 } from "../utils/clauseSlots";
 import {
   getDraftCharDelay,
@@ -42,6 +43,8 @@ interface ContractDocumentProps {
   fieldWarnings: ContractFieldWarning[];
   onOpenClauseSettings: (clauseId: string) => void;
   onRemoveClause: (clauseId: string) => void;
+  /** 반영한 조항 문장을 직접 고친다. 없으면 [수정] 버튼을 숨긴다. (읽기 전용 화면 등) */
+  onEditClauseText?: (clauseId: string, text: string) => void;
   disabled?: boolean;
   readOnly?: boolean;
   documentStatusText?: string;
@@ -314,6 +317,7 @@ export default function ContractDocument({
   fieldWarnings,
   onOpenClauseSettings,
   onRemoveClause,
+  onEditClauseText,
   disabled = false,
   readOnly = false,
   documentStatusText,
@@ -329,6 +333,12 @@ export default function ContractDocument({
 
   const [reasonClause, setReasonClause] =
     useState<AppliedContractClause | null>(null);
+  
+  // 반영한 조항 문장 직접 고치기
+  const [editingTextClauseId, setEditingTextClauseId] =
+    useState<string | null>(null);
+
+  const [editingText, setEditingText] = useState("");  
 
   const draftRef = useRef<HTMLElement | null>(null);
 
@@ -442,6 +452,17 @@ export default function ContractDocument({
   const resolvedDebtorName =
     debtorName?.trim() ||
     "상대방 확인 단계에서 확정";
+
+  function startEditClauseText(clause: AppliedContractClause) {
+    setEditingTextClauseId(clause.id);
+    setEditingText(toEditableClauseText(clause));
+  }
+
+  function saveClauseText(clauseId: string) {
+    onEditClauseText?.(clauseId, editingText);
+    setEditingTextClauseId(null);
+  }
+  
 
   function handleRemoveClause(
     clause: AppliedContractClause,
@@ -933,10 +954,62 @@ export default function ContractDocument({
                         <span>→</span>
                       </button>
                     )}
+
+                    {onEditClauseText && (
+                      <button
+                        type="button"
+                        className="document-clause__edit-button"
+                        disabled={editingTextClauseId === clause.id}
+                        onClick={() => startEditClauseText(clause)}
+                      >
+                        수정
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      className="document-clause__edit-button is-danger"
+                      onClick={() => handleRemoveClause(clause)}
+                    >
+                      삭제
+                    </button>
                   </div>
                 )}
               </div>
 
+              {editingTextClauseId === clause.id ? (
+                <div className="document-clause__text-editor">
+                  <textarea
+                    value={editingText}
+                    rows={6}
+                    aria-label={`${clause.title} 조항 문장 고치기`}
+                    onChange={(event) => setEditingText(event.target.value)}
+                  />
+
+                  <p>
+                    비어 있는 칸은 [입력 필요: 이름] 모양 그대로 두면 나중에 값을 고를 수 있어요.
+                  </p>
+
+                  <div>
+                    <button
+                      type="button"
+                      className="document-clause__edit-button"
+                      onClick={() => setEditingTextClauseId(null)}
+                    >
+                      취소
+                    </button>
+
+                    <button
+                      type="button"
+                      className="document-clause__edit-button"
+                      disabled={!editingText.trim()}
+                      onClick={() => saveClauseText(clause.id)}
+                    >
+                      저장
+                    </button>
+                  </div>
+                </div>
+              ) : (
               <RenderSmartClause
                 clause={clause}
                 onOpen={() =>
@@ -946,7 +1019,19 @@ export default function ContractDocument({
                 }
                 readOnly={readOnly}
               />
+              )}
 
+              {!readOnly &&
+                clause.review?.status === "NEEDS_REVIEW" &&  (
+                  <div className="document-clause__reivew-notice">
+                      <strong>
+                        직접 고친 문장이에요.
+                      </strong>
+                      <p>
+                        원래 요청·계약과 맞는지 AI로 다시 확인할 수 있어요.
+                      </p>
+                  </div>
+                )}    
               {!readOnly &&
                 unresolved.length > 0 && (
                   <div className="document-clause__slot-notice">
