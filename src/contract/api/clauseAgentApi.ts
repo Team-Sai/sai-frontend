@@ -1,6 +1,7 @@
 
 import { authFetch } from "../../auth/authFetch";
 import { createSseParser } from "../utils/sseParser";
+import { isDemoMode } from "../utils/demoMode";
 
 import type {
   ClauseChatReplyResponse,
@@ -527,7 +528,8 @@ export async function startClauseChat(
       "Content-Type": "application/json",
       Accept: "application/json",
     },
-    body: JSON.stringify(request),
+    // 발표 시연 탭이면 demo 표시를 붙인다. (서버에서 허용했을 때만 쓰인다)
+    body: JSON.stringify(isDemoMode() ? { ...request, demo: true } : request),
     signal,
   });
 
