@@ -1540,6 +1540,17 @@ export default function ClauseAgentPanel({
                   >
                     위약금을 정하고 싶어요
                   </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setInput(
+                        "채무자 소유 자동차를 담보로 잡고 싶어요.",
+                      )
+                    }
+                  >
+                    자동차를 담보로 잡으려면?
+                  </button>
                 </div>
               </div>
             </section>

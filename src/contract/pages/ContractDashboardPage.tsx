@@ -15,6 +15,7 @@ import {
 } from "../types/contractDashboard";
 import RelationModal from "../components/RelationModal";
 import type { ContractRelationType } from "../types/contract";
+import { setDemoMode } from "../utils/demoMode";
 
 const money = (v: number) =>
   v.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
@@ -27,6 +28,8 @@ export default function ContractDashboardPage() {
   const [sortType, setSortType] = useState("");
   const [page, setPage] = useState(1);
   const [isRelationModalOpen, setIsRelationModalOpen] = useState(false);
+    /** Alt를 누른 채 [차용증 작성]을 눌렀는지 (발표 시연 진입) */
+  const [demoEntry, setDemoEntry] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncTime, setSyncTime] = useState(() => formatTransactionSyncTime(getLastTransactionSyncAt()));
   const [isReviewOpen, setIsReviewOpen] = useState(false);
@@ -69,7 +72,9 @@ export default function ContractDashboardPage() {
     setIsRelationModalOpen(false);
     // 차용증 생성마다 본인인증을 새로 받도록 이전 인증 결과를 비운다.
     sessionStorage.removeItem("identityVerificationId");
-    navigate(`/contracts/new?relation=${relation}`);
+    // Alt로 들어왔으면 이 탭을 발표 시연 모드로, 아니면 일반 모드로 둔다.
+    setDemoMode(demoEntry);
+    navigate(`/contracts/new?relation=${relation}${demoEntry ? "&v=2" : ""}`);
   }
 
   useEffect(() => {
@@ -131,7 +136,10 @@ export default function ContractDashboardPage() {
           <button
             type="button"
             className="button button-primary"
-            onClick={() => setIsRelationModalOpen(true)}
+            onClick={(event) => {
+              setDemoEntry(event.altKey);
+              setIsRelationModalOpen(true);
+            }}
           >
             차용증 작성
           </button>
@@ -290,7 +298,10 @@ export default function ContractDashboardPage() {
             <button
               type="button"
               className="button button-primary"
-              onClick={() => setIsRelationModalOpen(true)}
+              onClick={(event) => {
+                setDemoEntry(event.altKey);
+                setIsRelationModalOpen(true);
+              }}
             >
               첫 차용증 작성하기
             </button>
