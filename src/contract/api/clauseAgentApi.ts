@@ -5,6 +5,8 @@ import { createSseParser } from "../utils/sseParser";
 import type {
   ClauseChatReplyResponse,
   ClauseChatStartResponse,
+  ClauseReviewRequest,
+  ClauseReviewResponse,
   ClauseDraft,
   ClauseIssue,
   ClauseReference,
@@ -252,6 +254,17 @@ export class ClauseStreamUnavailableError extends Error {
   }
 }
 
+/** 대화가 없거나 30분이 지나 끝났다. 같은 요청으로 새 대화를 시작해야 한다. */
+export class ClauseChatExpiredError extends Error {
+  constructor(
+    message = "대화가 끝났어요. 같은 요청으로 다시 시작해 주세요.",
+    options?: ErrorOptions,
+  ) {
+    super(message, options);
+    this.name = "ClauseChatExpiredError";
+  }
+}
+
 export interface ClauseStreamHandlers {
   onProgress?: (step: ClauseStreamStep) => void;
   /** 순위 매기기가 끝난 뒤, 조항을 쓰기 전에 먼저 받는 근거 법령 */
@@ -361,6 +374,12 @@ async function requestClauseStream(
       `스트리밍 API를 사용할 수 없습니다. (${response.status})`,
     );
   }
+
+  // 대화가 없거나 만료됐다(30분). 같은 요청으로 새로 시작하게 한다.
+  if (response.status === 404) {
+    throw new ClauseChatExpiredError();
+  }
+
 
   if (!response.ok) {
     throw new Error(
@@ -575,4 +594,51 @@ export function requestClauseChatWriteStream(
     handlers,
     signal,
   );
+}
+
+/* ============================================================
+ * 반영한 AI 조항 다시 검토
+ * ============================================================ */
+
+/** 사용자가 고치거나 채운 조항을 다시 검토한다. (생성 없이 검증만, 길면 20초 이상) */
+export async function reviewClause(
+  request: ClauseReviewRequest,
+  signal?: AbortSignal,
+): Promise<ClauseReviewResponse> {
+  const response = await authFetch("/api/contracts/clause-review", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      ...request,
+      // 백엔드는 type만 쓰므로 다른 칸은 보내지 않는다.
+      issues: request.issues.map((issue) => ({ type: issue.type })),
+    }),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      await readErrorMessage(
+        response,
+        `조항을 다시 검토하지 못했어요. (${response.status})`,
+      ),
+    );
+  }
+
+  const body = (await response.json()) as Record<string, unknown>;
+
+  return {
+    status: normalizeStatus(body.status),
+    isSafeToSuggest: body.isSafeToSuggest !== false,
+    checks: normalizeValidationChecks(body.checks),
+    warnings: normalizeWarnings(body.warnings),
+    openSlots: normalizeWarnings(body.openSlots),
+    suggestedClause:
+      typeof body.suggestedClause === "string" && body.suggestedClause.trim()
+        ? body.suggestedClause.trim()
+        : null,
+  };
 }

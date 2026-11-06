@@ -483,3 +483,15 @@
 
   cursor: default;
 }
+
+.clause-slot-row__hint {
+  margin: -4px 0 8px;
+  color: #81938b;
+  font-size: 11px;
+}
+
+.clause-slot-row__warning {
+  margin: 6px 0 0;
+  color: #a33a3a;
+  font-size: 11px;
+}

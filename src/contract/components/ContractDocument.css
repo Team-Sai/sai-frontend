@@ -662,3 +662,183 @@
     width: 100%;
   }
 }
+
+
+.document-clause__review-notice .document-clause__edit-button {
+  margin-top: 8px;
+}
+
+.document-clause__review-notice p.is-error {
+  color: #a33a3a;
+}
+
+.document-clause__review-suggestion {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #ffffff;
+  border: 1px dashed #e7d1a7;
+  border-radius: 6px;
+}
+
+.document-clause__review-suggestion span {
+  color: #725018;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.document-clause__review-suggestion p {
+  margin: 4px 0 0;
+  color: #31493e;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.document-clause__review-suggestion div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+/* 조항에 마우스를 올리거나 키보드로 들어오면 아래 가운데에 [수정][삭제]가 뜬다. */
+.document-clause__hover-actions {
+  position: absolute;
+  left: 50%;
+  bottom: -14px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.document-clause--generated:not(.is-draft):hover .document-clause__hover-actions,
+.document-clause--generated:focus-within .document-clause__hover-actions {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+.document-clause__hover-actions .document-clause__edit-button {
+  box-shadow: 0 3px 10px rgba(49, 73, 62, 0.08);
+}
+
+/* =========================================================
+   CLAUSE EDIT / REVIEW (기본 모양)
+========================================================= */
+
+.document-clause .document-clause__edit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  color: #2f5d4a;
+  background: #ffffff;
+  border: 1px solid #cfe5da;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: "Pretendard", system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.document-clause .document-clause__edit-button:hover:not(:disabled) {
+  background: #edf8f3;
+  border-color: #9fd2bc;
+}
+
+.document-clause .document-clause__edit-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.document-clause .document-clause__edit-button.is-danger {
+  color: #a33a3a;
+  border-color: #f0caca;
+}
+
+.document-clause .document-clause__edit-button.is-danger:hover:not(:disabled) {
+  background: #fff5f5;
+  border-color: #e3a5a5;
+}
+
+.document-clause .document-clause__edit-button.is-primary {
+  color: #ffffff;
+  background: #16815f;
+  border-color: #16815f;
+}
+
+.document-clause .document-clause__edit-button.is-primary:hover:not(:disabled) {
+  background: #126b4f;
+}
+
+/* 수정할 때 */
+.document-clause__text-editor {
+  margin-top: 6px;
+  padding: 12px;
+  background: #f7fbf9;
+  border: 1px solid #cfe5da;
+  border-radius: 8px;
+}
+
+.document-clause__text-editor textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  color: #23352d;
+  background: #ffffff;
+  border: 1px solid #cfe5da;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.8;
+  resize: vertical;
+}
+
+.document-clause__text-editor textarea:focus {
+  outline: none;
+  border-color: #16815f;
+  box-shadow: 0 0 0 3px rgba(22, 129, 95, 0.12);
+}
+
+.document-clause__text-editor p {
+  margin: 6px 0 0;
+  color: #81938b;
+  font-size: 11px;
+}
+
+.document-clause__text-editor > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+/* 다시 검토 안내 */
+.document-clause__review-notice {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #fff9eb;
+  border: 1px solid #e7d1a7;
+  border-radius: 8px;
+}
+
+.document-clause__review-notice strong {
+  display: block;
+  color: #725018;
+  font-size: 12px;
+}
+
+.document-clause__review-notice p {
+  margin: 4px 0 0;
+  color: #8b6425;
+  font-size: 11px;
+}
