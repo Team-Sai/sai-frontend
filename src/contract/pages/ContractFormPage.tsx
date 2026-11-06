@@ -597,22 +597,38 @@ export default function ContractFormPage() {
     slots: ClauseSlot[],
   ) {
     setAppliedClauses((previous) =>
-      previous.map((clause) =>
-        clause.id === clauseId
-          ? {
-              ...clause,
+      previous.map((clause) => {
+        if (clause.id !== clauseId) {
+          return clause;
+        }
 
-              slots,
+        // 칸 값이 하나라도 바뀌었는지 (같은 순서의 칸끼리 비교)
+        const changed = slots.some(
+          (slot, slotIndex) =>
+            slot.value.trim() !== (clause.slots[slotIndex]?.value ?? "").trim(),
+        );
 
-              // 칸을 모두 채웠으면 채운 값으로 문장이 맞는지 다시 검토하도록 안내한다.
-              review:
-                slots.length > 0 &&
-                slots.every((slot) => slot.value.trim())
-                  ? { status: "NEEDS_REVIEW" as const }
-                  : clause.review,
-            }
-          : clause,
-      ),
+        const allFilled =
+          slots.length > 0 && slots.every((slot) => slot.value.trim());
+
+        let review = clause.review;
+
+        if (allFilled) {
+          // 칸을 모두 채웠으면 채운 값으로 문장이 맞는지 다시 검토하도록 안내한다.
+          review = { status: "NEEDS_REVIEW" };
+        } else if (changed && clause.review?.status === "DONE") {
+          // 값이 바뀌었는데 예전 문장의 결과(수정 제안 포함)가 남지 않게 되돌린다.
+          review = { status: "NEEDS_REVIEW" };
+        }
+
+        return {
+          ...clause,
+
+          slots,
+
+          review,
+        };
+      }),
     );
 
     setEditingClauseId(null);
