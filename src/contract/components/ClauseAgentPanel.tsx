@@ -222,6 +222,14 @@ function getRequiredAgentFields(
       label: "상환방식",
       filled: Boolean(formData.repaymentType),
     },
+    {
+      label: "변제금 수취 계좌",
+      filled: Boolean(formData.selectedLinkedAccountId),
+    },
+    {
+      label: "계약 목적",
+      filled: Boolean(formData.contractAlias.trim()),
+    },
   ];
 }
 
@@ -1391,21 +1399,6 @@ export default function ClauseAgentPanel({
 
       <div className="sai-panel__body">
         <div className="sai-contract-summary">
-          <span
-            className={
-              basicConditionProgress.completed <
-              basicConditionProgress.total
-                ? "has-warning"
-                : undefined
-            }
-          >
-            기본 조건
-            <b>
-              {basicConditionProgress.completed}/
-              {basicConditionProgress.total}
-            </b>
-          </span>
-
           <span>
             추가 조항
             <b>{appliedClauses.length}</b>
@@ -1516,7 +1509,7 @@ export default function ClauseAgentPanel({
                       )
                     }
                   >
-                    3개월 연속 연체하면?
+                    3개월 연속 연체하면 남은 원금을 전부 갚게 하고 싶어요.
                   </button>
 
                   <button
@@ -1527,7 +1520,7 @@ export default function ClauseAgentPanel({
                       )
                     }
                   >
-                    중도상환을 허용하려면?
+                    만기 전에 원금을 먼저 갚을 수 있게 하고 싶어요.
                   </button>
 
                   <button
@@ -1538,7 +1531,7 @@ export default function ClauseAgentPanel({
                       )
                     }
                   >
-                    위약금을 정하고 싶어요
+                    연체했을 때 위약금을 정하고 싶어요.
                   </button>
                   
                   <button
@@ -1549,7 +1542,7 @@ export default function ClauseAgentPanel({
                       )
                     }
                   >
-                    자동차를 담보로 잡으려면?
+                    채무자 소유 자동차를 담보로 잡고 싶어요.
                   </button>
                 </div>
               </div>

@@ -59,7 +59,7 @@ export default function ContractClauseList({
       id: "base-interest",
       title: "이자",
       source: "BASE",
-      content: `채무자는 미상환 원금에 대하여 연 ${formData.interestRate || "-"}%의 약정이율에 따른 이자를 지급한다.`,
+      content: `채무자는 미상환 원금에 대하여 연 ${formData.interestRate || "-"}%의 약정이율에 따른 이자를 지급한다. 이자는 1년을 365일로 보아 실제 경과한 날짜만큼 계산한다.`,
     },
     {
       id: "base-repayment",

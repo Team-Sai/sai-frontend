@@ -12,6 +12,7 @@ import {
   getContractDetailForSchedule,
 } from "../api/scheduleApi";
 import { getContractAccount } from "../api/contractApi";
+import EarlyRepaymentPanel from "../components/EarlyRepaymentPanel";
 import type { LinkedBankAccount } from "../../accounts/types/account";
 import type {
   RepaymentScheduleSummary,
@@ -335,6 +336,15 @@ function ScheduleContent({ contractId }: { contractId: string }) {
             </div>
           </div>
 
+          {contractDetail?.isCreditor && (
+            <EarlyRepaymentPanel
+              contractId={Number(contractId)}
+              reloadKey={reloadKey}
+              history={schedule.earlyRepayments ?? []}
+              onDone={() => setReloadKey((current) => current + 1)}
+            />
+          )}
+
           {schedule.schedules.length === 0 ? (
             <div className="empty-state">등록된 상환 스케줄이 없습니다.</div>
           ) : (
@@ -360,9 +370,15 @@ function ScheduleContent({ contractId }: { contractId: string }) {
                           <td>{formatWon(row.totalPaymentDue)}</td>
                           <td>{paidAt ? <span className="payment-date-time"><span>{paidAt.date}</span><span>{paidAt.time}</span></span> : "-"}</td>
                           <td>
-                            <span className={`status-chip ${rowStatusClass(row.status)}`}>
-                              ● {SCHEDULE_STATUS_LABELS[row.status]}
-                            </span>
+                            {row.status === "PENDING" && (row.paidAmount ?? 0) > 0 ? (
+                              <span className="status-chip status-partial">
+                                ● 부분납부 중 ({formatWon(row.paidAmount ?? 0)})
+                              </span>
+                            ) : (
+                              <span className={`status-chip ${rowStatusClass(row.status)}`}>
+                                ● {SCHEDULE_STATUS_LABELS[row.status]}
+                              </span>
+                            )}
                           </td>
                         </tr>
                       );
