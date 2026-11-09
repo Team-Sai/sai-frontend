@@ -33,6 +33,12 @@ import {
 } from "../utils/draftTyping";
 import ClauseChatCard from "./ClauseChatCard";
 import { toClauseSuggestionRequest } from "../utils/clauseRequest";
+import {
+  AGENT_SESSION_KEY,
+  CHAT_SESSION_KEY,
+  CHAT_WRITING_KEY,
+  canReadStoredConversation,
+} from "../utils/agentConversationEntry";
 import "./ClauseAgentPanel.css";
 
 interface ClauseAgentPanelProps {
@@ -74,9 +80,6 @@ interface StoredAgentSession {
 
 const FULL_IMAGE_PATH = "/images/guest/sai-guide-full.avif";
 const HEAD_IMAGE_PATH = "/images/guest/sai-guide-head.avif";
-const AGENT_SESSION_KEY = "sai.contract.agent.pending";
-const CHAT_WRITING_KEY = "sai.contract.agent.chat-writing";
-const CHAT_SESSION_KEY = "sai.contract.agent.chat";
 
 /*
  * 스트리밍 API를 쓸 수 없을 때(기존 API로 대체할 때)만 쓰는 단계 표시.
@@ -329,40 +332,12 @@ function findDuplicateClause(
 /** 마지막 확인에서 입력창에 직접 써도 대화를 끝내는 말 (문장부호·띄어쓰기 제외) */
 const DECLINE_WORDS = new Set(["아니요", "아니오", "아니", "아뇨"]);
 
-/** 이 페이지 로드에서 패널이 아직 뜬 적 없으면 true (화면을 옮겨 다시 뜨면 false) */
-let isFirstMountInDocument = true;
-
-/** 지금 보고 있는 이 화면을 새로고침한 경우인지 (다른 화면에서 새로고침 후 넘어온 경우는 제외) */
-function isCurrentPageReload() {
-  const [entry] = performance.getEntriesByType(
-    "navigation",
-  ) as PerformanceNavigationTiming[];
-
-  return (
-    entry?.type === "reload" &&
-    new URL(entry.name).pathname === window.location.pathname
-  );
-}
-
-/**
- * 새로고침이 아니면(다른 화면에 갔다 오면) 저장된 대화를 지워 처음 화면에서 시작한다.
- * 계약서 입력값은 별도 키에 있어 지워지지 않는다.
- */
-function prepareConversationRestore() {
-  if (isFirstMountInDocument && isCurrentPageReload()) {
-    return;
-  }
-
-  try {
-    sessionStorage.removeItem(AGENT_SESSION_KEY);
-    sessionStorage.removeItem(CHAT_SESSION_KEY);
-    sessionStorage.removeItem(CHAT_WRITING_KEY);
-  } catch {
-    // 저장소를 쓸 수 없으면 복원할 대화도 없다.
-  }
-}
+/** 맨 아래에서 이만큼(px) 안쪽이면 최근 내용을 보고 있는 것으로 친다 */
+const FOLLOW_LATEST_THRESHOLD = 80;
 
 function loadStoredAgentSession(): StoredAgentSession | null {
+  if (!canReadStoredConversation()) return null;
+
   try {
     const raw = sessionStorage.getItem(AGENT_SESSION_KEY);
     if (!raw) return null;
@@ -395,6 +370,8 @@ function clearStoredAgentSession() {
 }
 
 function loadStoredChatSession(): StoredChatSession | null {
+  if (!canReadStoredConversation()) return null;
+
   try {
     const raw = sessionStorage.getItem(CHAT_SESSION_KEY);
     if (!raw) return null;
@@ -414,6 +391,8 @@ function loadStoredChatSession(): StoredChatSession | null {
 
 /** 작성 도중 새로고침되면 남아 있는 요청 (다시 시작에 쓴다) */
 function loadInterruptedWrite(): { question: string; request: ClauseSuggestionRequest } | null {
+  if (!canReadStoredConversation()) return null;
+
   try {
     const raw = sessionStorage.getItem(CHAT_WRITING_KEY);
     if (!raw) return null;
@@ -466,9 +445,6 @@ export default function ClauseAgentPanel({
   onApprove,
 }: ClauseAgentPanelProps) {
   const [input, setInput] = useState("");
-
-  // 아래 복원 값을 읽기 전에 먼저 실행되어야 한다.
-  useState(prepareConversationRestore);
 
   const [initialSession] = useState(loadStoredAgentSession);
   const [interruptedWrite] = useState(loadInterruptedWrite);
@@ -584,18 +560,42 @@ export default function ClauseAgentPanel({
     }
   }, [initialSession, onDraftChange]);
 
-  useEffect(() => {
-    isFirstMountInDocument = false;
-  }, []);
-
   const panelBody = useRef<HTMLDivElement | null>(null);
+  /* 사용자가 위로 올려 읽는 중이면 false: 내용이 늘어나도 끌어내리지 않는다 */
+  const followLatest = useRef(true);
+  const lastScrollTop = useRef(0);
+
+  /*
+   * 내용이 늘어난 뒤에는 이미 맨 아래에서 멀어져 있으므로, 효과 안에서 재지 않고 스크롤할 때 기억해 둔다.
+   * 자동 스크롤은 아래로만 움직이니, 위로 움직인 경우만 사용자가 올린 것으로 본다.
+   */
+  function handleBodyScroll() {
+    const body = panelBody.current;
+
+    if (!body) return;
+
+    const distanceFromBottom =
+      body.scrollHeight - body.scrollTop - body.clientHeight;
+
+    if (distanceFromBottom < FOLLOW_LATEST_THRESHOLD) {
+      followLatest.current = true;
+    } else if (body.scrollTop < lastScrollTop.current) {
+      followLatest.current = false;
+    }
+
+    lastScrollTop.current = body.scrollTop;
+  }
 
   // 말풍선이나 진행 단계가 바뀌면 맨 아래 최근 내용을 보여 준다. 처음 화면으로 돌아오면 맨 위로.
   useEffect(() => {
     const body = panelBody.current;
 
-    if (body) {
-      body.scrollTop = question ? body.scrollHeight : 0;
+    if (!body) return;
+
+    if (!question) {
+      body.scrollTop = 0;
+    } else if (followLatest.current) {
+      body.scrollTop = body.scrollHeight;
     }
   }, [
     question,
@@ -1058,6 +1058,7 @@ export default function ClauseAgentPanel({
       return;
     }
 
+    followLatest.current = true;
     setJustApplied(null);
     setDuplicateClause(null);
     setError(null);
@@ -1289,6 +1290,7 @@ export default function ClauseAgentPanel({
     const controller = new AbortController();
     abortController.current = controller;
 
+    followLatest.current = true;
     setIsChatWaiting(true);
     setError(null);
 
@@ -1356,6 +1358,7 @@ export default function ClauseAgentPanel({
       return;
     }
 
+    followLatest.current = true;
     setRestartRequest(null);
     clearInterruptedWrite();
     setError(null);
@@ -1474,7 +1477,11 @@ export default function ClauseAgentPanel({
         />
       </header>
 
-      <div ref={panelBody} className="sai-panel__body">
+      <div
+        ref={panelBody}
+        className="sai-panel__body"
+        onScroll={handleBodyScroll}
+      >
         <div className="sai-contract-summary">
           <span
             className={

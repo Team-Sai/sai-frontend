@@ -37,6 +37,7 @@ import type {
 
 import { reviewClause } from "../api/clauseAgentApi";
 import { toClauseSuggestionRequest } from "../utils/clauseRequest";
+import { useAgentConversationEntry } from "../utils/agentConversationEntry";
 
 import type { ContractFieldWarning } from "../utils/contractValidation";
 
@@ -309,6 +310,8 @@ export default function ContractFormPage() {
   const [searchParams] = useSearchParams();
 
   const relation = searchParams.get("relation");
+
+  useAgentConversationEntry();
 
   const [initialEditorState] = useState(() => loadEditorState(relation));
 
