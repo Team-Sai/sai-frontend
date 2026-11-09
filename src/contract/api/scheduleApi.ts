@@ -153,14 +153,13 @@ export async function getEarlyRepaymentDeposits(
 export async function processEarlyRepayment(
   contractId: number,
   bankTransactionId: number,
-  feeAmount: number,
 ): Promise<void> {
   const response = await authFetch(
     `/api/contracts/${contractId}/early-repayments`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ bankTransactionId, feeAmount }),
+      body: JSON.stringify({ bankTransactionId }),
     },
   );
 
@@ -193,4 +192,19 @@ export async function getContractDetailForSchedule(
   }
 
   return data;
+}
+
+export async function syncContractRepayments(
+  contractId: number,
+): Promise<{ appliedCount: number; needsCheckCount: number; unmatchedCount: number }> {
+  const response = await authFetch(`/api/contracts/${contractId}/schedules/sync`, {
+    method: "POST",
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error("입금 내역을 확인하지 못했습니다.");
+  }
+
+  return response.json();
 }
