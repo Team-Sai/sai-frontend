@@ -326,6 +326,45 @@ function findDuplicateClause(
   return null;
 }
 
+/** 마지막 확인에서 입력창에 직접 써도 대화를 끝내는 말 (문장부호·띄어쓰기 제외) */
+const DECLINE_WORDS = new Set(["아니요", "아니오", "아니", "아뇨"]);
+
+/** 맨 아래에서 이만큼(px) 안쪽에 있으면 자동 스크롤을 이어 간다 */
+const FOLLOW_BOTTOM_THRESHOLD = 80;
+
+/** 이 페이지 로드에서 패널이 아직 뜬 적 없으면 true (화면을 옮겨 다시 뜨면 false) */
+let isFirstMountInDocument = true;
+
+/** 지금 보고 있는 이 화면을 새로고침한 경우인지 (다른 화면에서 새로고침 후 넘어온 경우는 제외) */
+function isCurrentPageReload() {
+  const [entry] = performance.getEntriesByType(
+    "navigation",
+  ) as PerformanceNavigationTiming[];
+
+  return (
+    entry?.type === "reload" &&
+    new URL(entry.name).pathname === window.location.pathname
+  );
+}
+
+/**
+ * 새로고침이 아니면(다른 화면에 갔다 오면) 저장된 대화를 지워 처음 화면에서 시작한다.
+ * 계약서 입력값은 별도 키에 있어 지워지지 않는다.
+ */
+function prepareConversationRestore() {
+  if (isFirstMountInDocument && isCurrentPageReload()) {
+    return;
+  }
+
+  try {
+    sessionStorage.removeItem(AGENT_SESSION_KEY);
+    sessionStorage.removeItem(CHAT_SESSION_KEY);
+    sessionStorage.removeItem(CHAT_WRITING_KEY);
+  } catch {
+    // 저장소를 쓸 수 없으면 복원할 대화도 없다.
+  }
+}
+
 function loadStoredAgentSession(): StoredAgentSession | null {
   try {
     const raw = sessionStorage.getItem(AGENT_SESSION_KEY);
@@ -430,6 +469,9 @@ export default function ClauseAgentPanel({
   onApprove,
 }: ClauseAgentPanelProps) {
   const [input, setInput] = useState("");
+
+  // 아래 복원 값을 읽기 전에 먼저 실행되어야 한다.
+  useState(prepareConversationRestore);
 
   const [initialSession] = useState(loadStoredAgentSession);
   const [interruptedWrite] = useState(loadInterruptedWrite);
@@ -544,6 +586,55 @@ export default function ClauseAgentPanel({
       });
     }
   }, [initialSession, onDraftChange]);
+
+  useEffect(() => {
+    isFirstMountInDocument = false;
+  }, []);
+
+  const panelBody = useRef<HTMLDivElement | null>(null);
+  /* 사용자가 위로 올려 읽는 중이면 false */
+  const followBottom = useRef(true);
+
+  function handleBodyScroll() {
+    const body = panelBody.current;
+
+    if (body) {
+      followBottom.current =
+        body.scrollHeight - body.scrollTop - body.clientHeight <
+        FOLLOW_BOTTOM_THRESHOLD;
+    }
+  }
+
+  // 새 요청이나 답장을 보내면 다시 맨 아래를 따라간다. 처음 화면으로 돌아오면 맨 위로.
+  useEffect(() => {
+    followBottom.current = true;
+
+    if (!question && panelBody.current) {
+      panelBody.current.scrollTop = 0;
+    }
+  }, [question, chat?.replies.length]);
+
+  useEffect(() => {
+    const body = panelBody.current;
+
+    if (body && question && followBottom.current) {
+      body.scrollTop = body.scrollHeight;
+    }
+  }, [
+    question,
+    chat,
+    isChatWaiting,
+    isLoading,
+    isStreaming,
+    currentStep,
+    streamStep,
+    foundReferences,
+    draft,
+    result,
+    restartRequest,
+    error,
+    duplicateClause,
+  ]);
 
   function stopTyping() {
     if (typingTimer.current === null) return;
@@ -968,6 +1059,17 @@ export default function ClauseAgentPanel({
       return;
     }
 
+    // 마지막 확인에서 직접 "아니요"라고 쓰면 버튼과 똑같이 대화를 끝낸다.
+    if (
+      chat?.sessionId &&
+      !chat.readyToWrite &&
+      chat.questions.length === 0 &&
+      DECLINE_WORDS.has(message.replace(/[\s.!?~]/g, ""))
+    ) {
+      handleDecline();
+      return;
+    }
+
     // 확정 전 대화 중이면 입력창에 쓴 말은 답장으로 보낸다. (실패하면 입력을 되돌린다)
     if (chat?.sessionId && !chat.readyToWrite) {
       setInput("");
@@ -1313,6 +1415,12 @@ export default function ClauseAgentPanel({
     onDraftChange(null);
   }
 
+  /** 마지막 확인에서 [아니요]: 대화를 끝내고 처음 화면으로 돌아간다. */
+  function handleDecline() {
+    setInput("");
+    handleCancel();
+  }
+
   function handleApprove() {
     if (!result || !result.suggestedClause || isStreaming || isReviewing) {
       return;
@@ -1389,7 +1497,11 @@ export default function ClauseAgentPanel({
         />
       </header>
 
-      <div className="sai-panel__body">
+      <div
+        ref={panelBody}
+        className="sai-panel__body"
+        onScroll={handleBodyScroll}
+      >
         <div className="sai-contract-summary">
           <span
             className={
@@ -1572,7 +1684,7 @@ export default function ClauseAgentPanel({
             />
 
             <div className="sai-chat-bubble sai-chat-bubble--assistant">
-              <strong>요청 내용을 확인하고 있어요.</strong>
+              <strong className="sai-shimmer">요청 내용을 확인하고 있어요.</strong>
               <p>바로 쓰기 전에, 이해한 내용을 먼저 보여 드릴게요.</p>
             </div>
           </section>
@@ -1590,6 +1702,7 @@ export default function ClauseAgentPanel({
               />
             }
             onReply={(text) => void handleReply(text)}
+            onDecline={handleDecline}
           />
         )}
 
@@ -1602,7 +1715,7 @@ export default function ClauseAgentPanel({
             />
 
             <div className="sai-working__content">
-              <strong>계약 내용을 확인하고 있어요.</strong>
+              <strong className="sai-shimmer">계약 내용을 확인하고 있어요.</strong>
 
               <div className="sai-working__steps">
                 {stepMode === "legacy"
