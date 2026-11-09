@@ -5,6 +5,11 @@
   margin-top: 16px;
 }
 
+/* 답장 묶음은 부모 gap이 안 닿아서 사용자 말풍선과 직접 띄운다 */
+.sai-chat__echo {
+  margin-top: 12px;
+}
+
 .sai-chat__multiline {
   white-space: pre-line;
 }

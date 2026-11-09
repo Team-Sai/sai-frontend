@@ -352,6 +352,11 @@
   margin-top: 20px;
 }
 
+/* 사용자 말풍선 바로 아래 AI 말풍선 (자체 여백이 있는 진행·오류 영역은 제외) */
+.sai-user-row + .sai-chat-row:not(.sai-working):not(:has(> .sai-error)) {
+  margin-top: 12px;
+}
+
 .sai-chat-bubble {
   max-width: calc(100% - 52px);
 
@@ -519,6 +524,42 @@
   background: #2ca678;
 
   animation: sai-dot-pulse 0.8s infinite;
+}
+
+/* AI가 처리 중인 문구: 글자 위로 빛이 지나간다 */
+.sai-shimmer,
+.sai-working__steps .is-active > span {
+  width: fit-content;
+
+  background: linear-gradient(100deg, #2d7257 40%, #9be3c4 50%, #2d7257 60%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+
+  animation: sai-shimmer 1.8s linear infinite;
+}
+
+@keyframes sai-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sai-shimmer,
+  .sai-working__steps .is-active > span {
+    background: none;
+
+    -webkit-text-fill-color: currentcolor;
+
+    animation: none;
+  }
 }
 
 .sai-working__steps .is-done {
