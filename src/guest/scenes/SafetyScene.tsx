@@ -5,10 +5,10 @@ import styles from './SafetyScene.module.css';
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
 const TRANSACTIONS = [
-  { who: '박채연', what: '여행 회비 입금', amount: '+210,000원' },
-  { who: '한민엽', what: '차용금 상환', amount: '+500,000원' },
+  { who: '이몽룡', what: '여행 회비 입금', amount: '+210,000원' },
+  { who: '김신한', what: '차용금 상환', amount: '+500,000원' },
   { who: '처음 보는 계좌', what: '송금 요청', amount: '−3,000,000원', flagged: true },
-  { who: '양예은', what: '여행 회비 입금', amount: '+80,000원' },
+  { who: '성춘향', what: '여행 회비 입금', amount: '+80,000원' },
 ];
 
 const SIGNALS = ['평소보다 큰 금액', '처음 거래하는 계좌', '짧은 시간 반복 요청'];
