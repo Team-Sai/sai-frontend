@@ -58,16 +58,16 @@ const ANCHORS = [
 ];
 
 const PARTICIPANTS = [
-  { name: '한민엽', share: '210,000', paid: '210,000', done: true },
-  { name: '박채연', share: '210,000', paid: '210,000', done: true },
-  { name: '양예은', share: '210,000', paid: '210,000', done: true },
-  { name: '지인진', share: '210,000', paid: '0', done: false },
+  { name: '김신한', share: '210,000', paid: '210,000', done: true },
+  { name: '이영희', share: '210,000', paid: '210,000', done: true },
+  { name: '이몽룡', share: '210,000', paid: '210,000', done: true },
+  { name: '성춘향', share: '210,000', paid: '0', done: false },
 ];
 
 const TRANSACTIONS = [
-  { name: '박채연', memo: '제주 회비', amount: '+210,000', state: '확인 필요', pending: true },
-  { name: '한민엽', memo: '5월 상환', amount: '+500,000', state: '반영 완료' },
-  { name: '양예은', memo: '제주 회비', amount: '+210,000', state: '반영 완료' },
+  { name: '이영희', memo: '제주 회비', amount: '+210,000', state: '확인 필요', pending: true },
+  { name: '김신한', memo: '5월 상환', amount: '+500,000', state: '반영 완료' },
+  { name: '이몽룡', memo: '제주 회비', amount: '+210,000', state: '반영 완료' },
   { name: '편의점', memo: '체크카드', amount: '-6,800', state: '' },
 ];
 
@@ -246,8 +246,8 @@ export default function FeatureStory() {
                         </dl>
                         <div className={styles.signs}>
                           {[
-                            ['채권자 (갑)', '한민엽'],
-                            ['채무자 (을)', '박채연'],
+                            ['채권자 (갑)', '김신한'],
+                            ['채무자 (을)', '이영희'],
                           ].map(([role, name], i) => (
                             <div key={role} className={styles.sign} style={{ '--r': i } as Vars}>
                               <small>{role}</small>
@@ -292,14 +292,14 @@ export default function FeatureStory() {
                       </div>
                       <div className={styles.match}>
                         <p className={styles.matchTitle}>정산·차용증 매칭 선택</p>
-                        <p className={styles.matchSub}>박채연 · +210,000원 입금</p>
+                        <p className={styles.matchSub}>이영희 · +210,000원 입금</p>
                         <div className={styles.candidate}>
                           <span className={styles.radio} />
                           <div>
                             <b>
                               <em className={styles.tagSettle}>정산</em> 제주 여행 회비
                             </b>
-                            <small>참여자 박채연 · 예정 잔여금액 210,000원</small>
+                            <small>참여자 이영희 · 예정 잔여금액 210,000원</small>
                           </div>
                           <em className={styles.pillGreen}>정확히 일치</em>
                         </div>
@@ -343,7 +343,7 @@ export default function FeatureStory() {
                           <div className={styles.dayItem}>
                             <em className={styles.pillRed}>보낼 일정</em>
                             <strong>500,000원</strong>
-                            <small>보증금 상환 · 박채연님께</small>
+                            <small>보증금 상환 · 김신한님께</small>
                           </div>
                           <div className={`${styles.dayItem} ${styles.dim}`}>
                             <em className={styles.pillBlue}>받을 일정</em>
@@ -356,7 +356,7 @@ export default function FeatureStory() {
                         <span className={styles.toastIcon} />
                         <div>
                           <b>내일은 보증금 상환일이에요</b>
-                          <small>박채연님께 500,000원</small>
+                          <small>김신한님께 500,000원</small>
                         </div>
                       </div>
                     </AppChrome>

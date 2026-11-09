@@ -60,7 +60,7 @@ export default function FeatureBento() {
                 <span className={styles.fileIcon}>PDF</span>
                 <div>
                   <b>금전소비대차 계약서</b>
-                  <small>한민엽 · 박채연 · 서명 완료</small>
+                  <small>김신한 · 이영희 · 서명 완료</small>
                 </div>
               </li>
               <li style={{ '--r': 1 } as Vars}>
