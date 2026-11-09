@@ -329,9 +329,6 @@ function findDuplicateClause(
 /** 마지막 확인에서 입력창에 직접 써도 대화를 끝내는 말 (문장부호·띄어쓰기 제외) */
 const DECLINE_WORDS = new Set(["아니요", "아니오", "아니", "아뇨"]);
 
-/** 맨 아래에서 이만큼(px) 안쪽에 있으면 자동 스크롤을 이어 간다 */
-const FOLLOW_BOTTOM_THRESHOLD = 80;
-
 /** 이 페이지 로드에서 패널이 아직 뜬 적 없으면 true (화면을 옮겨 다시 뜨면 false) */
 let isFirstMountInDocument = true;
 
@@ -592,33 +589,13 @@ export default function ClauseAgentPanel({
   }, []);
 
   const panelBody = useRef<HTMLDivElement | null>(null);
-  /* 사용자가 위로 올려 읽는 중이면 false */
-  const followBottom = useRef(true);
 
-  function handleBodyScroll() {
+  // 말풍선이나 진행 단계가 바뀌면 맨 아래 최근 내용을 보여 준다. 처음 화면으로 돌아오면 맨 위로.
+  useEffect(() => {
     const body = panelBody.current;
 
     if (body) {
-      followBottom.current =
-        body.scrollHeight - body.scrollTop - body.clientHeight <
-        FOLLOW_BOTTOM_THRESHOLD;
-    }
-  }
-
-  // 새 요청이나 답장을 보내면 다시 맨 아래를 따라간다. 처음 화면으로 돌아오면 맨 위로.
-  useEffect(() => {
-    followBottom.current = true;
-
-    if (!question && panelBody.current) {
-      panelBody.current.scrollTop = 0;
-    }
-  }, [question, chat?.replies.length]);
-
-  useEffect(() => {
-    const body = panelBody.current;
-
-    if (body && question && followBottom.current) {
-      body.scrollTop = body.scrollHeight;
+      body.scrollTop = question ? body.scrollHeight : 0;
     }
   }, [
     question,
@@ -1497,11 +1474,7 @@ export default function ClauseAgentPanel({
         />
       </header>
 
-      <div
-        ref={panelBody}
-        className="sai-panel__body"
-        onScroll={handleBodyScroll}
-      >
+      <div ref={panelBody} className="sai-panel__body">
         <div className="sai-contract-summary">
           <span
             className={

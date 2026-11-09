@@ -352,6 +352,11 @@
   margin-top: 20px;
 }
 
+/* 사용자 말풍선 바로 아래 AI 말풍선 (자체 여백이 있는 진행·오류 영역은 제외) */
+.sai-user-row + .sai-chat-row:not(.sai-working):not(:has(> .sai-error)) {
+  margin-top: 12px;
+}
+
 .sai-chat-bubble {
   max-width: calc(100% - 52px);
 
