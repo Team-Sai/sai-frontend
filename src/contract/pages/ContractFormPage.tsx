@@ -22,6 +22,7 @@ import ClauseSlotDialog from "../components/ClauseSlotDialog";
 
 import {
   LOAN_CONTRACT_DRAFT_KEY,
+  LOAN_CONTRACT_EDITOR_KEY,
   toDraft,
   type ContractFormData,
   type CreditorInfo,
@@ -56,8 +57,6 @@ import "../styles/ContractFormPage.css";
 /* =========================================================
    Storage
 ========================================================= */
-
-const LOAN_CONTRACT_EDITOR_KEY = "sai.loanContract.editor";
 
 interface StoredEditorState {
   formData: ContractFormData;

@@ -523,7 +523,7 @@
 .sai-working__steps .is-active i {
   background: #2ca678;
 
-  animation: sai-dot-pulse 0.8s infinite;
+  box-shadow: 0 0 6px 2px rgba(44, 166, 120, 0.5);
 }
 
 /* AI가 처리 중인 문구: 글자 위로 빛이 지나간다 */
