@@ -14,8 +14,11 @@ import {
   CONTRACT_STATUS_LABELS,
 } from "../types/contractDashboard";
 import RelationModal from "../components/RelationModal";
-import type { ContractRelationType } from "../types/contract";
-import { setDemoMode } from "../utils/demoMode";
+import {
+  LOAN_CONTRACT_DRAFT_KEY,
+  LOAN_CONTRACT_EDITOR_KEY,
+  type ContractRelationType,
+} from "../types/contract";import { setDemoMode } from "../utils/demoMode";
 
 const money = (v: number) =>
   v.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
@@ -72,6 +75,9 @@ export default function ContractDashboardPage() {
     setIsRelationModalOpen(false);
     // 차용증 생성마다 본인인증을 새로 받도록 이전 인증 결과를 비운다.
     sessionStorage.removeItem("identityVerificationId");
+    // 새 차용증은 빈 계약서에서 시작한다. (이전 입력값과 AI 조항을 비움)
+    sessionStorage.removeItem(LOAN_CONTRACT_EDITOR_KEY);
+    sessionStorage.removeItem(LOAN_CONTRACT_DRAFT_KEY);
     // Alt로 들어왔으면 이 탭을 발표 시연 모드로, 아니면 일반 모드로 둔다.
     setDemoMode(demoEntry);
     navigate(`/contracts/new?relation=${relation}${demoEntry ? "&v=2" : ""}`);
