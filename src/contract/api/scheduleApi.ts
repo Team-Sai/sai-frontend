@@ -7,6 +7,7 @@ import type {
   ContractInfo,
   ContractStatus,
   RepaymentMethod,
+  EarlyRepaymentDeposit,
 } from "../types/schedule";
 
 function isRepaymentScheduleStatus(value: unknown): value is RepaymentScheduleStatus {
@@ -133,6 +134,39 @@ export async function getScheduleSummary(
 
   return data;
 }
+  
+export async function getEarlyRepaymentDeposits(
+  contractId: number,
+): Promise<EarlyRepaymentDeposit[]> {
+  const response = await authFetch(
+    `/api/contracts/${contractId}/early-repayments/deposits`,
+    { method: "GET", headers: { Accept: "application/json" } },
+  );
+
+  if (!response.ok) {
+    throw new Error("입금 내역을 불러오지 못했습니다.");
+  }
+
+  return (await response.json()) as EarlyRepaymentDeposit[];
+}
+
+export async function processEarlyRepayment(
+  contractId: number,
+  bankTransactionId: number,
+): Promise<void> {
+  const response = await authFetch(
+    `/api/contracts/${contractId}/early-repayments`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ bankTransactionId }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("처리하지 못했습니다. 금액을 확인해 주세요.");
+  }
+}
 
 export async function getContractDetailForSchedule(
   contractId: number,
@@ -158,4 +192,19 @@ export async function getContractDetailForSchedule(
   }
 
   return data;
+}
+
+export async function syncContractRepayments(
+  contractId: number,
+): Promise<{ appliedCount: number; needsCheckCount: number; unmatchedCount: number }> {
+  const response = await authFetch(`/api/contracts/${contractId}/schedules/sync`, {
+    method: "POST",
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error("입금 내역을 확인하지 못했습니다.");
+  }
+
+  return response.json();
 }
