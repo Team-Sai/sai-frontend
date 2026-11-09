@@ -59,16 +59,16 @@ const ANCHORS = [
 
 const PARTICIPANTS = [
   { name: '김신한', share: '210,000', paid: '210,000', done: true },
-  { name: '이몽룡', share: '210,000', paid: '210,000', done: true },
   { name: '이영희', share: '210,000', paid: '210,000', done: true },
+  { name: '이몽룡', share: '210,000', paid: '210,000', done: true },
   { name: '성춘향', share: '210,000', paid: '0', done: false },
 ];
 
 const TRANSACTIONS = [
-  { name: '김신한', memo: '제주 회비', amount: '+210,000', state: '확인 필요', pending: true },
-  { name: '이몽룡', memo: '5월 상환', amount: '+500,000', state: '반영 완료' },
-  { name: '이영희', memo: '제주 회비', amount: '+210,000', state: '반영 완료' },
-  { name: '성춘향', memo: '체크카드', amount: '-6,800', state: '' },
+  { name: '이영희', memo: '제주 회비', amount: '+210,000', state: '확인 필요', pending: true },
+  { name: '김신한', memo: '5월 상환', amount: '+500,000', state: '반영 완료' },
+  { name: '이몽룡', memo: '제주 회비', amount: '+210,000', state: '반영 완료' },
+  { name: '편의점', memo: '체크카드', amount: '-6,800', state: '' },
 ];
 
 /** 2026년 8월 (1일이 토요일) */
@@ -343,7 +343,7 @@ export default function FeatureStory() {
                           <div className={styles.dayItem}>
                             <em className={styles.pillRed}>보낼 일정</em>
                             <strong>500,000원</strong>
-                            <small>보증금 상환 · 이영희님께</small>
+                            <small>보증금 상환 · 김신한님께</small>
                           </div>
                           <div className={`${styles.dayItem} ${styles.dim}`}>
                             <em className={styles.pillBlue}>받을 일정</em>
@@ -356,7 +356,7 @@ export default function FeatureStory() {
                         <span className={styles.toastIcon} />
                         <div>
                           <b>내일은 보증금 상환일이에요</b>
-                          <small>이영희님께 500,000원</small>
+                          <small>김신한님께 500,000원</small>
                         </div>
                       </div>
                     </AppChrome>
