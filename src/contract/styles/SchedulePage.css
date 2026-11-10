@@ -52,7 +52,7 @@
 .early-repayment {
   display: grid;
   gap: 12px;
-  padding: 0 22px 20px;
+  padding: 16px 22px;
 }
 
 .early-repayment__title {
@@ -204,4 +204,94 @@
 
 .early-repayment__more .early-repayment__rows {
   margin-top: 8px;
+}
+
+.contract-schedule-page .remaining-toggle {
+  display: inline-flex;
+  align-self: flex-start;
+  width: fit-content;
+  gap: 2px;
+  margin-bottom: 6px;
+  padding: 2px;
+  border-radius: 999px;
+  background: #eef1f5;
+}
+
+.contract-schedule-page .remaining-toggle button {
+  padding: 3px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.contract-schedule-page .remaining-toggle button.is-active {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.contract-schedule-page .remaining-note {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.contract-schedule-page .contract-number-guide {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.contract-schedule-page .contract-number-guide b {
+  color: var(--color-primary);
+}
+
+.contract-schedule-page .early-repayment-line td {
+  background: #f3faf7;
+}
+
+.settlement-detail-page .status-early {
+  color: var(--color-primary);
+  background: #e7f6f0;
+}
+
+.early-repayment__warn {
+  margin: 0;
+  font-size: 13px;
+  color: #b7791f;
+}
+
+.early-repayment__rows .is-refund dd {
+  color: var(--color-error);
+}
+
+.early-repayment__badge.is-returned {
+  background: #fff1f0;
+  color: var(--color-error);
+}
+
+.early-repayment__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 위쪽 요약·계약 정보와 아래 박스 사이 간격 */
+.contract-schedule-page .meta-card {
+  margin-top: 12px;
+}
+
+.contract-schedule-page .detail-grid {
+  margin-top: 20px;
+}
+
+.contract-schedule-page .participant-panel-header {
+  padding-top: 18px;
+  padding-bottom: 18px;
 }

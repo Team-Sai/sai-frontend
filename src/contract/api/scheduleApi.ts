@@ -153,14 +153,14 @@ export async function getEarlyRepaymentDeposits(
 export async function processEarlyRepayment(
   contractId: number,
   bankTransactionId: number,
+  returnExcess = false,
 ): Promise<void> {
   const response = await authFetch(
     `/api/contracts/${contractId}/early-repayments`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ bankTransactionId }),
-    },
+      body: JSON.stringify({ bankTransactionId, returnExcess }),    },
   );
 
   if (!response.ok) {
@@ -207,4 +207,18 @@ export async function syncContractRepayments(
   }
 
   return response.json();
+}
+
+export async function markDepositReturned(
+  contractId: number,
+  bankTransactionId: number,
+): Promise<void> {
+  const response = await authFetch(
+    `/api/contracts/${contractId}/early-repayments/deposits/${bankTransactionId}/return`,
+    { method: "POST", headers: { Accept: "application/json" } },
+  );
+
+  if (!response.ok) {
+    throw new Error("반환 표시를 하지 못했습니다.");
+  }
 }
