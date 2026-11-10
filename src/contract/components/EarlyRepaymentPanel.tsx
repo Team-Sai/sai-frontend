@@ -60,7 +60,7 @@ export default function EarlyRepaymentPanel({
   const items: HistoryItem[] = [
     ...history.map((early) => ({ kind: "early" as const, at: early.processedAt, early })),
     ...returned.map((item) => ({ kind: "returned" as const, at: item.returnedAt, returned: item })),
-  ].sort((a, b) => b.at.localeCompare(a.at));
+  ].sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
 
   if (deposits.length === 0 && items.length === 0 && !loadError) {
     return null;
@@ -68,7 +68,11 @@ export default function EarlyRepaymentPanel({
 
   return (
     <div className="early-repayment">
-      {loadError && <p className="early-repayment__error">{loadError}</p>}
+      {loadError && (
+        <p className="early-repayment__error">
+          {isCreditor ? loadError : "입금 내역을 불러오지 못했어요."}
+        </p>
+      )}
       {deposits.length > 0 && (
         <p className="early-repayment__title">
           {isCreditor ? "확인이 필요한 입금" : "채권자 확인을 기다리는 입금"} {deposits.length}건
@@ -179,6 +183,7 @@ function DepositCard({ contractId, isCreditor, deposit, onDone }: CardProps) {
       onDone();
     } catch (e) {
       setError(e instanceof Error ? e.message : "처리하지 못했습니다.");
+    } finally {
       setIsSaving(false);
     }
   }
