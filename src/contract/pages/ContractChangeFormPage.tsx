@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import LoadingSkeleton from "../../common/components/LoadingSkeleton";
+import Stepper from "../components/Stepper";
 import "../shared.css";
 import "../styles/ContractChangeFormPage.css";
+import { getCurrentContractConditions } from "../api/contractChangeApi";
 import {
-  getCurrentContractConditions,
-  requestContractChange,
-} from "../api/contractChangeApi";
+  clearContractChangeDraft,
+  loadContractChangeDraft,
+  saveContractChangeDraft,
+} from "../utils/contractChangeDraft";
+import { clearIdentityVerification } from "../../identity/identityVerificationStorage";
 import type { CurrentContractConditions } from "../types/contractChange";
 import { REPAYMENT_METHOD_LABELS } from "../types/schedule";
-import type { RepaymentMethod } from "../types/schedule";
 
 export default function ContractChangeFormPage() {
   const { contractId } = useParams();
@@ -33,15 +36,24 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  const [changeReason, setChangeReason] = useState("");
-  const [newMaturityDate, setNewMaturityDate] = useState("");
-  const [newInterestRate, setNewInterestRate] = useState("");
-  const [newRepaymentType, setNewRepaymentType] = useState("");
-  const [newRepaymentDate, setNewRepaymentDate] = useState("");
-  const [newTerms, setNewTerms] = useState("");
+  const [draft] = useState(() => loadContractChangeDraft(contractId));
+
+  const [changeReason, setChangeReason] = useState(draft?.changeReason ?? "");
+  const [newMaturityDate, setNewMaturityDate] = useState(
+    draft?.newMaturityDate ?? "",
+  );
+  const [newInterestRate, setNewInterestRate] = useState(
+    draft?.newInterestRate ?? "",
+  );
+  const [newRepaymentType, setNewRepaymentType] = useState(
+    draft?.newRepaymentType ?? "",
+  );
+  const [newRepaymentDate, setNewRepaymentDate] = useState(
+    draft?.newRepaymentDate ?? "",
+  );
+  const [newTerms, setNewTerms] = useState(draft?.newTerms ?? "");
 
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -117,25 +129,31 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
     }
 
     setSubmitError(null);
-    setIsSubmitting(true);
 
-    requestContractChange(Number(contractId), {
-      changeReason,
-      newMaturityDate: newMaturityDate || null,
-      newInterestRate: newInterestRate ? Number(newInterestRate) : null,
-      newRepaymentType: (newRepaymentType || null) as RepaymentMethod | null,
-      newRepaymentDate: newRepaymentDate ? Number(newRepaymentDate) : null,
-      newTerms: newTerms.trim() || null,
-    })
-      .then((result) => {
-        navigate(`/contracts/${contractId}/change-requests/${result.changeRequestId}/signature`);
-      })
-      .catch((err: Error) => {
-        setSubmitError(err.message);
-      })
-      .finally(() => {
-        setIsSubmitting(false);
+    try {
+      saveContractChangeDraft({
+        contractId,
+        changeReason,
+        newMaturityDate,
+        newInterestRate,
+        newRepaymentType,
+        newRepaymentDate,
+        newTerms,
       });
+    } catch {
+      setSubmitError("입력 내용을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+
+    clearIdentityVerification();
+    navigate(
+      `/identity-test?returnTo=${encodeURIComponent(`/contracts/${contractId}/change-request/signature`)}`,
+    );
+  }
+
+  function handleCancel() {
+    clearContractChangeDraft();
+    navigate(`/contracts/${contractId}/contract-detail`);
   }
 
   if (isLoading) {
@@ -156,6 +174,8 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
 
   return (
     <div className="contract-scope contract-scope--change-form contract-change-page">
+      <Stepper variant="changeRequest" currentStep={1} />
+
       <header className="change-page-heading">
         <h1>계약 변경 요청</h1>
       </header>
@@ -247,12 +267,10 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
           {submitError && <p className="form-error" role="alert">{submitError}</p>}
 
           <div className="change-form__actions">
-            <button type="button" onClick={() => navigate(-1)}>
+            <button type="button" onClick={handleCancel}>
               취소
             </button>
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "요청 중..." : "변경 요청"}
-            </button>
+            <button type="submit">다음 (본인인증)</button>
           </div>
         </form>
 

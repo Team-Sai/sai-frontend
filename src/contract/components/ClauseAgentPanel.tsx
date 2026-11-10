@@ -33,6 +33,12 @@ import {
 } from "../utils/draftTyping";
 import ClauseChatCard from "./ClauseChatCard";
 import { toClauseSuggestionRequest } from "../utils/clauseRequest";
+import {
+  AGENT_SESSION_KEY,
+  CHAT_SESSION_KEY,
+  CHAT_WRITING_KEY,
+  canReadStoredConversation,
+} from "../utils/agentConversationEntry";
 import "./ClauseAgentPanel.css";
 
 interface ClauseAgentPanelProps {
@@ -74,9 +80,6 @@ interface StoredAgentSession {
 
 const FULL_IMAGE_PATH = "/images/guest/sai-guide-full.avif";
 const HEAD_IMAGE_PATH = "/images/guest/sai-guide-head.avif";
-const AGENT_SESSION_KEY = "sai.contract.agent.pending";
-const CHAT_WRITING_KEY = "sai.contract.agent.chat-writing";
-const CHAT_SESSION_KEY = "sai.contract.agent.chat";
 
 /*
  * 스트리밍 API를 쓸 수 없을 때(기존 API로 대체할 때)만 쓰는 단계 표시.
@@ -222,6 +225,14 @@ function getRequiredAgentFields(
       label: "상환방식",
       filled: Boolean(formData.repaymentType),
     },
+    {
+      label: "변제금 수취 계좌",
+      filled: Boolean(formData.selectedLinkedAccountId),
+    },
+    {
+      label: "계약 목적",
+      filled: Boolean(formData.contractAlias.trim()),
+    },
   ];
 }
 
@@ -326,7 +337,15 @@ function findDuplicateClause(
   return null;
 }
 
+/** 마지막 확인에서 입력창에 직접 써도 대화를 끝내는 말 (문장부호·띄어쓰기 제외) */
+const DECLINE_WORDS = new Set(["아니요", "아니오", "아니", "아뇨"]);
+
+/** 맨 아래에서 이만큼(px) 안쪽이면 최근 내용을 보고 있는 것으로 친다 */
+const FOLLOW_LATEST_THRESHOLD = 80;
+
 function loadStoredAgentSession(): StoredAgentSession | null {
+  if (!canReadStoredConversation()) return null;
+
   try {
     const raw = sessionStorage.getItem(AGENT_SESSION_KEY);
     if (!raw) return null;
@@ -359,6 +378,8 @@ function clearStoredAgentSession() {
 }
 
 function loadStoredChatSession(): StoredChatSession | null {
+  if (!canReadStoredConversation()) return null;
+
   try {
     const raw = sessionStorage.getItem(CHAT_SESSION_KEY);
     if (!raw) return null;
@@ -378,6 +399,8 @@ function loadStoredChatSession(): StoredChatSession | null {
 
 /** 작성 도중 새로고침되면 남아 있는 요청 (다시 시작에 쓴다) */
 function loadInterruptedWrite(): { question: string; request: ClauseSuggestionRequest } | null {
+  if (!canReadStoredConversation()) return null;
+
   try {
     const raw = sessionStorage.getItem(CHAT_WRITING_KEY);
     if (!raw) return null;
@@ -544,6 +567,59 @@ export default function ClauseAgentPanel({
       });
     }
   }, [initialSession, onDraftChange]);
+
+  const panelBody = useRef<HTMLDivElement | null>(null);
+  /* 사용자가 위로 올려 읽는 중이면 false: 내용이 늘어나도 끌어내리지 않는다 */
+  const followLatest = useRef(true);
+  const lastScrollTop = useRef(0);
+
+  /*
+   * 내용이 늘어난 뒤에는 이미 맨 아래에서 멀어져 있으므로, 효과 안에서 재지 않고 스크롤할 때 기억해 둔다.
+   * 자동 스크롤은 아래로만 움직이니, 위로 움직인 경우만 사용자가 올린 것으로 본다.
+   */
+  function handleBodyScroll() {
+    const body = panelBody.current;
+
+    if (!body) return;
+
+    const distanceFromBottom =
+      body.scrollHeight - body.scrollTop - body.clientHeight;
+
+    if (distanceFromBottom < FOLLOW_LATEST_THRESHOLD) {
+      followLatest.current = true;
+    } else if (body.scrollTop < lastScrollTop.current) {
+      followLatest.current = false;
+    }
+
+    lastScrollTop.current = body.scrollTop;
+  }
+
+  // 말풍선이나 진행 단계가 바뀌면 맨 아래 최근 내용을 보여 준다. 처음 화면으로 돌아오면 맨 위로.
+  useEffect(() => {
+    const body = panelBody.current;
+
+    if (!body) return;
+
+    if (!question) {
+      body.scrollTop = 0;
+    } else if (followLatest.current) {
+      body.scrollTop = body.scrollHeight;
+    }
+  }, [
+    question,
+    chat,
+    isChatWaiting,
+    isLoading,
+    isStreaming,
+    currentStep,
+    streamStep,
+    foundReferences,
+    draft,
+    result,
+    restartRequest,
+    error,
+    duplicateClause,
+  ]);
 
   function stopTyping() {
     if (typingTimer.current === null) return;
@@ -968,6 +1044,17 @@ export default function ClauseAgentPanel({
       return;
     }
 
+    // 마지막 확인에서 직접 "아니요"라고 쓰면 버튼과 똑같이 대화를 끝낸다.
+    if (
+      chat?.sessionId &&
+      !chat.readyToWrite &&
+      chat.questions.length === 0 &&
+      DECLINE_WORDS.has(message.replace(/[\s.!?~]/g, ""))
+    ) {
+      handleDecline();
+      return;
+    }
+
     // 확정 전 대화 중이면 입력창에 쓴 말은 답장으로 보낸다. (실패하면 입력을 되돌린다)
     if (chat?.sessionId && !chat.readyToWrite) {
       setInput("");
@@ -979,6 +1066,7 @@ export default function ClauseAgentPanel({
       return;
     }
 
+    followLatest.current = true;
     setJustApplied(null);
     setDuplicateClause(null);
     setError(null);
@@ -1210,6 +1298,7 @@ export default function ClauseAgentPanel({
     const controller = new AbortController();
     abortController.current = controller;
 
+    followLatest.current = true;
     setIsChatWaiting(true);
     setError(null);
 
@@ -1277,6 +1366,7 @@ export default function ClauseAgentPanel({
       return;
     }
 
+    followLatest.current = true;
     setRestartRequest(null);
     clearInterruptedWrite();
     setError(null);
@@ -1311,6 +1401,12 @@ export default function ClauseAgentPanel({
     pendingRequest.current = null;
 
     onDraftChange(null);
+  }
+
+  /** 마지막 확인에서 [아니요]: 대화를 끝내고 처음 화면으로 돌아간다. */
+  function handleDecline() {
+    setInput("");
+    handleCancel();
   }
 
   function handleApprove() {
@@ -1389,23 +1485,12 @@ export default function ClauseAgentPanel({
         />
       </header>
 
-      <div className="sai-panel__body">
+      <div
+        ref={panelBody}
+        className="sai-panel__body"
+        onScroll={handleBodyScroll}
+      >
         <div className="sai-contract-summary">
-          <span
-            className={
-              basicConditionProgress.completed <
-              basicConditionProgress.total
-                ? "has-warning"
-                : undefined
-            }
-          >
-            기본 조건
-            <b>
-              {basicConditionProgress.completed}/
-              {basicConditionProgress.total}
-            </b>
-          </span>
-
           <span>
             추가 조항
             <b>{appliedClauses.length}</b>
@@ -1516,7 +1601,7 @@ export default function ClauseAgentPanel({
                       )
                     }
                   >
-                    3개월 연속 연체하면?
+                    3개월 연속 연체하면 남은 원금을 전부 갚게 하고 싶어요.
                   </button>
 
                   <button
@@ -1527,7 +1612,7 @@ export default function ClauseAgentPanel({
                       )
                     }
                   >
-                    중도상환을 허용하려면?
+                    만기 전에 원금을 먼저 갚을 수 있게 하고 싶어요.
                   </button>
 
                   <button
@@ -1538,7 +1623,7 @@ export default function ClauseAgentPanel({
                       )
                     }
                   >
-                    위약금을 정하고 싶어요
+                    연체했을 때 위약금을 정하고 싶어요.
                   </button>
                   
                   <button
@@ -1549,7 +1634,7 @@ export default function ClauseAgentPanel({
                       )
                     }
                   >
-                    자동차를 담보로 잡으려면?
+                    채무자 소유 자동차를 담보로 잡고 싶어요.
                   </button>
                 </div>
               </div>
@@ -1572,7 +1657,7 @@ export default function ClauseAgentPanel({
             />
 
             <div className="sai-chat-bubble sai-chat-bubble--assistant">
-              <strong>요청 내용을 확인하고 있어요.</strong>
+              <strong className="sai-shimmer">요청 내용을 확인하고 있어요.</strong>
               <p>바로 쓰기 전에, 이해한 내용을 먼저 보여 드릴게요.</p>
             </div>
           </section>
@@ -1590,6 +1675,7 @@ export default function ClauseAgentPanel({
               />
             }
             onReply={(text) => void handleReply(text)}
+            onDecline={handleDecline}
           />
         )}
 
@@ -1602,7 +1688,7 @@ export default function ClauseAgentPanel({
             />
 
             <div className="sai-working__content">
-              <strong>계약 내용을 확인하고 있어요.</strong>
+              <strong className="sai-shimmer">계약 내용을 확인하고 있어요.</strong>
 
               <div className="sai-working__steps">
                 {stepMode === "legacy"

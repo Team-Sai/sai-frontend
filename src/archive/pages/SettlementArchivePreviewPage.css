@@ -224,10 +224,8 @@
  * PartiesInfo
  * +
  * 전자서명
- * +
- * 수취 계좌
  *
- * 를 하나의 계약서 Sheet로 묶는다.
+ * 를 하나의 계약서로 묶는다.
  */
 
 .archive-contract-sheet {
@@ -236,7 +234,7 @@
 
   width:
     min(
-      1180px,
+      var(--contract-sheet-width),
       100%
     );
 
@@ -245,99 +243,6 @@
 
   margin:
     0 auto;
-
-  overflow:
-    hidden;
-
-  border:
-    1px solid
-    #d8e0ea;
-
-  border-radius:
-    10px;
-
-  background:
-    #ffffff;
-
-  box-shadow:
-    0 8px 26px
-    rgba(
-      22,
-      42,
-      66,
-      0.05
-    );
-}
-
-
-/* =========================================================
-   ContractDocument
-========================================================= */
-
-.archive-contract-sheet__body {
-  box-sizing:
-    border-box;
-
-  width:
-    100%;
-
-  min-width:
-    0;
-}
-
-
-/*
- * ContractDocument는 작성 화면에서
- * 자체 .contract-paper를 가지고 있다.
- *
- * Archive에서는 바깥
- * .archive-contract-sheet가
- * 전체 계약서 종이 역할을 하므로
- * 내부 테두리만 제거한다.
- */
-
-.archive-contract-sheet__body
-.contract-paper {
-  box-sizing:
-    border-box;
-
-  width:
-    100%;
-
-  max-width:
-    none;
-
-  min-width:
-    0;
-
-  margin:
-    0;
-
-  border:
-    0;
-
-  border-radius:
-    0;
-
-  box-shadow:
-    none;
-
-  background:
-    transparent;
-}
-
-
-/*
- * 기존 작성 화면 패딩/본문 폭은 최대한 유지.
- */
-
-.archive-contract-sheet__body
-.contract-paper__header,
-
-.archive-contract-sheet__body
-.document-clause {
-  box-sizing:
-    border-box;
 }
 
 
@@ -371,226 +276,6 @@
 
 
 /* =========================================================
-   PartiesInfo
-========================================================= */
-
-.archive-contract-sheet__parties {
-  box-sizing:
-    border-box;
-
-  width:
-    100%;
-
-  min-width:
-    0;
-
-  padding:
-    0 48px
-    38px;
-
-  background:
-    #ffffff;
-}
-
-
-/*
- * 기타사항 직후 같은 계약서 안에서
- * 자연스럽게 이어지도록 한다.
- */
-
-.archive-contract-sheet__parties
-.doc__closing {
-  box-sizing:
-    border-box;
-
-  width:
-    100%;
-
-  margin:
-    0;
-
-  padding:
-    26px 0
-    14px;
-
-  border-top:
-    1px solid
-    #dfe5ec;
-
-  color:
-    #25364c;
-
-  font-size:
-    16px;
-
-  line-height:
-    1.75;
-
-  word-break:
-    keep-all;
-}
-
-
-/* =========================================================
-   Parties Table
-========================================================= */
-
-.archive-contract-sheet__parties
-.parties {
-  box-sizing:
-    border-box;
-
-  width:
-    100%;
-
-  max-width:
-    none;
-
-  min-width:
-    0;
-
-  margin:
-    0;
-
-  table-layout:
-    fixed;
-
-  border-collapse:
-    collapse;
-
-  border-top:
-    2px solid
-    #2a3c55;
-
-  border-bottom:
-    2px solid
-    #2a3c55;
-
-  background:
-    #ffffff;
-}
-
-
-.archive-contract-sheet__parties
-.parties th,
-
-.archive-contract-sheet__parties
-.parties td {
-  box-sizing:
-    border-box;
-
-  min-width:
-    0;
-
-  padding:
-    12px 13px;
-
-  border:
-    1px solid
-    #dbe2ea;
-
-  vertical-align:
-    middle;
-}
-
-
-.archive-contract-sheet__parties
-.parties__role {
-  background:
-    #f7f9fb;
-
-  color:
-    #27384e;
-
-  text-align:
-    center;
-
-  font-size:
-    13px;
-
-  font-weight:
-    800;
-}
-
-
-.archive-contract-sheet__parties
-.parties__label {
-  background:
-    #fafbfd;
-
-  color:
-    #788397;
-
-  text-align:
-    center;
-
-  font-size:
-    12px;
-
-  font-weight:
-    700;
-
-  letter-spacing:
-    0.08em;
-}
-
-
-.archive-contract-sheet__parties
-.parties__value {
-  min-width:
-    0;
-
-  overflow-wrap:
-    anywhere;
-
-  color:
-    #233247;
-
-  font-size:
-    13px;
-}
-
-
-.archive-contract-sheet__parties
-.doc__readonly {
-  display:
-    block;
-
-  min-width:
-    0;
-
-  overflow-wrap:
-    anywhere;
-
-  color:
-    #17283f;
-
-  font-size:
-    13px;
-
-  font-weight:
-    700;
-}
-
-
-.archive-contract-sheet__parties
-.doc__hint {
-  margin:
-    12px 0
-    0;
-
-  color:
-    #788391;
-
-  font-size:
-    12px;
-
-  line-height:
-    1.6;
-}
-
-
-/* =========================================================
    전자서명
 ========================================================= */
 
@@ -604,12 +289,10 @@
     border-box;
 
   width:
-    calc(
-      100% - 96px
-    );
+    100%;
 
   margin:
-    0 48px;
+    0;
 
   padding:
     28px 0
@@ -697,94 +380,6 @@
 
 
 /* =========================================================
-   수취 계좌
-========================================================= */
-
-.archive-contract-account {
-  font-family:
-    "Noto Sans KR",
-    Arial,
-    sans-serif;
-
-  box-sizing:
-    border-box;
-
-  width:
-    calc(
-      100% - 96px
-    );
-
-  margin:
-    0 48px
-    38px;
-
-  padding:
-    16px 18px;
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  gap:
-    14px;
-
-  border:
-    1px solid
-    #e1e8e4;
-
-  border-radius:
-    6px;
-
-  background:
-    #f8fbf9;
-}
-
-
-.archive-contract-account > span {
-  flex:
-    0 0 auto;
-
-  color:
-    #78877e;
-
-  font-size:
-    12px;
-
-  font-weight:
-    700;
-}
-
-
-.archive-contract-account > strong {
-  min-width:
-    0;
-
-  color:
-    #18372d;
-
-  font-size:
-    14px;
-
-  font-weight:
-    800;
-}
-
-
-.archive-contract-account > small {
-  margin-left:
-    auto;
-
-  color:
-    #6e7d74;
-
-  font-size:
-    12px;
-}
-
-
-/* =========================================================
    Disclaimer
 ========================================================= */
 
@@ -834,36 +429,6 @@
       calc(
         100% - 40px
       );
-  }
-
-
-  .archive-contract-sheet__parties {
-    padding:
-      0 28px
-      32px;
-  }
-
-
-  .archive-contract-signatures {
-    width:
-      calc(
-        100% - 56px
-      );
-
-    margin:
-      0 28px;
-  }
-
-
-  .archive-contract-account {
-    width:
-      calc(
-        100% - 56px
-      );
-
-    margin:
-      0 28px
-      32px;
   }
 }
 
@@ -929,68 +494,12 @@
   }
 
 
-  .archive-contract-sheet__parties {
-    padding:
-      0 16px
-      24px;
-
-    overflow-x:
-      auto;
-  }
-
-
-  /*
-   * 7열 표는 모바일에서 억지로 찌그러뜨리면
-   * 읽기 어려우므로 내부 가로 스크롤을 허용한다.
-   */
-  .archive-contract-sheet__parties
-  .parties {
-    min-width:
-      760px;
-  }
-
-
   .archive-contract-signatures {
-    width:
-      calc(
-        100% - 32px
-      );
-
-    margin:
-      0 16px;
-
     grid-template-columns:
       1fr;
 
     gap:
       20px;
-  }
-
-
-  .archive-contract-account {
-    width:
-      calc(
-        100% - 32px
-      );
-
-    margin:
-      0 16px
-      24px;
-
-    align-items:
-      flex-start;
-
-    flex-direction:
-      column;
-
-    gap:
-      6px;
-  }
-
-
-  .archive-contract-account > small {
-    margin-left:
-      0;
   }
 
 

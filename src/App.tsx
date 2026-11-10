@@ -171,7 +171,7 @@ function App() {
             />
 
             <Route
-              path="/contracts/:contractId/change-requests/:changeRequestId/signature"
+              path="/contracts/:contractId/change-request/signature"
               element={
                 <ProtectedRoute>
                   <ContractChangeSignaturePage />

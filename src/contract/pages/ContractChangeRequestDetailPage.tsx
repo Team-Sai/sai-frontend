@@ -8,6 +8,7 @@ import {
   rejectChangeRequest,
 } from "../api/contractChangeApi";
 import type { ChangeRequestDetail } from "../types/contractChange";
+import { clearContractChangeDraft } from "../utils/contractChangeDraft";
 
 function formatCurrency(amount: number): string {
   return "₩" + Math.round(amount).toLocaleString("ko-KR");
@@ -36,7 +37,7 @@ export default function ContractChangeRequestDetailPage() {
   if (!contractId || !changeRequestId) {
     return (
       <div className="contract-scope contract-scope--change-detail">
-        잘못된 접근입니다.
+        <p className="change-detail-message">잘못된 접근입니다.</p>
       </div>
     );
   }
@@ -96,6 +97,7 @@ function ContractChangeRequestDetailContent({
     if (!detail) return;
 
     if (isRejectedView) {
+      clearContractChangeDraft();
       navigate(`/contracts/${contractId}/change-request`);
       return;
     }
@@ -158,7 +160,7 @@ function ContractChangeRequestDetailContent({
   if (loadError && !detail) {
     return (
       <div className="contract-scope contract-scope--change-detail">
-        {loadError}
+        <p className="change-detail-message" role="alert">{loadError}</p>
       </div>
     );
   }
@@ -255,11 +257,11 @@ function ContractChangeRequestDetailContent({
 
       {isPending || isRejectedView ? (
         <div className="action-group">
-          <button type="button" className="btn-approve" onClick={handleApproveClick}>
-            {isRejectedView ? "수정하기" : "변경 승인"}
-          </button>
           <button type="button" className="btn-reject" onClick={handleRejectClick}>
             {isRejectedView ? "취소" : "변경 반려"}
+          </button>
+          <button type="button" className="btn-approve" onClick={handleApproveClick}>
+            {isRejectedView ? "수정하기" : "변경 승인"}
           </button>
         </div>
       ) : (
@@ -272,6 +274,7 @@ function ContractChangeRequestDetailContent({
             <h3>변경 요청 반려</h3>
             <p className="modal-sub">반려 사유를 입력해주세요.</p>
             <textarea
+              className="modal-textarea"
               rows={4}
               placeholder="반려 사유를 입력하세요"
               value={returnReasonInput}

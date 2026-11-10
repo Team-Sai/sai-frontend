@@ -22,6 +22,7 @@ import ClauseSlotDialog from "../components/ClauseSlotDialog";
 
 import {
   LOAN_CONTRACT_DRAFT_KEY,
+  LOAN_CONTRACT_EDITOR_KEY,
   toDraft,
   type ContractFormData,
   type CreditorInfo,
@@ -37,6 +38,7 @@ import type {
 
 import { reviewClause } from "../api/clauseAgentApi";
 import { toClauseSuggestionRequest } from "../utils/clauseRequest";
+import { useAgentConversationEntry } from "../utils/agentConversationEntry";
 
 import type { ContractFieldWarning } from "../utils/contractValidation";
 
@@ -55,8 +57,6 @@ import "../styles/ContractFormPage.css";
 /* =========================================================
    Storage
 ========================================================= */
-
-const LOAN_CONTRACT_EDITOR_KEY = "sai.loanContract.editor";
 
 interface StoredEditorState {
   formData: ContractFormData;
@@ -225,22 +225,21 @@ function validateForNext(
 
   draftClause: DraftContractClause | null,
 ): string | null {
-  if (draftClause) {
-    return "S-AI가 작성한 조항을 적용하거나 취소한 뒤 다음 단계로 진행해 주세요.";
-  }
-
-  const unresolvedCount = countUnresolvedClauseSlots(appliedClauses);
-
-  if (unresolvedCount > 0) {
-    return `추가 조항에 아직 입력하지 않은 계약 조건이 ${unresolvedCount}개 있습니다.`;
-  }
-
-  if (!formData.selectedLinkedAccountId) {
-    return "변제금을 받을 계좌를 선택해 주세요.";
-  }
-
+  /* 계약서에 적힌 순서대로 안내한다. */
   if (!formData.principalAmount || Number(formData.principalAmount) <= 0) {
     return "대여 원금을 입력해 주세요.";
+  }
+
+  if (!formData.startDate) {
+    return "대여금 지급일을 입력해 주세요.";
+  }
+
+  if (!formData.maturityDate) {
+    return "최종 변제기일을 입력해 주세요.";
+  }
+
+  if (!(new Date(formData.maturityDate) > new Date(formData.startDate))) {
+    return "최종 변제기일은 대여금 지급일 이후여야 합니다.";
   }
 
   const rate = Number(formData.interestRate);
@@ -255,14 +254,6 @@ function validateForNext(
     return "연이자율은 0.5% 이상 20% 이하이며 0.5% 단위여야 합니다.";
   }
 
-  if (!formData.startDate || !formData.maturityDate) {
-    return "대여 시작일과 최종 변제기일을 입력해 주세요.";
-  }
-
-  if (!(new Date(formData.maturityDate) > new Date(formData.startDate))) {
-    return "최종 변제기일은 대여 시작일 이후여야 합니다.";
-  }
-
   const day = Number(formData.repaymentDay);
 
   if (
@@ -274,12 +265,26 @@ function validateForNext(
     return "정기 상환일은 1일부터 31일까지의 정수로 입력해 주세요.";
   }
 
-  if (!formData.creditorAddress.trim()) {
-    return "채권자 주소를 입력해 주세요.";
+  if (!formData.selectedLinkedAccountId) {
+    return "변제금을 받을 계좌를 선택해 주세요.";
   }
 
   if (!formData.contractAlias.trim()) {
     return "차용 목적을 입력해 주세요.";
+  }
+
+  if (draftClause) {
+    return "S-AI가 작성한 조항을 적용하거나 취소한 뒤 다음 단계로 진행해 주세요.";
+  }
+
+  const unresolvedCount = countUnresolvedClauseSlots(appliedClauses);
+
+  if (unresolvedCount > 0) {
+    return `추가 조항에 아직 입력하지 않은 계약 조건이 ${unresolvedCount}개 있습니다. 해당 조항의 '조건 입력하기'에서 작성해 주세요.`;
+  }
+
+  if (!formData.creditorAddress.trim()) {
+    return "채권자 주소를 입력해 주세요.";
   }
 
   return null;
@@ -309,6 +314,8 @@ export default function ContractFormPage() {
   const [searchParams] = useSearchParams();
 
   const relation = searchParams.get("relation");
+
+  useAgentConversationEntry();
 
   const [initialEditorState] = useState(() => loadEditorState(relation));
 
@@ -886,6 +893,11 @@ export default function ContractFormPage() {
               isProcessing={isChecking}
               statusMessage={null}
               isError={false}
+              notice={
+                validateForNext(formData, appliedClauses, draftClause) ??
+                fieldWarnings[0]?.message ??
+                null
+              }
               onNext={handleNext}
             />
           </div>

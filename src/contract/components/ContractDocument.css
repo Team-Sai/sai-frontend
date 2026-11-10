@@ -31,6 +31,42 @@
 }
 
 /* =========================================================
+   CONTRACT FOOTER
+========================================================= */
+
+.contract-paper-footer {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 34px 58px 44px;
+
+  background: #ffffff;
+
+  border: 1px solid #d9dfe6;
+
+  border-top: 0;
+
+  border-radius: 0 0 8px 8px;
+
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.035);
+}
+
+.contract-paper-footer > p {
+  margin: 0 0 28px;
+
+  color: #7c8794;
+
+  font-family: "Noto Serif KR", "Nanum Myeongjo", serif;
+
+  font-size: 11px;
+
+  line-height: 1.8;
+
+  text-align: center;
+}
+
+/* =========================================================
    HEADER
 ========================================================= */
 
@@ -420,6 +456,40 @@
  */
 .document-account__info {
   display: none !important;
+}
+
+.document-account__readonly {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: baseline;
+
+  gap: 4px 12px;
+
+  font-family: "Noto Sans KR", Arial, sans-serif;
+}
+
+.document-account__readonly span {
+  color: #46584f;
+
+  font-size: 11px;
+
+  font-weight: 800;
+}
+
+.document-account__readonly strong {
+  color: #087d59;
+
+  font-size: 14px;
+
+  font-weight: 800;
+}
+
+.document-account__readonly small {
+  color: #56675f;
+
+  font-size: 12px;
 }
 
 /* =========================================================
@@ -841,4 +911,9 @@
   margin: 4px 0 0;
   color: #8b6425;
   font-size: 11px;
+}
+@media (max-width: 680px) {
+  .contract-paper-footer {
+    padding: 26px 20px 30px;
+  }
 }

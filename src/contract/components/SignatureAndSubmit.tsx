@@ -17,7 +17,7 @@ interface SignatureAndSubmitProps {
 }
 
 export default function SignatureAndSubmit({
-  title = "금 전 차 용 계 약 서",
+  title = "전 자 서 명",
   debtorUserToken = "",
   onDebtorUserTokenChange,
   isSubmitting,
@@ -134,7 +134,7 @@ export default function SignatureAndSubmit({
             <input
               type="text"
               className="doc__inline-input doc__inline-input--alias"
-              placeholder="예: SAI_ABCD1234"
+              placeholder="예: SAI-D93J4VGV"
               value={debtorUserToken}
               onChange={(event) => onDebtorUserTokenChange(event.target.value)}
               disabled={isSubmitting}

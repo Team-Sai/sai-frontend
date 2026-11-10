@@ -24,6 +24,8 @@ interface ClauseChatCardProps {
   writing: boolean;
   avatar: ReactNode;
   onReply: (text: string) => void;
+  /** 마지막 확인에서 [아니요]: 대화를 끝낸다 */
+  onDecline: () => void;
 }
 
 export default function ClauseChatCard({
@@ -39,6 +41,7 @@ export default function ClauseChatCard({
   writing,
   avatar,
   onReply,
+  onDecline,
 }: ClauseChatCardProps) {
   // 질문은 한 번에 하나씩 보여 준다.
   const current = questions[0];
@@ -160,7 +163,7 @@ export default function ClauseChatCard({
                 type="button"
                 className="is-subtle"
                 disabled={waiting}
-                onClick={() => onReply("아니요")}
+                onClick={onDecline}
               >
                 아니요
               </button>

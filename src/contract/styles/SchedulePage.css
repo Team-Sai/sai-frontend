@@ -23,7 +23,9 @@
 }
 
 .contract-schedule-page .local-data-note {
-  margin: 20px 0 0;
+  margin: 0;
+  padding: 14px 22px 18px;
+  border-top: 1px solid #eef0f4;
   color: var(--gray-500, #8e99a5);
   font-size: 12px;
   line-height: 1.5;
@@ -40,4 +42,256 @@
 
 .contract-schedule-page .participant-avatar-list--pair {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settlement-detail-page .status-partial {
+  color: #b7791f;
+  background: #fff7e6;
+}
+
+.early-repayment {
+  display: grid;
+  gap: 12px;
+  padding: 16px 22px;
+}
+
+.early-repayment__title {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.early-repayment__card,
+.early-repayment__history {
+  display: grid;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid #d9dee8;
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.early-repayment__card {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 10px rgba(15, 138, 95, 0.08);
+}
+
+.early-repayment__card.is-invalid {
+  border-color: #f2c9c9;
+  background: #fffafa;
+  box-shadow: none;
+}
+
+.early-repayment__card-head,
+.early-repayment__history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.early-repayment__card-head > div {
+  display: grid;
+  gap: 2px;
+}
+
+.early-repayment__card-head strong,
+.early-repayment__history-head strong {
+  font-size: 18px;
+  color: var(--color-text);
+}
+
+.early-repayment__history-head strong {
+  margin-left: auto;
+  font-size: 15px;
+}
+
+.early-repayment__date {
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.early-repayment__badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #e7f6f0;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.early-repayment__rows {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px dashed #e3e7ee;
+}
+
+.early-repayment__rows > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.early-repayment__rows dt {
+  color: var(--color-muted);
+}
+
+.early-repayment__rows dd {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.early-repayment__result,
+.early-repayment__error {
+  margin: 0;
+  font-size: 13px;
+}
+
+.early-repayment__result {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.early-repayment__error {
+  color: var(--color-error);
+}
+
+.early-repayment__card > .button {
+  justify-self: end;
+}
+
+.early-repayment__fold,
+.early-repayment__more {
+  border-radius: 10px;
+}
+
+.early-repayment__fold {
+  border: 1px solid #d9dee8;
+  background: var(--color-surface);
+}
+
+.early-repayment__fold > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.early-repayment__fold > summary strong {
+  margin-left: auto;
+  color: var(--color-text);
+}
+
+.early-repayment__fold-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 16px 16px;
+}
+
+.early-repayment__more > summary {
+  font-size: 13px;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.early-repayment__more .early-repayment__rows {
+  margin-top: 8px;
+}
+
+.contract-schedule-page .remaining-toggle {
+  display: inline-flex;
+  align-self: flex-start;
+  width: fit-content;
+  gap: 2px;
+  margin-bottom: 6px;
+  padding: 2px;
+  border-radius: 999px;
+  background: #eef1f5;
+}
+
+.contract-schedule-page .remaining-toggle button {
+  padding: 3px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.contract-schedule-page .remaining-toggle button.is-active {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.contract-schedule-page .remaining-note {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.contract-schedule-page .contract-number-guide {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.contract-schedule-page .contract-number-guide b {
+  color: var(--color-primary);
+}
+
+.contract-schedule-page .early-repayment-line td {
+  background: #f3faf7;
+}
+
+.settlement-detail-page .status-early {
+  color: var(--color-primary);
+  background: #e7f6f0;
+}
+
+.early-repayment__warn {
+  margin: 0;
+  font-size: 13px;
+  color: #b7791f;
+}
+
+.early-repayment__rows .is-refund dd {
+  color: var(--color-error);
+}
+
+.early-repayment__badge.is-returned {
+  background: #fff1f0;
+  color: var(--color-error);
+}
+
+.early-repayment__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 위쪽 요약·계약 정보와 아래 박스 사이 간격 */
+.contract-schedule-page .meta-card {
+  margin-top: 12px;
+}
+
+.contract-schedule-page .detail-grid {
+  margin-top: 20px;
+}
+
+.contract-schedule-page .participant-panel-header {
+  padding-top: 18px;
+  padding-bottom: 18px;
 }

@@ -10,9 +10,11 @@ import "../styles/SchedulePage.css";
 import {
   getScheduleSummary,
   getContractDetailForSchedule,
+  syncContractRepayments,
 } from "../api/scheduleApi";
 import { getContractAccount } from "../api/contractApi";
-import type { LinkedBankAccount } from "../../accounts/types/account";
+import EarlyRepaymentPanel from "../components/EarlyRepaymentPanel";
+import type { ContractRepaymentAccount } from "../../accounts/types/account";
 import type {
   RepaymentScheduleSummary,
   RepaymentScheduleRow,
@@ -80,12 +82,13 @@ function ScheduleContent({ contractId }: { contractId: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [account, setAccount] = useState<LinkedBankAccount | null>(null);
+  const [account, setAccount] = useState<ContractRepaymentAccount | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [syncTime, setSyncTime] = useState(() => formatTransactionSyncTime(getLastTransactionSyncAt()));
   const [toast, setToast] = useState<{ text: string; error?: boolean } | null>(null);
+  const [remainingMode, setRemainingMode] = useState<"plan" | "today">("plan");
 
   useEffect(() => {
     let cancelled = false;
@@ -112,9 +115,8 @@ function ScheduleContent({ contractId }: { contractId: string }) {
     };
   }, [contractId, reloadKey]);
 
-  // 수취 계좌 조회는 채권자에게만 허용되므로, 채무자면 패널 자체를 숨긴다.
   useEffect(() => {
-    if (!contractDetail?.isCreditor) return;
+    if (!contractDetail) return;
     let cancelled = false;
     getContractAccount(Number(contractId))
       .then((res) => {
@@ -151,11 +153,9 @@ function ScheduleContent({ contractId }: { contractId: string }) {
       ? Math.round((schedule.paidCount / schedule.totalCount) * 100)
       : 0;
 
+  // 전액 상환은 회차 줄에 표시되므로, 가장 최근 중도상환은 따로 넣지 않는다.
   const totalPages = Math.ceil(schedule.schedules.length / PAGE_SIZE);
-  const pageItems = schedule.schedules.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
-  );
+  const pageItems = schedule.schedules.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   function showToast(text: string, error = false) {
     setToast({ text, error });
@@ -165,13 +165,14 @@ function ScheduleContent({ contractId }: { contractId: string }) {
   async function syncTransactions() {
     try {
       setIsSyncing(true);
-      const result = await settlementApi.syncAll();
-      setSyncTime(formatTransactionSyncTime(recordTransactionSync()));
+      const result = isCreditor
+        ? await settlementApi.syncAll()
+        : await syncContractRepayments(Number(contractId));      setSyncTime(formatTransactionSyncTime(recordTransactionSync()));
       showToast(`동기화 완료: 자동반영 ${result.appliedCount ?? 0}건, 확인필요 ${result.needsCheckCount ?? 0}건, 미매칭 ${result.unmatchedCount ?? 0}건`);
       setIsLoading(true);
       setError(null);
       setReloadKey((current) => current + 1);
-      setIsReviewOpen(true);
+      if (isCreditor) setIsReviewOpen(true);
     } catch (cause) {
       showToast(cause instanceof Error ? cause.message : "거래내역 동기화에 실패했습니다.", true);
     } finally {
@@ -195,17 +196,16 @@ function ScheduleContent({ contractId }: { contractId: string }) {
           <h1>{contract.contractAlias}</h1>
         </div>
         <div className="heading-actions">
-          {isCreditor && (
-            <button
-              type="button"
-              className="button button-secondary settlement-sync-button"
-              onClick={() => void syncTransactions()}
-              disabled={isSyncing}
-            >
-              {isSyncing && <span className="button-spinner" aria-hidden="true" />}
-              ↻ 거래내역 동기화
-            </button>
-          )}
+          <button
+            type="button"
+            className="button button-secondary settlement-sync-button"
+            onClick={() => void syncTransactions()}
+            disabled={isSyncing}
+          >
+            {isSyncing && <span className="button-spinner" aria-hidden="true" />}
+            ↻ 거래내역 동기화
+          </button>
+          
           <button
             type="button"
             className="button button-primary"
@@ -226,8 +226,42 @@ function ScheduleContent({ contractId }: { contractId: string }) {
           <strong className="text-success">{formatWon(schedule.paidAmount)}</strong>
         </div>
         <div className="summary-item">
-          <span>잔여 상환액</span>
-          <strong>{formatWon(schedule.remainingAmount)}</strong>
+          {schedule.todayPayoff && (
+            <div className="remaining-toggle" role="group" aria-label="잔여 상환액 기준">
+              <button
+                type="button"
+                className={remainingMode === "plan" ? "is-active" : undefined}
+                onClick={() => setRemainingMode("plan")}
+              >
+                만기까지
+              </button>
+              <button
+                type="button"
+                className={remainingMode === "today" ? "is-active" : undefined}
+                onClick={() => setRemainingMode("today")}
+              >
+                오늘 완납
+              </button>
+            </div>
+          )}
+          {remainingMode === "today" && schedule.todayPayoff ? (
+            <>
+              <span>오늘 완납 금액</span>
+              <strong>{formatWon(schedule.todayPayoff.total)}</strong>
+              <small className="remaining-note">
+                원금 {formatWon(schedule.todayPayoff.principal)} + 오늘까지 이자{" "}
+                {formatWon(schedule.todayPayoff.interest)}
+                {schedule.todayPayoff.shortfall > 0 &&
+                  ` + 밀린 회차 ${formatWon(schedule.todayPayoff.shortfall)}`}
+              </small>
+            </>
+          ) : (
+            <>
+              <span>잔여 상환액</span>
+              <strong>{formatWon(schedule.remainingAmount)}</strong>
+              <small className="remaining-note">남은 회차를 계획대로 낼 때</small>
+            </>
+          )}
         </div>
         <div className="summary-progress">
           <div className="progress-meta">
@@ -279,24 +313,22 @@ function ScheduleContent({ contractId }: { contractId: string }) {
 
       <div className="detail-grid">
         <aside className="side-column">
-          {isCreditor && (
-            <section className="panel">
-              <div className="panel-header">
-                <h2>상환 수취 계좌</h2>
+          <section className="panel">
+            <div className="panel-header">
+              <h2>상환 수취 계좌</h2>
+            </div>
+            <div className="account-card">
+              <div className="account-icon">₩</div>
+              <div>
+                <span>{account?.bankName ?? "수취 계좌"}</span>
+                <strong>{account?.maskedAccountNumber ?? "계좌 정보 없음"}</strong>
+                <small>{account?.accountHolderName ?? "-"}</small>
               </div>
-              <div className="account-card">
-                <div className="account-icon">₩</div>
-                <div>
-                  <span>{account?.bankName ?? "수취 계좌"}</span>
-                  <strong>{account?.maskedAccountNumber ?? "계좌 정보 없음"}</strong>
-                  <small>{account?.accountHolderName ?? "-"}</small>
-                </div>
-              </div>
-              <dl className="info-list schedule-sync-info">
-                <div><dt>최근 동기화</dt><dd>{syncTime}</dd></div>
-              </dl>
-            </section>
-          )}
+            </div>
+            <dl className="info-list schedule-sync-info">
+              <div><dt>최근 동기화</dt><dd>{syncTime}</dd></div>
+            </dl>
+          </section>
 
           <section className="panel">
             <div className="panel-header">
@@ -332,8 +364,22 @@ function ScheduleContent({ contractId }: { contractId: string }) {
             <div>
               <h2>회차별 상환 내역</h2>
               <p>계약 조건에 따라 산정된 상환 회차별 예정 및 완료 내역입니다.</p>
+              {schedule.contractDisplayId && (
+                <p className="contract-number-guide">
+                  차용증 번호 <b>{schedule.contractDisplayId}</b> · 이체할 때 받는 분 메모에 적어 주세요.
+                </p>
+              )}
             </div>
           </div>
+
+          <EarlyRepaymentPanel
+            contractId={Number(contractId)}
+            isCreditor={isCreditor}
+            reloadKey={reloadKey}
+            history={schedule.earlyRepayments ?? []}
+            returned={schedule.returnedDeposits ?? []}
+            onDone={() => setReloadKey((current) => current + 1)}
+          />        
 
           {schedule.schedules.length === 0 ? (
             <div className="empty-state">등록된 상환 스케줄이 없습니다.</div>
@@ -354,15 +400,21 @@ function ScheduleContent({ contractId }: { contractId: string }) {
                     {pageItems.map((row) => {
                       const paidAt = formatPaidAt(row.paidAt);
                       return (
-                        <tr key={row.scheduleId}>
-                          <td>{row.sequence}회차</td>
+                        <tr key={row.scheduleId} className={row.earlyPayoff ? "early-repayment-line" : undefined}>
+                          <td>{row.earlyPayoff ? "중도상환(전액)" : `${row.sequence}회차`}</td>
                           <td>{row.dueDate}</td>
                           <td>{formatWon(row.totalPaymentDue)}</td>
                           <td>{paidAt ? <span className="payment-date-time"><span>{paidAt.date}</span><span>{paidAt.time}</span></span> : "-"}</td>
                           <td>
-                            <span className={`status-chip ${rowStatusClass(row.status)}`}>
-                              ● {SCHEDULE_STATUS_LABELS[row.status]}
-                            </span>
+                            {row.status === "PENDING" && (row.paidAmount ?? 0) > 0 ? (
+                              <span className="status-chip status-partial">
+                                ● 부분납부 중 ({formatWon(row.paidAmount ?? 0)})
+                              </span>
+                            ) : (
+                              <span className={`status-chip ${rowStatusClass(row.status)}`}>
+                                ● {SCHEDULE_STATUS_LABELS[row.status]}
+                              </span>
+                            )}
                           </td>
                         </tr>
                       );
@@ -388,14 +440,14 @@ function ScheduleContent({ contractId }: { contractId: string }) {
               )}
             </>
           )}
+
+          <p className="local-data-note">
+            * 본 화면의 상환 회차별 금액은 계약 조건을 기준으로 자동 산정된 예정
+            금액으로, 실제 입금 및 처리 시점에 따라 표시된 상태와 차이가 있을 수
+            있습니다. 금액은 원 단위 미만을 반올림하여 표시됩니다.
+          </p>
         </section>
       </div>
-
-      <p className="local-data-note">
-        * 본 화면의 상환 회차별 금액은 계약 조건을 기준으로 자동 산정된 예정
-        금액으로, 실제 입금 및 처리 시점에 따라 표시된 상태와 차이가 있을 수
-        있습니다. 금액은 원 단위 미만을 반올림하여 표시됩니다.
-      </p>
     </main>
     {isReviewOpen && (
       <MatchingReviewModal

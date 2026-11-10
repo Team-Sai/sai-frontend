@@ -29,6 +29,8 @@ export interface RepaymentScheduleRow {
   totalPaymentDue: number;
   paidAt: string | null;
   status: RepaymentScheduleStatus;
+  paidAmount?: number;
+  earlyPayoff?: boolean;
 }
 
 export interface RepaymentScheduleSummary {
@@ -41,6 +43,10 @@ export interface RepaymentScheduleSummary {
   paidCount: number;
   totalCount: number;
   schedules: RepaymentScheduleRow[];
+  earlyRepayments?: EarlyRepaymentHistory[];
+  contractDisplayId?: string;
+  todayPayoff?: TodayPayoff | null;
+  returnedDeposits?: ReturnedDeposit[];
 }
 
 export interface ContractInfo {
@@ -55,4 +61,39 @@ export interface ContractInfo {
 export interface ContractDetailForSchedule {
   contract: ContractInfo;
   isCreditor: boolean;
+}
+
+export interface EarlyRepaymentHistory {
+  earlyRepaymentId: number;
+  amount: number;
+  shortfallAmount: number;
+  accruedInterest: number;
+  feeAmount: number;
+  principalAmount: number;
+  processedAt: string;
+}
+
+export interface EarlyRepaymentDeposit {
+  bankTransactionId: number;
+  amount: number;
+  transactionAt: string;
+  counterpartyName: string | null;
+  shortfallAmount: number;
+  accruedInterest: number;
+  balance: number;
+  memoConfirmed: boolean;
+}
+
+export interface TodayPayoff {
+  principal: number;
+  interest: number;
+  shortfall: number;
+  total: number;
+}
+
+export interface ReturnedDeposit {
+  bankTransactionId: number;
+  amount: number;
+  transactionAt: string;
+  returnedAt: string;
 }

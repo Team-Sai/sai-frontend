@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../shared.css';
 import '../styles/ContractCompletePage.css';
+import CompletionIcon from '../components/CompletionIcon';
 import Stepper from '../components/Stepper';
 import { getContractSummary } from '../api/contractApi';
 
@@ -10,8 +11,11 @@ export default function ContractCompletePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const contractId = searchParams.get('contractId');
+  const isChangeFlow = searchParams.get('flow') === 'change';
 
-  const [title, setTitle] = useState('금전소비대차계약이 성공적으로 체결되었습니다!');
+  const [title, setTitle] = useState(
+    isChangeFlow ? '계약 변경이 완료되었습니다!' : '금전소비대차계약이 성공적으로 체결되었습니다!',
+  );
 
   useEffect(() => {
     if (!contractId) return;
@@ -27,14 +31,12 @@ export default function ContractCompletePage() {
 
   return (
     <div className="page">
-      <Stepper currentStep={4} />
+      <Stepper variant={isChangeFlow ? 'changeApproval' : 'create'} currentStep={4} />
 
       <div className="success-container">
         <header className="success-header">
           <h1 className="success-title">{title}</h1>
-          <div className="success-icon" aria-hidden="true">
-            🎉
-          </div>
+          <CompletionIcon />
           <p className="success-description">
             "전자서명이 완료된 원본 차용증은 언제든지 조회 및 발급이 가능합니다."
           </p>
