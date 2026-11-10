@@ -14,6 +14,8 @@
   --radius-md: 8px;
   --radius-lg: 8px;
   --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04);
+
+  --contract-sheet-width: 1014px;
 }
 
 * { box-sizing: border-box; }
@@ -40,4 +42,103 @@ button { font-family: inherit; }
   margin: 32px auto 80px;
   padding: 0 20px;
   flex: 1 0 auto;
+}
+
+.page.contract-review-page {
+  max-width: calc(var(--contract-sheet-width) + 40px);
+}
+
+.doc {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 48px 44px 40px;
+}
+
+.doc__title {
+  font-family: var(--font-ui);
+  text-align: center;
+  color: var(--primary);
+  font-size: 24px;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  font-weight: 700;
+  margin: 0 0 36px;
+}
+
+.doc__article {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px dashed var(--line);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.doc__clause {
+  flex: 0 0 auto;
+  min-width: 112px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.doc__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.doc__text {
+  display: block;
+  color: var(--text);
+}
+
+.doc__inline-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 44px;
+  margin-top: 8px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.doc__inline-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.doc__hint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.doc__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.doc__status {
+  min-height: 18px;
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: var(--primary);
+  text-align: right;
+}
+
+.doc__status.is-error {
+  color: var(--error);
+}
+
+@media (max-width: 640px) {
+  .doc { padding: 32px 20px; }
+  .doc__article { flex-direction: column; gap: 4px; }
+  .doc__clause { min-width: 0; }
 }

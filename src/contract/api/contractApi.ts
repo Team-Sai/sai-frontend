@@ -1,5 +1,5 @@
 import { authFetch } from '../../auth/authFetch';
-import type { LinkedBankAccount } from '../../accounts/types/account';
+import type { ContractRepaymentAccount, LinkedBankAccount } from '../../accounts/types/account';
 import type { ContractDetail, LoanContractDraft, LoanContractResponse } from '../types/contract';
 
 function isLinkedBankAccount(value: unknown): value is LinkedBankAccount {
@@ -18,6 +18,20 @@ function isLinkedBankAccount(value: unknown): value is LinkedBankAccount {
       typeof account.accountHolderName === 'string' &&
       typeof account.balance === 'number' &&
       typeof account.connectionStatus === 'string'
+  );
+}
+
+function isContractRepaymentAccount(value: unknown): value is ContractRepaymentAccount {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  const account = value as Record<string, unknown>;
+
+  return (
+    typeof account.bankName === 'string' &&
+    typeof account.maskedAccountNumber === 'string' &&
+    typeof account.accountHolderName === 'string'
   );
 }
 
@@ -231,7 +245,7 @@ export async function saveContractPdf(contractId: number, pdf: Blob): Promise<vo
   }
 }
 
-export async function getContractAccount(contractId: number): Promise<LinkedBankAccount | null> {
+export async function getContractAccount(contractId: number): Promise<ContractRepaymentAccount | null> {
   const response = await authFetch(`/api/contracts/${contractId}/account`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
@@ -247,7 +261,7 @@ export async function getContractAccount(contractId: number): Promise<LinkedBank
 
   const data: unknown = await response.json();
 
-  if (!isLinkedBankAccount(data)) {
+  if (!isContractRepaymentAccount(data)) {
     throw new Error('계좌 정보 응답 형식이 올바르지 않습니다.');
   }
 

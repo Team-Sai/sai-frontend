@@ -146,6 +146,22 @@ export async function submitChangeRequestSignature(
   }
 }
 
+export async function cancelChangeRequest(
+  contractId: number,
+  changeRequestId: number,
+): Promise<void> {
+  const response = await authFetch(
+    `/api/contracts/${contractId}/change-requests/${changeRequestId}`,
+    { method: "DELETE" },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      await readErrorMessage(response, "변경 요청을 취소하지 못했습니다."),
+    );
+  }
+}
+
 export async function getChangeRequestDetail(
   contractId: number,
   changeRequestId: number,

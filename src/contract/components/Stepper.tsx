@@ -1,16 +1,21 @@
 import './Stepper.css';
 
-const STEPS = ['본인인증', '차용증 작성', '상대확인 · 전자서명', '완료'];
+const STEPS_BY_VARIANT = {
+  create: ['본인인증', '차용증 작성', '상대확인 · 전자서명', '완료'],
+  changeRequest: ['변경 내용 작성', '본인인증', '전자서명', '완료'],
+  changeApproval: ['변경 내용 확인', '본인인증', '전자서명', '완료'],
+} as const;
 
 interface StepperProps {
   currentStep: 1 | 2 | 3 | 4;
+  variant?: keyof typeof STEPS_BY_VARIANT;
 }
 
-export default function Stepper({ currentStep }: StepperProps) {
+export default function Stepper({ currentStep, variant = 'create' }: StepperProps) {
   return (
     <section className="stepper-card">
       <ol className="stepper">
-        {STEPS.map((label, index) => {
+        {STEPS_BY_VARIANT[variant].map((label, index) => {
           const stepNumber = index + 1;
           const isDone = stepNumber < currentStep;
           const isActive = stepNumber === currentStep;

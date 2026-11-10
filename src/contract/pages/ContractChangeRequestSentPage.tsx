@@ -2,6 +2,8 @@ import { Button } from "../../common/components";
 import { useParams, useNavigate } from "react-router-dom";
 import "../shared.css";
 import "../styles/ContractCompletePage.css";
+import CompletionIcon from "../components/CompletionIcon";
+import Stepper from "../components/Stepper";
 
 export default function ContractChangeRequestSentPage() {
   const { contractId } = useParams();
@@ -9,12 +11,12 @@ export default function ContractChangeRequestSentPage() {
 
   return (
     <div className="page">
+      <Stepper variant="changeRequest" currentStep={4} />
+
       <div className="success-container">
         <header className="success-header">
           <h1 className="success-title">변경 요청이 전송되었습니다.</h1>
-          <div className="success-icon" aria-hidden="true">
-            📨
-          </div>
+          <CompletionIcon />
           <p className="success-description">
             상대방이 요청을 확인하고 승인하면 알림으로 안내해드립니다.
           </p>
@@ -26,6 +28,12 @@ export default function ContractChangeRequestSentPage() {
             className="complete-action complete-action--primary"
             onClick={() => navigate("/contracts/dashboard")}
           >
+            <svg className="complete-action__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <rect x="3" y="3" width="7" height="9" />
+              <rect x="14" y="3" width="7" height="5" />
+              <rect x="14" y="12" width="7" height="9" />
+              <rect x="3" y="16" width="7" height="5" />
+            </svg>
             <span>대시보드로 이동</span>
           </Button>
 
@@ -36,6 +44,10 @@ export default function ContractChangeRequestSentPage() {
             disabled={!contractId}
             onClick={() => navigate(`/contracts/${contractId}/contract-detail`)}
           >
+            <svg className="complete-action__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
             <span>계약서 보기</span>
           </Button>
         </footer>

@@ -8,6 +8,7 @@ import ContractDocument from "../components/ContractDocument";
 import PartiesInfo from "../components/PartiesInfo";
 
 import { getContractDocument } from "../api/contractDocumentApi";
+import { clearContractChangeDraft } from "../utils/contractChangeDraft";
 
 import type { ContractDocumentDetail } from "../types/contractDocument";
 
@@ -328,7 +329,11 @@ function ContractDocumentContent({ contractId }: { contractId: string }) {
           <button
             type="button"
             className="contract-document-action"
-            onClick={() => navigate(`/contracts/${contractId}/change-request`)}
+            onClick={() => {
+              // 변경 요청마다 빈 입력값에서 시작한다.
+              clearContractChangeDraft();
+              navigate(`/contracts/${contractId}/change-request`);
+            }}
           >
             계약 변경 요청
           </button>
@@ -343,7 +348,6 @@ function ContractDocumentContent({ contractId }: { contractId: string }) {
       ===================================================== */}
 
       <section className="contract-document-sheet" aria-label="계약서 내용">
-        <div className="contract-document-sheet__body">
           <ContractDocument
             formData={formData}
             onFieldChange={noopFieldChange}
@@ -359,13 +363,12 @@ function ContractDocumentContent({ contractId }: { contractId: string }) {
             readOnly
             documentStatusText={documentStatusText}
           />
-        </div>
 
         {/* ===================================================
             계약서 하단 당사자 정보
         =================================================== */}
 
-        <div className="contract-document-sheet__parties">
+        <div className="contract-paper-footer">
           <PartiesInfo
             creditorInfo={creditorInfo}
             creditorAddress={contract.creditorAddress ?? ""}
@@ -382,7 +385,7 @@ function ContractDocumentContent({ contractId }: { contractId: string }) {
           계약서 바깥의 상세페이지 안내
       ===================================================== */}
 
-      {!canRequestChange && (
+      {contract.status === "COMPLETED" && !canRequestChange && (
         <p className="contract-document-notice" role="status">
           현재 진행 중인 요청이 있어 새 계약 변경 요청을 할 수 없습니다.
         </p>

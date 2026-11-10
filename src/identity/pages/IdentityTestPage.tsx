@@ -316,9 +316,18 @@ export default function IdentityTestPage() {
     }
   }
 
+  const returnToPath =
+    new URLSearchParams(window.location.search).get("returnTo") ?? "";
+
   return (
     <div className="mx-auto w-full max-w-240 px-5 py-10 md:px-8">
-      <Stepper currentStep={1} />
+      {returnToPath.includes("/change-approval") ? (
+        <Stepper variant="changeApproval" currentStep={2} />
+      ) : returnToPath.includes("/change-request") ? (
+        <Stepper variant="changeRequest" currentStep={2} />
+      ) : (
+        <Stepper currentStep={1} />
+      )}
 
       {/* Identity Card */}
       <section className="overflow-hidden rounded-2xl border border-outline bg-surface shadow-sm">

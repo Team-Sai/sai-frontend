@@ -8,6 +8,7 @@ import {
   rejectChangeRequest,
 } from "../api/contractChangeApi";
 import type { ChangeRequestDetail } from "../types/contractChange";
+import { clearContractChangeDraft } from "../utils/contractChangeDraft";
 
 function formatCurrency(amount: number): string {
   return "₩" + Math.round(amount).toLocaleString("ko-KR");
@@ -96,6 +97,7 @@ function ContractChangeRequestDetailContent({
     if (!detail) return;
 
     if (isRejectedView) {
+      clearContractChangeDraft();
       navigate(`/contracts/${contractId}/change-request`);
       return;
     }

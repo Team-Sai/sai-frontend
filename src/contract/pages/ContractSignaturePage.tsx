@@ -11,6 +11,8 @@ import SignatureAndSubmit from "../components/SignatureAndSubmit";
 
 import { createContract, submitCreditorSignature } from "../api/contractApi";
 
+import { clearIdentityVerification } from "../../identity/identityVerificationStorage";
+
 import {
   LOAN_CONTRACT_DRAFT_KEY,
   LOAN_CONTRACT_EDITOR_KEY,
@@ -79,21 +81,6 @@ export default function ContractSignaturePage() {
       return;
     }
 
-    const identityVerificationId = sessionStorage.getItem(
-      "identityVerificationId",
-    );
-
-    if (!identityVerificationId) {
-      navigate(
-        `/identity-test?returnTo=${encodeURIComponent("/contracts/signature")}`,
-        {
-          replace: true,
-        },
-      );
-
-      return;
-    }
-
     setIsSubmitting(true);
 
     setIsError(false);
@@ -103,12 +90,28 @@ export default function ContractSignaturePage() {
     try {
       let contractId = createdContractId;
 
+      /* 본인인증은 계약 생성 때 소모되므로, 전송만 다시 할 때는 필요 없다. */
       if (contractId == null) {
+        const identityVerificationId = sessionStorage.getItem(
+          "identityVerificationId",
+        );
+
+        if (!identityVerificationId) {
+          navigate(
+            `/identity-test?returnTo=${encodeURIComponent("/contracts/signature")}`,
+            {
+              replace: true,
+            },
+          );
+
+          return;
+        }
+
         contractId = await createContract(draft, identityVerificationId);
 
         setCreatedContractId(contractId);
 
-        sessionStorage.removeItem("identityVerificationId");
+        clearIdentityVerification();
       }
 
       await submitCreditorSignature(
