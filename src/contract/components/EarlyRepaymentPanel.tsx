@@ -183,8 +183,7 @@ function DepositCard({ contractId, isCreditor, deposit, onDone }: CardProps) {
       onDone();
     } catch (e) {
       setError(e instanceof Error ? e.message : "처리하지 못했습니다.");
-    } finally {
-      setIsSaving(false);
+      setIsSaving(false); // 성공하면 카드가 목록에서 사라지므로 실패했을 때만 다시 누를 수 있게 한다
     }
   }
 
