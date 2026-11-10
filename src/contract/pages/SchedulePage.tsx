@@ -88,6 +88,7 @@ function ScheduleContent({ contractId }: { contractId: string }) {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [syncTime, setSyncTime] = useState(() => formatTransactionSyncTime(getLastTransactionSyncAt()));
   const [toast, setToast] = useState<{ text: string; error?: boolean } | null>(null);
+  const [remainingMode, setRemainingMode] = useState<"plan" | "today">("plan");
 
   useEffect(() => {
     let cancelled = false;
@@ -153,11 +154,9 @@ function ScheduleContent({ contractId }: { contractId: string }) {
       ? Math.round((schedule.paidCount / schedule.totalCount) * 100)
       : 0;
 
+  // 전액 상환은 회차 줄에 표시되므로, 가장 최근 중도상환은 따로 넣지 않는다.
   const totalPages = Math.ceil(schedule.schedules.length / PAGE_SIZE);
-  const pageItems = schedule.schedules.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
-  );
+  const pageItems = schedule.schedules.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   function showToast(text: string, error = false) {
     setToast({ text, error });
@@ -228,8 +227,42 @@ function ScheduleContent({ contractId }: { contractId: string }) {
           <strong className="text-success">{formatWon(schedule.paidAmount)}</strong>
         </div>
         <div className="summary-item">
-          <span>잔여 상환액</span>
-          <strong>{formatWon(schedule.remainingAmount)}</strong>
+          {schedule.todayPayoff && (
+            <div className="remaining-toggle" role="group" aria-label="잔여 상환액 기준">
+              <button
+                type="button"
+                className={remainingMode === "plan" ? "is-active" : undefined}
+                onClick={() => setRemainingMode("plan")}
+              >
+                만기까지
+              </button>
+              <button
+                type="button"
+                className={remainingMode === "today" ? "is-active" : undefined}
+                onClick={() => setRemainingMode("today")}
+              >
+                오늘 완납
+              </button>
+            </div>
+          )}
+          {remainingMode === "today" && schedule.todayPayoff ? (
+            <>
+              <span>오늘 완납 금액</span>
+              <strong>{formatWon(schedule.todayPayoff.total)}</strong>
+              <small className="remaining-note">
+                원금 {formatWon(schedule.todayPayoff.principal)} + 오늘까지 이자{" "}
+                {formatWon(schedule.todayPayoff.interest)}
+                {schedule.todayPayoff.shortfall > 0 &&
+                  ` + 밀린 회차 ${formatWon(schedule.todayPayoff.shortfall)}`}
+              </small>
+            </>
+          ) : (
+            <>
+              <span>잔여 상환액</span>
+              <strong>{formatWon(schedule.remainingAmount)}</strong>
+              <small className="remaining-note">남은 회차를 계획대로 낼 때</small>
+            </>
+          )}
         </div>
         <div className="summary-progress">
           <div className="progress-meta">
@@ -334,6 +367,11 @@ function ScheduleContent({ contractId }: { contractId: string }) {
             <div>
               <h2>회차별 상환 내역</h2>
               <p>계약 조건에 따라 산정된 상환 회차별 예정 및 완료 내역입니다.</p>
+              {schedule.contractDisplayId && (
+                <p className="contract-number-guide">
+                  차용증 번호 <b>{schedule.contractDisplayId}</b> · 이체할 때 받는 분 메모에 적어 주세요.
+                </p>
+              )}
             </div>
           </div>
 
@@ -342,8 +380,9 @@ function ScheduleContent({ contractId }: { contractId: string }) {
             isCreditor={isCreditor}
             reloadKey={reloadKey}
             history={schedule.earlyRepayments ?? []}
+            returned={schedule.returnedDeposits ?? []}
             onDone={() => setReloadKey((current) => current + 1)}
-          />          
+          />        
 
           {schedule.schedules.length === 0 ? (
             <div className="empty-state">등록된 상환 스케줄이 없습니다.</div>
@@ -364,8 +403,8 @@ function ScheduleContent({ contractId }: { contractId: string }) {
                     {pageItems.map((row) => {
                       const paidAt = formatPaidAt(row.paidAt);
                       return (
-                        <tr key={row.scheduleId}>
-                          <td>{row.sequence}회차</td>
+                        <tr key={row.scheduleId} className={row.earlyPayoff ? "early-repayment-line" : undefined}>
+                          <td>{row.earlyPayoff ? "중도상환(전액)" : `${row.sequence}회차`}</td>
                           <td>{row.dueDate}</td>
                           <td>{formatWon(row.totalPaymentDue)}</td>
                           <td>{paidAt ? <span className="payment-date-time"><span>{paidAt.date}</span><span>{paidAt.time}</span></span> : "-"}</td>
