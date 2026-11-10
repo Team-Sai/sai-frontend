@@ -3,11 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../shared.css";
 import Stepper from "../components/Stepper";
 import SignatureAndSubmit from "../components/SignatureAndSubmit";
-import {
-  cancelChangeRequest,
-  requestContractChange,
-  submitChangeRequestSignature,
-} from "../api/contractChangeApi";
+import { requestContractChange } from "../api/contractChangeApi";
 import {
   clearContractChangeDraft,
   loadContractChangeDraft,
@@ -25,9 +21,6 @@ export default function ContractChangeSignaturePage() {
   const [draft] = useState(() =>
     contractId ? loadContractChangeDraft(contractId) : null,
   );
-  const [createdChangeRequestId, setCreatedChangeRequestId] = useState<
-    number | null
-  >(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
@@ -47,28 +40,6 @@ export default function ContractChangeSignaturePage() {
     }
   }, [draft, formPath, identityPath, navigate]);
 
-  /* 입력값은 draft에 남아 있으므로 작성 화면으로 돌아가면 그대로 복구된다. */
-  async function handleCancel() {
-    if (createdChangeRequestId != null) {
-      setIsSubmitting(true);
-
-      try {
-        await cancelChangeRequest(Number(contractId), createdChangeRequestId);
-      } catch (error) {
-        setIsError(true);
-        setStatusMessage(
-          error instanceof Error
-            ? error.message
-            : "변경 요청을 취소하지 못했습니다.",
-        );
-        setIsSubmitting(false);
-        return;
-      }
-    }
-
-    navigate(formPath);
-  }
-
   async function handleSubmit(signature: Blob) {
     if (!draft) return;
 
@@ -85,20 +56,9 @@ export default function ContractChangeSignaturePage() {
     setStatusMessage("변경 요청을 전송하는 중입니다...");
 
     try {
-      let changeRequestId = createdChangeRequestId;
-
-      if (changeRequestId == null) {
-        const result = await requestContractChange(
-          Number(contractId),
-          toContractChangeInput(draft),
-        );
-        changeRequestId = result.changeRequestId;
-        setCreatedChangeRequestId(changeRequestId);
-      }
-
-      await submitChangeRequestSignature(
+      const { changeRequestId } = await requestContractChange(
         Number(contractId),
-        changeRequestId,
+        toContractChangeInput(draft),
         signature,
         identityVerificationId,
       );
@@ -134,7 +94,7 @@ export default function ContractChangeSignaturePage() {
         isSubmitting={isSubmitting}
         statusMessage={statusMessage}
         isError={isError}
-        onCancel={handleCancel}
+        onCancel={() => navigate(formPath)}
         onSubmit={handleSubmit}
       />
     </div>

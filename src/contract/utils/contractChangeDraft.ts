@@ -14,14 +14,36 @@ export interface ContractChangeDraft {
   newTerms: string;
 }
 
+const DRAFT_FIELDS = [
+  "contractId",
+  "changeReason",
+  "newMaturityDate",
+  "newInterestRate",
+  "newRepaymentType",
+  "newRepaymentDate",
+  "newTerms",
+] as const satisfies readonly (keyof ContractChangeDraft)[];
+
+function isContractChangeDraft(value: unknown): value is ContractChangeDraft {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const draft = value as Record<string, unknown>;
+
+  return DRAFT_FIELDS.every((field) => typeof draft[field] === "string");
+}
+
 export function loadContractChangeDraft(
   contractId: string,
 ): ContractChangeDraft | null {
   try {
     const raw = sessionStorage.getItem(CONTRACT_CHANGE_DRAFT_KEY);
-    const draft = raw ? (JSON.parse(raw) as ContractChangeDraft) : null;
+    const draft: unknown = raw ? JSON.parse(raw) : null;
 
-    return draft?.contractId === contractId ? draft : null;
+    return isContractChangeDraft(draft) && draft.contractId === contractId
+      ? draft
+      : null;
   } catch {
     return null;
   }

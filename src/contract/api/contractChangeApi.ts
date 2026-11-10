@@ -96,13 +96,22 @@ export async function getCurrentContractConditions(
 export async function requestContractChange(
   contractId: number,
   input: ContractChangeRequestInput,
+  signature: Blob,
+  identityVerificationId: string,
 ): Promise<ContractChangeResult> {
+  const form = new FormData();
+  form.append(
+    "request",
+    new Blob([JSON.stringify(input)], { type: "application/json" }),
+  );
+  form.append("signature", signature, "signature.png");
+  form.append("identityVerificationId", identityVerificationId);
+
   const response = await authFetch(
     `/api/contracts/${contractId}/change-requests`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
+      body: form,
     },
   );
 
@@ -118,48 +127,6 @@ export async function requestContractChange(
   }
 
   return data;
-}
-
-export async function submitChangeRequestSignature(
-  contractId: number,
-  changeRequestId: number,
-  signature: Blob,
-  identityVerificationId: string,
-): Promise<void> {
-  const form = new FormData();
-  form.append("signature", signature, "signature.png");
-  form.append("identityVerificationId", identityVerificationId);
-
-  const response = await authFetch(
-    `/api/contracts/${contractId}/change-requests/${changeRequestId}/signature`,
-    {
-      method: "PATCH",
-      body: form,
-    },
-  );
-
-  if (!response.ok) {
-    const body = await response.json().catch(() => null);
-    throw new Error(
-      body?.message || `서명 제출에 실패했습니다. (HTTP ${response.status})`,
-    );
-  }
-}
-
-export async function cancelChangeRequest(
-  contractId: number,
-  changeRequestId: number,
-): Promise<void> {
-  const response = await authFetch(
-    `/api/contracts/${contractId}/change-requests/${changeRequestId}`,
-    { method: "DELETE" },
-  );
-
-  if (!response.ok) {
-    throw new Error(
-      await readErrorMessage(response, "변경 요청을 취소하지 못했습니다."),
-    );
-  }
 }
 
 export async function getChangeRequestDetail(
