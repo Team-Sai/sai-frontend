@@ -233,7 +233,7 @@ function DepositCard({ contractId, isCreditor, deposit, onDone }: CardProps) {
                 {isSaving ? "처리 중…" : applyLabel[mode]}
               </button>
             )}
-            {!isOk && (
+            {(
               <button type="button" className="button button-secondary" disabled={isSaving} onClick={() => void returnAll()}>
                 {mode === "returnOnly" ? "반환했어요" : "전액 반환"}
               </button>
