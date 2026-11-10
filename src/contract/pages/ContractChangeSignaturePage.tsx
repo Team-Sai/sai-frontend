@@ -105,7 +105,9 @@ export default function ContractChangeSignaturePage() {
 
       clearIdentityVerification();
       clearContractChangeDraft();
-      navigate(`/contracts/${contractId}/change-requests/sent`);
+      navigate(
+        `/contracts/${contractId}/change-requests/sent?changeRequestId=${changeRequestId}`,
+      );
     } catch (error) {
       setIsError(true);
       setStatusMessage(

@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { Button } from "../../common/components";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { getChangeRequestDetail } from "../api/contractChangeApi";
 import "../shared.css";
 import "../styles/ContractCompletePage.css";
 import CompletionIcon from "../components/CompletionIcon";
@@ -8,6 +10,32 @@ import Stepper from "../components/Stepper";
 export default function ContractChangeRequestSentPage() {
   const { contractId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const changeRequestId = searchParams.get("changeRequestId");
+
+  const [newContractId, setNewContractId] = useState<number | null>(null);
+  const [isResolving, setIsResolving] = useState(
+    Boolean(contractId && changeRequestId),
+  );
+
+  useEffect(() => {
+    if (!contractId || !changeRequestId) return;
+
+    let cancelled = false;
+
+    getChangeRequestDetail(Number(contractId), Number(changeRequestId))
+      .then((detail) => {
+        if (!cancelled) setNewContractId(detail.newContractId);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setIsResolving(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [contractId, changeRequestId]);
 
   return (
     <div className="page">
@@ -41,8 +69,10 @@ export default function ContractChangeRequestSentPage() {
             type="button"
             variant="text"
             className="complete-action complete-action--secondary"
-            disabled={!contractId}
-            onClick={() => navigate(`/contracts/${contractId}/contract-detail`)}
+            disabled={!contractId || isResolving}
+            onClick={() =>
+              navigate(`/contracts/${newContractId ?? contractId}/contract-detail`)
+            }
           >
             <svg className="complete-action__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
