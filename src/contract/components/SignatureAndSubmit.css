@@ -104,12 +104,12 @@
 }
 
 .btn--primary {
-  background: #0b3d2e;
+  background: var(--primary);
   color: #fff;
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: #123c2c;
+  background: #0b7651;
 }
 
 .btn--ghost {

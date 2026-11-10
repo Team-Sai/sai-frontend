@@ -14,7 +14,7 @@ import {
 } from "../api/scheduleApi";
 import { getContractAccount } from "../api/contractApi";
 import EarlyRepaymentPanel from "../components/EarlyRepaymentPanel";
-import type { LinkedBankAccount } from "../../accounts/types/account";
+import type { ContractRepaymentAccount } from "../../accounts/types/account";
 import type {
   RepaymentScheduleSummary,
   RepaymentScheduleRow,
@@ -82,7 +82,7 @@ function ScheduleContent({ contractId }: { contractId: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [account, setAccount] = useState<LinkedBankAccount | null>(null);
+  const [account, setAccount] = useState<ContractRepaymentAccount | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
@@ -115,9 +115,8 @@ function ScheduleContent({ contractId }: { contractId: string }) {
     };
   }, [contractId, reloadKey]);
 
-  // 수취 계좌 조회는 채권자에게만 허용되므로, 채무자면 패널 자체를 숨긴다.
   useEffect(() => {
-    if (!contractDetail?.isCreditor) return;
+    if (!contractDetail) return;
     let cancelled = false;
     getContractAccount(Number(contractId))
       .then((res) => {
@@ -314,24 +313,22 @@ function ScheduleContent({ contractId }: { contractId: string }) {
 
       <div className="detail-grid">
         <aside className="side-column">
-          {isCreditor && (
-            <section className="panel">
-              <div className="panel-header">
-                <h2>상환 수취 계좌</h2>
+          <section className="panel">
+            <div className="panel-header">
+              <h2>상환 수취 계좌</h2>
+            </div>
+            <div className="account-card">
+              <div className="account-icon">₩</div>
+              <div>
+                <span>{account?.bankName ?? "수취 계좌"}</span>
+                <strong>{account?.maskedAccountNumber ?? "계좌 정보 없음"}</strong>
+                <small>{account?.accountHolderName ?? "-"}</small>
               </div>
-              <div className="account-card">
-                <div className="account-icon">₩</div>
-                <div>
-                  <span>{account?.bankName ?? "수취 계좌"}</span>
-                  <strong>{account?.maskedAccountNumber ?? "계좌 정보 없음"}</strong>
-                  <small>{account?.accountHolderName ?? "-"}</small>
-                </div>
-              </div>
-              <dl className="info-list schedule-sync-info">
-                <div><dt>최근 동기화</dt><dd>{syncTime}</dd></div>
-              </dl>
-            </section>
-          )}
+            </div>
+            <dl className="info-list schedule-sync-info">
+              <div><dt>최근 동기화</dt><dd>{syncTime}</dd></div>
+            </dl>
+          </section>
 
           <section className="panel">
             <div className="panel-header">

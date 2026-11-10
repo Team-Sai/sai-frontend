@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../shared.css";
-import ChangeApprovalStepper from "../components/ChangeApprovalStepper";
+import Stepper from "../components/Stepper";
 import SignatureAndSubmit from "../components/SignatureAndSubmit";
 import { submitChangeApproval } from "../api/contractChangeApi";
+import {
+  clearIdentityVerification,
+  isIdentityVerifiedFor,
+} from "../../identity/identityVerificationStorage";
 
 export default function ContractChangeApprovalSignaturePage() {
   const navigate = useNavigate();
@@ -16,7 +20,8 @@ export default function ContractChangeApprovalSignaturePage() {
   useEffect(() => {
     if (!contractId) return;
 
-    if (!sessionStorage.getItem("identityVerificationId")) {
+    if (!isIdentityVerifiedFor(`/contracts/${contractId}/change-approval`)) {
+      clearIdentityVerification();
       navigate(
         `/identity-test?returnTo=${encodeURIComponent(`/contracts/${contractId}/change-approval/signature`)}`,
         { replace: true },
@@ -42,8 +47,8 @@ export default function ContractChangeApprovalSignaturePage() {
 
     try {
       await submitChangeApproval(Number(contractId), signature, identityVerificationId);
-      sessionStorage.removeItem("identityVerificationId");
-      navigate(`/contracts/complete?contractId=${contractId}`);
+      clearIdentityVerification();
+      navigate(`/contracts/complete?contractId=${contractId}&flow=change`);
     } catch (error) {
       setIsError(true);
       setStatusMessage(
@@ -58,7 +63,7 @@ export default function ContractChangeApprovalSignaturePage() {
 
   return (
     <div className="page">
-      <ChangeApprovalStepper currentStep={3} />
+      <Stepper variant="changeApproval" currentStep={3} />
 
       <SignatureAndSubmit
         title="전 자 서 명"

@@ -44,7 +44,7 @@ import {
 
 import type {
 
-  LinkedBankAccount,
+  ContractRepaymentAccount,
 
 } from "../../accounts/types/account";
 
@@ -497,7 +497,7 @@ const navigate =
 
     useState<
 
-      LinkedBankAccount | null
+      ContractRepaymentAccount | null
 
     >(null);
 
@@ -1266,11 +1266,7 @@ const navigate =
 
 
 
-            <div className="archive-contract-sheet__body">
-
-
-
-              <ContractDocument
+            <ContractDocument
 
                 formData={
 
@@ -1366,11 +1362,9 @@ const navigate =
 
                 }
 
+                repaymentAccount={account}
+
               />
-
-
-
-            </div>
 
 
 
@@ -1384,7 +1378,7 @@ const navigate =
 
 
 
-            <div className="archive-contract-sheet__parties">
+            <div className="contract-paper-footer">
 
 
 
@@ -1441,10 +1435,6 @@ const navigate =
                 disabled
 
               />
-
-
-
-            </div>
 
 
 
@@ -1575,62 +1565,13 @@ const navigate =
               </div>
 
             )}
+            </div>
 
 
 
 
 
-            {/* =================================
-
-                수취 계좌
-
-            ================================= */}
-
-
-
-            {account && (
-
-              <div className="archive-contract-account">
-
-
-
-                <span>
-
-                  변제금 수취 계좌
-
-                </span>
-
-
-
-                <strong>
-
-                  {account.bankName}
-
-                  {" · "}
-
-                  {account.maskedAccountNumber}
-
-                </strong>
-
-
-
-                <small>
-
-                  예금주{" "}
-
-                  {account.accountHolderName}
-
-                </small>
-
-
-
-              </div>
-
-            )}
-
-
-
-          </section>
+            </section>
 
 
 

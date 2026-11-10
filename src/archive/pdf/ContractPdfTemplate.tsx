@@ -7,7 +7,7 @@ import {
   View,
 } from "@react-pdf/renderer";
 
-import type { LinkedBankAccount } from "../../accounts/types/account";
+import type { ContractRepaymentAccount } from "../../accounts/types/account";
 
 import {
   REPAYMENT_METHOD_LABELS,
@@ -385,7 +385,7 @@ function PartyRow({ role, name, birthDate, address, isFirst }: PartyRowProps) {
 interface ContractPdfTemplateProps {
   contract: LoanContractResponse;
 
-  account?: LinkedBankAccount | null;
+  account?: ContractRepaymentAccount | null;
 
   creditorSignatureDataUri?: string | null;
 

@@ -1,7 +1,10 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Input, Select } from "../../common/components";
-import type { LinkedBankAccount } from "../../accounts/types/account";
+import type {
+  ContractRepaymentAccount,
+  LinkedBankAccount,
+} from "../../accounts/types/account";
 import { getSelectableAccounts } from "../api/contractApi";
 import {
   REPAYMENT_METHOD_LABELS,
@@ -52,6 +55,8 @@ interface ContractDocumentProps {
   disabled?: boolean;
   readOnly?: boolean;
   documentStatusText?: string;
+  /** 읽기 전용 화면에 표시할 수취 계좌. 없으면 영역을 표시하지 않는다. */
+  repaymentAccount?: ContractRepaymentAccount | null;
 }
 
 interface InlineWarningData {
@@ -327,6 +332,7 @@ export default function ContractDocument({
   disabled = false,
   readOnly = false,
   documentStatusText,
+  repaymentAccount,
 }: ContractDocumentProps) {
   const [accounts, setAccounts] =
     useState<LinkedBankAccount[]>([]);
@@ -778,6 +784,20 @@ export default function ContractDocument({
               을은 본 계약에 따른 원금 및 이자를
               갑이 지정한 계좌로 송금하여 변제한다.
             </p>
+
+            {readOnly && repaymentAccount && (
+              <div className="document-account__readonly">
+                <span>변제금 수취 계좌</span>
+                <strong>
+                  {repaymentAccount.bankName}
+                  {" · "}
+                  {repaymentAccount.maskedAccountNumber}
+                </strong>
+                <small>
+                  예금주 {repaymentAccount.accountHolderName}
+                </small>
+              </div>
+            )}
 
             {!readOnly && (
               <>

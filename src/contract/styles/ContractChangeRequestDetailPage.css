@@ -1,9 +1,41 @@
+/* 변경 작성 화면(.contract-change-page)과 같은 폭과 카드 규격을 쓴다. */
+.contract-scope--change-detail {
+  --change-surface: #fff;
+  --change-line: #d9dee8;
+  --change-text: #151922;
+  --change-muted: #667085;
+  --change-primary: #0f8a5f;
+  --change-shadow: 0 2px 8px rgba(14, 34, 55, 0.08);
+  box-sizing: border-box;
+  width: min(1344px, calc(100% - 96px));
+  min-width: 0;
+  margin: 0 auto;
+  padding: 36px 0 72px;
+  color: var(--change-text);
+}
+
+.contract-scope--change-detail * {
+  box-sizing: border-box;
+}
+
+.contract-scope--change-detail .change-detail-message {
+  margin: 0;
+  padding: 48px 24px;
+  border: 1px solid var(--change-line);
+  border-radius: 8px;
+  background: var(--change-surface);
+  box-shadow: var(--change-shadow);
+  color: var(--change-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
 .contract-scope--change-detail .banner {
   background: #0b3d2e;
   color: white;
   padding: 20px 24px;
-  border-radius: 12px;
-  margin-bottom: 24px;
+  border-radius: 8px;
+  margin-bottom: 8px;
   font-size: 16px;
 }
 
@@ -24,62 +56,80 @@
 }
 
 .contract-scope--change-detail .content {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(280px, 0.85fr);
+  align-items: start;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.contract-scope--change-detail .detail-card,
+.contract-scope--change-detail .reason-card,
+.contract-scope--change-detail .period-card {
+  min-width: 0;
+  border: 1px solid var(--change-line);
+  border-radius: 8px;
+  background: var(--change-surface);
+  box-shadow: var(--change-shadow);
 }
 
 .contract-scope--change-detail .detail-card {
-  flex: 2;
-  background: white;
   padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .contract-scope--change-detail .detail-card h2 {
-  font-size: 16px;
-  margin-top: 0;
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 700;
 }
 
 .contract-scope--change-detail .row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #edf0f2;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .contract-scope--change-detail .row .label {
-  color: #888;
-  font-size: 13px;
+  color: var(--change-muted);
+  font-size: 12px;
 }
 
 .contract-scope--change-detail .side {
-  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 .contract-scope--change-detail .reason-card,
 .contract-scope--change-detail .period-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 22px;
 }
 
 .contract-scope--change-detail .reason-card h3,
 .contract-scope--change-detail .period-card h3 {
-  font-size: 18px;
-  margin-top: 0;
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.contract-scope--change-detail .period-card p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .contract-scope--change-detail .change-reason-text {
-  font-size: 16px;
+  margin: 0;
+  font-size: 15px;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: var(--change-text);
+  overflow-wrap: anywhere;
 }
 
 .contract-scope--change-detail .return-reason {
@@ -98,8 +148,9 @@
   display: flex;
   flex-direction: row;
   align-items: stretch;
+  justify-content: flex-end;
   width: auto;
-  gap: 12px;
+  gap: 8px;
 }
 
 .contract-scope--change-detail .processed-note {
@@ -112,28 +163,32 @@
   text-align: center;
 }
 
-.contract-scope--change-detail .btn-approve {
-  flex: 1;
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  background: #0b3d2e;
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
+.contract-scope--change-detail .btn-approve,
+.contract-scope--change-detail .btn-reject {
+  min-width: 112px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
 }
 
+.contract-scope--change-detail .btn-approve {
+  border: 1px solid transparent;
+  background: var(--change-primary);
+  color: white;
+}
+
+.contract-scope--change-detail .btn-approve:hover {
+  background: #0b7651;
+}
+
 .contract-scope--change-detail .btn-reject {
-  flex: 1;
-  padding: 14px;
-  border: 1.5px solid #c0392b;
-  border-radius: 8px;
+  border: 1px solid #c0392b;
   background: white;
   color: #c0392b;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 .contract-scope--change-detail .btn-reject:hover {
@@ -314,4 +369,31 @@
   font-size: 12px;
   color: #999;
   margin-top: 4px;
+}
+
+@media (max-width: 720px) {
+  .contract-scope--change-detail {
+    width: calc(100% - 32px);
+    max-width: 680px;
+    padding-top: 24px;
+  }
+
+  .contract-scope--change-detail .content {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .contract-scope--change-detail {
+    width: calc(100% - 24px);
+    padding-bottom: 48px;
+  }
+
+  .contract-scope--change-detail .detail-card {
+    padding: 16px;
+  }
+
+  .contract-scope--change-detail .action-group > button {
+    flex: 1;
+  }
 }
