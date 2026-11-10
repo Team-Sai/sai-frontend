@@ -134,6 +134,12 @@ export async function getScheduleSummary(
 
   return data;
 }
+
+async function readErrorMessage(response: Response, fallback: string): Promise<string> {
+  const body = await response.json().catch(() => null);
+  return body && typeof body.message === "string" ? body.message : fallback;
+}
+
   
 export async function getEarlyRepaymentDeposits(
   contractId: number,
@@ -144,7 +150,7 @@ export async function getEarlyRepaymentDeposits(
   );
 
   if (!response.ok) {
-    throw new Error("입금 내역을 불러오지 못했습니다.");
+    throw new Error(await readErrorMessage(response, "입금 내역을 불러오지 못했습니다."));
   }
 
   return (await response.json()) as EarlyRepaymentDeposit[];
@@ -164,7 +170,7 @@ export async function processEarlyRepayment(
   );
 
   if (!response.ok) {
-    throw new Error("처리하지 못했습니다. 금액을 확인해 주세요.");
+    throw new Error(await readErrorMessage(response, "처리하지 못했습니다. 금액을 확인해 주세요."));
   }
 }
 
@@ -203,7 +209,7 @@ export async function syncContractRepayments(
   });
 
   if (!response.ok) {
-    throw new Error("입금 내역을 확인하지 못했습니다.");
+    throw new Error(await readErrorMessage(response, "입금 내역을 확인하지 못했습니다."));
   }
 
   return response.json();
@@ -219,6 +225,6 @@ export async function markDepositReturned(
   );
 
   if (!response.ok) {
-    throw new Error("반환 표시를 하지 못했습니다.");
+    throw new Error(await readErrorMessage(response, "반환 표시를 하지 못했습니다."));
   }
 }

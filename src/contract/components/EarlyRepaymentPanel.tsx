@@ -37,15 +37,20 @@ export default function EarlyRepaymentPanel({
   onDone,
 }: PanelProps) {
   const [deposits, setDeposits] = useState<EarlyRepaymentDeposit[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     getEarlyRepaymentDeposits(contractId)
       .then((rows) => {
-        if (!cancelled) setDeposits(rows);
+        if (cancelled) return;
+        setDeposits(rows);
+        setLoadError(null);
       })
-      .catch(() => {
-        if (!cancelled) setDeposits([]);
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        setDeposits([]);
+        setLoadError(e instanceof Error ? e.message : "입금 내역을 불러오지 못했습니다.");
       });
     return () => {
       cancelled = true;
@@ -57,12 +62,13 @@ export default function EarlyRepaymentPanel({
     ...returned.map((item) => ({ kind: "returned" as const, at: item.returnedAt, returned: item })),
   ].sort((a, b) => b.at.localeCompare(a.at));
 
-  if (deposits.length === 0 && items.length === 0) {
+  if (deposits.length === 0 && items.length === 0 && !loadError) {
     return null;
   }
 
   return (
     <div className="early-repayment">
+      {loadError && <p className="early-repayment__error">{loadError}</p>}
       {deposits.length > 0 && (
         <p className="early-repayment__title">
           {isCreditor ? "확인이 필요한 입금" : "채권자 확인을 기다리는 입금"} {deposits.length}건
