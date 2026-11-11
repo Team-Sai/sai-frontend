@@ -13,6 +13,7 @@ import MyPage from "./users/pages/MyPage";
 import IntegratedTransactionPage from "./transaction/pages/IntegratedTransactionPage";
 import IdentityTestPage from "./identity/pages/IdentityTestPage";
 import LinkCompletePage from "./link/pages/LinkCompletePage";
+import LegalPage from "./legal/LegalPage";
 
 import DashboardPage from "./integration/pages/DashboardPage";
 
@@ -58,6 +59,8 @@ function App() {
           <Route element={<MinimalLayout />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/terms" element={<LegalPage />} />
+            <Route path="/privacy" element={<LegalPage />} />
           </Route>
 
           <Route element={<AppLayout />}>
