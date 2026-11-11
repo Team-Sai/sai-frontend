@@ -27,7 +27,9 @@
 
   gap: 28px;
 
-  margin-bottom: 24px;
+  box-sizing: border-box;
+  width: min(var(--contract-sheet-width), 100%);  /* 계약서 박스와 같은 너비 */
+  margin: 0 auto 24px;                            /* 가운데 정렬 + 아래 여백 */
 }
 
 .contract-document-heading__copy {

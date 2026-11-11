@@ -34,11 +34,13 @@ export interface ChangeRequestDetail {
     currentRepaymentType: string;
     currentTerms: string | null;
     currentMonthlyPayment: number;
+    currentRepaymentDay?: number | null;
     newMaturityDate: string;
     newInterestRate: number;
     newRepaymentType: string;
     newTerms: string | null;
     newMonthlyPayment: number;
+    newRepaymentDay?: number | null;
     changeReason: string;
     extendedMonths: number;
     returnReason: string | null;
