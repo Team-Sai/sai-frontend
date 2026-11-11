@@ -46,6 +46,8 @@ const transactionStatusFilters: {
 
 const TRANSACTIONS_PER_PAGE = 5;
 
+const VISIBLE_PAGE_COUNT = 5;
+
 const currencyFormatter =
   new Intl.NumberFormat('ko-KR');
 
@@ -513,6 +515,32 @@ export default function DashboardPage() {
         TRANSACTIONS_PER_PAGE,
       currentTransactionPage *
         TRANSACTIONS_PER_PAGE,
+    );
+
+  const firstVisiblePage =
+    Math.max(
+      1,
+      Math.min(
+        currentTransactionPage -
+          Math.floor(
+            VISIBLE_PAGE_COUNT / 2,
+          ),
+        totalTransactionPages -
+          VISIBLE_PAGE_COUNT +
+          1,
+      ),
+    );
+
+  const visibleTransactionPages =
+    Array.from(
+      {
+        length: Math.min(
+          VISIBLE_PAGE_COUNT,
+          totalTransactionPages,
+        ),
+      },
+      (_, index) =>
+        firstVisiblePage + index,
     );
 
   function changeTransactionFilter(
@@ -1284,21 +1312,30 @@ export default function DashboardPage() {
         </div>
 
         {!loading &&
-          !loadError &&
-          totalTransactionPages >
-            1 && (
+          !loadError && (
             <nav
               className="transaction-pagination"
               aria-label="최근 거래 내역 페이지"
             >
-              {Array.from(
-                {
-                  length:
-                    totalTransactionPages,
-                },
-                (_, index) =>
-                  index + 1,
-              ).map((page) => (
+              <button
+                type="button"
+                className="transaction-page-button"
+                aria-label="이전 페이지"
+                disabled={
+                  currentTransactionPage ===
+                  1
+                }
+                onClick={() =>
+                  setTransactionPage(
+                    currentTransactionPage -
+                      1,
+                  )
+                }
+              >
+                ‹
+              </button>
+
+              {visibleTransactionPages.map((page) => (
                 <button
                   key={page}
                   type="button"
@@ -1323,6 +1360,24 @@ export default function DashboardPage() {
                   {page}
                 </button>
               ))}
+
+              <button
+                type="button"
+                className="transaction-page-button"
+                aria-label="다음 페이지"
+                disabled={
+                  currentTransactionPage ===
+                  totalTransactionPages
+                }
+                onClick={() =>
+                  setTransactionPage(
+                    currentTransactionPage +
+                      1,
+                  )
+                }
+              >
+                ›
+              </button>
             </nav>
           )}
       </section>

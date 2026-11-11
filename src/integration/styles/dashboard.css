@@ -490,6 +490,7 @@ body.integration-page button {
 
 .transaction-pagination {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
   padding: 16px 0 18px;
@@ -507,6 +508,11 @@ body.integration-page button {
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;
+}
+
+.transaction-page-button:disabled {
+  cursor: default;
+  opacity: 0.4;
 }
 
 .transaction-page-button.is-active {
