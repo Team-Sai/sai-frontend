@@ -462,6 +462,59 @@ body.integration-page button {
   box-shadow: none;
 }
 
+.transaction-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-filter-select {
+  height: 34px;
+  padding: 0 28px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat right 10px center;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  appearance: none;
+}
+
+.status-filter-select:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 1px;
+}
+
+.transaction-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px 0 18px;
+  border-top: 1px solid var(--line);
+}
+
+.transaction-page-button {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.transaction-page-button.is-active {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+
 .transaction-table {
   border-top: 1px solid var(--line);
 }
@@ -611,6 +664,10 @@ body.integration-page button {
     flex-direction: column;
     align-items: flex-start;
     padding: 18px;
+  }
+
+  .transaction-filters {
+    flex-wrap: wrap;
   }
 
   .transaction-row {
