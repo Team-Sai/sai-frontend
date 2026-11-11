@@ -4,6 +4,7 @@ import { getDashboard } from "../api/contractDashboardApi";
 import { settlementApi } from "../../settlement/api/settlementApi";
 import MatchingReviewModal from "../../settlement/components/MatchingReviewModal";
 import LoadingSkeleton from "../../common/components/LoadingSkeleton";
+import { Pagination } from "../../common/components/Pagination";
 import { formatTransactionSyncTime, getLastTransactionSyncAt, recordTransactionSync } from "../../transaction/syncTimestamp";
 import "../../settlement/styles/settlement-common.css";
 import "../../settlement/styles/settlement-list.css";
@@ -315,27 +316,12 @@ export default function ContractDashboardPage() {
         )}
       </section>
 
-      {data.totalPages > 1 && (
-        <div className="dashboard-pagination">
-          <button
-            className="button button-secondary button-small"
-            disabled={page <= 1}
-            onClick={() => setPage(page - 1)}
-          >
-            이전
-          </button>
-          <span className="updated-text">
-            {data.currentPage} / {data.totalPages}
-          </span>
-          <button
-            className="button button-secondary button-small"
-            disabled={page >= data.totalPages}
-            onClick={() => setPage(page + 1)}
-          >
-            다음
-          </button>
-        </div>
-      )}
+      <Pagination
+        ariaLabel="대여금 목록 페이지"
+        currentPage={data.currentPage}
+        totalPages={data.totalPages}
+        onChange={setPage}
+      />
 
       <p className="local-data-note">
         * 본 화면에 표시되는 금액과 일정은 각 계약의 내용을 요약하여 참고용으로

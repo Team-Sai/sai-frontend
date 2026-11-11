@@ -1,0 +1,15 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 20px 0 8px;
+}
+
+.label {
+  min-width: 48px;
+  color: var(--gray-650, #65717f);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
