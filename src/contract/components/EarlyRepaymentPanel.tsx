@@ -101,8 +101,9 @@ export default function EarlyRepaymentPanel({
                 <div className="early-repayment__history" key={`early-${item.early.earlyRepaymentId}`}>
                   <div className="early-repayment__history-head">
                     <span className="early-repayment__badge">
-                      {item.early.principalAmount > 0 ? "중도상환" : "밀린 회차 납부"}
-                    </span>
+                      {item.early.method === "PREPAY"
+                        ? "회차 미리 납부"
+                        : item.early.principalAmount > 0 ? "중도상환" : "밀린 회차 납부"}                    </span>
                     <span className="early-repayment__date">{item.at.slice(0, 10)}</span>
                     <strong>{won(item.early.amount)}</strong>
                   </div>
@@ -194,6 +195,12 @@ function DepositCard({ contractId, isCreditor, deposit, onDone }: CardProps) {
         ? `${won(amount - leftover)}을 반영하고, 은행에서 ${won(leftover)}을 돌려보냈다고 기록할까요?`
         : `${won(amount)}을 반영할까요? 처리하면 되돌릴 수 없어요.`,
     );
+  
+  const prepay = () =>
+    run(
+      () => processEarlyRepayment(contractId, deposit.bankTransactionId, false, "PREPAY"),
+      `${won(amount)}으로 가까운 회차부터 차례로 납부할까요? 회차 금액은 그대로예요. 처리하면 되돌릴 수 없어요.`,
+    );  
 
   const returnAll = () =>
     run(
@@ -204,7 +211,7 @@ function DepositCard({ contractId, isCreditor, deposit, onDone }: CardProps) {
   const applyLabel: Record<CardMode, string> = {
     arrears: "밀린 회차에 반영",
     arrearsLeftover: "밀린 회차 납부 + 차액 반환",
-    early: "중도상환으로 처리",
+    early: "원금 먼저 갚기 (이자 다시 계산)",
     over: "완납 처리 + 차액 반환",
     returnOnly: "",
   };
@@ -215,7 +222,7 @@ function DepositCard({ contractId, isCreditor, deposit, onDone }: CardProps) {
     early:
       principal === balance
         ? "처리하면 전액 상환으로 끝나요."
-        : `처리 후 남은 원금 ${won(balance - principal)} · 다음 회차부터 금액이 줄어요.`,
+        : `원금 먼저 갚기: 남은 원금 ${won(balance - principal)}, 다음 회차부터 금액이 줄어요. 미리 내기: 금액은 그대로, 가까운 회차부터 채워요.`,
     over: `완납 금액보다 ${won(leftover)} 더 들어왔어요. 완납 처리하고 차액만 돌려주거나, 전부 돌려줄 수 있어요.`,
     returnOnly: "이자보다 적게 들어와 반영할 곳이 없어요. 은행에서 돌려보낸 뒤 [반환했어요]를 눌러 주세요.",
   };
@@ -237,6 +244,13 @@ function DepositCard({ contractId, isCreditor, deposit, onDone }: CardProps) {
                 {isSaving ? "처리 중…" : applyLabel[mode]}
               </button>
             )}
+
+            {mode === "early" && principal < balance && (
+              <button type="button" className="button button-secondary" disabled={isSaving} onClick={() => void prepay()}>
+                다음 회차 미리 내기
+              </button>
+            )}
+
             {(
               <button type="button" className="button button-secondary" disabled={isSaving} onClick={() => void returnAll()}>
                 {mode === "returnOnly" ? "반환했어요" : "전액 반환"}

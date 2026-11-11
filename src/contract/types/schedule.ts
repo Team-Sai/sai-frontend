@@ -71,6 +71,7 @@ export interface EarlyRepaymentHistory {
   feeAmount: number;
   principalAmount: number;
   processedAt: string;
+  method?: "RECALCULATE" | "PREPAY";
 }
 
 export interface EarlyRepaymentDeposit {
