@@ -136,6 +136,23 @@
   background: #f2f2f2;
 }
 
+.app-header-notification {
+  position: relative;
+}
+
+/* 새 알림 표시 */
+.app-header-notification__dot {
+  position: absolute;
+  /* 버튼 크기가 화면 폭에 따라 줄어들어 비율로 아이콘 오른쪽 위에 둔다. */
+  top: 22%;
+  right: 22%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e5322d;
+  box-shadow: 0 0 0 2px var(--color-surface);
+}
+
 .app-header-actions__disabled img,
 .app-header-profile img {
   width: 34px;

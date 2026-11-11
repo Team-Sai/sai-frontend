@@ -730,12 +730,12 @@ export default function DashboardPage() {
             요약 현황
           </p>
 
-          <p
+          <div
             key={summaryIndex}
             className="summary-sentence is-summary-entering"
           >
             {renderSummary()}
-          </p>
+          </div>
         </div>
       </section>
 
