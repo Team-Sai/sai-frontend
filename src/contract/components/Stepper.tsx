@@ -9,16 +9,17 @@ const STEPS_BY_VARIANT = {
 interface StepperProps {
   currentStep: 1 | 2 | 3 | 4;
   variant?: keyof typeof STEPS_BY_VARIANT;
+  completed?: boolean; // true면 모든 단계를 완료(체크)로 표시
 }
 
-export default function Stepper({ currentStep, variant = 'create' }: StepperProps) {
+export default function Stepper({ currentStep, variant = 'create', completed = false }: StepperProps) {
   return (
     <section className="stepper-card">
       <ol className="stepper">
         {STEPS_BY_VARIANT[variant].map((label, index) => {
           const stepNumber = index + 1;
-          const isDone = stepNumber < currentStep;
-          const isActive = stepNumber === currentStep;
+          const isDone = completed || stepNumber < currentStep;
+          const isActive = !completed && stepNumber === currentStep;
           const stateClass = isDone ? 'is-done' : isActive ? 'is-active' : '';
 
           return (

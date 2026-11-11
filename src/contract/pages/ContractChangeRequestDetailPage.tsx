@@ -224,6 +224,12 @@ function ContractChangeRequestDetailContent({
           </div>
 
           <div className="row">
+            <span>상환일</span>
+            <span>매월 {detail.currentRepaymentDay}일</span>
+            <span>매월 {detail.newRepaymentDay}일</span>
+          </div>
+
+          <div className="row">
             <span>특약사항</span>
             <span>{detail.currentTerms || "-"}</span>
             <span>{detail.newTerms || "-"}</span>
