@@ -160,14 +160,15 @@ export async function processEarlyRepayment(
   contractId: number,
   bankTransactionId: number,
   returnExcess = false,
+  method: "RECALCULATE" | "PREPAY" = "RECALCULATE",
 ): Promise<void> {
   const response = await authFetch(
     `/api/contracts/${contractId}/early-repayments`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ bankTransactionId, returnExcess }),    },
-  );
+      body: JSON.stringify({ bankTransactionId, returnExcess, method }),
+    },  );
 
   if (!response.ok) {
     throw new Error(await readErrorMessage(response, "처리하지 못했습니다. 금액을 확인해 주세요."));
