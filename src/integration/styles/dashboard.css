@@ -327,13 +327,25 @@ body.integration-page button {
 }
 
 .attention-list {
+  --attention-item-height: 60px;
+  --attention-gap: 17px;
+  --attention-visible-count: 4;
+
   display: grid;
-  gap: 17px;
+  gap: var(--attention-gap);
   margin-top: 16px;
+  /* 4건까지 보이고 나머지는 목록 안에서 스크롤한다. */
+  max-height: calc(
+    var(--attention-item-height) * var(--attention-visible-count) +
+      var(--attention-gap) * (var(--attention-visible-count) - 1)
+  );
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 }
 
 .attention-item {
-  min-height: 60px;
+  min-height: var(--attention-item-height, 60px);
   display: flex;
   align-items: center;
   justify-content: space-between;
