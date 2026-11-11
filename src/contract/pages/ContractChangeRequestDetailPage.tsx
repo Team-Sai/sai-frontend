@@ -225,8 +225,8 @@ function ContractChangeRequestDetailContent({
 
           <div className="row">
             <span>상환일</span>
-            <span>매월 {detail.currentRepaymentDay}일</span>
-            <span>매월 {detail.newRepaymentDay}일</span>
+            <span>{typeof detail.currentRepaymentDay === "number" ? `매월 ${detail.currentRepaymentDay}일` : "-"}</span>
+            <span>{typeof detail.newRepaymentDay === "number" ? `매월 ${detail.newRepaymentDay}일` : "-"}</span>
           </div>
 
           <div className="row">

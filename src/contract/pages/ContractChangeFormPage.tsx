@@ -80,8 +80,7 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
       newMaturityDate ||
       newInterestRate ||
       newRepaymentType ||
-      newRepaymentDate;
-      
+      newRepaymentDate;      
     if (!hasAnyChange) {
       return "만기일·이율·상환 방식·상환일 중 하나 이상을 바꿔 주세요.";
     }
