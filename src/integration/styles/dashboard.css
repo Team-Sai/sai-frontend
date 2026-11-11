@@ -489,36 +489,9 @@ body.integration-page button {
 }
 
 .transaction-pagination {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
+  margin: 0;
   padding: 16px 0 18px;
   border-top: 1px solid var(--line);
-}
-
-.transaction-page-button {
-  min-width: 30px;
-  height: 30px;
-  padding: 0 8px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface-soft);
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.transaction-page-button:disabled {
-  cursor: default;
-  opacity: 0.4;
-}
-
-.transaction-page-button.is-active {
-  border-color: var(--green);
-  background: var(--green);
-  color: #fff;
 }
 
 .transaction-table {

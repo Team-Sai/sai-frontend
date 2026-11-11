@@ -7,6 +7,7 @@ import {
 import type { CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingSkeleton from '../../common/components/LoadingSkeleton';
+import { Pagination } from '../../common/components/Pagination';
 
 import { dashboardApi } from '../api/dashboardApi';
 
@@ -46,7 +47,6 @@ const transactionStatusFilters: {
 
 const TRANSACTIONS_PER_PAGE = 5;
 
-const VISIBLE_PAGE_COUNT = 5;
 
 const currencyFormatter =
   new Intl.NumberFormat('ko-KR');
@@ -515,32 +515,6 @@ export default function DashboardPage() {
         TRANSACTIONS_PER_PAGE,
       currentTransactionPage *
         TRANSACTIONS_PER_PAGE,
-    );
-
-  const firstVisiblePage =
-    Math.max(
-      1,
-      Math.min(
-        currentTransactionPage -
-          Math.floor(
-            VISIBLE_PAGE_COUNT / 2,
-          ),
-        totalTransactionPages -
-          VISIBLE_PAGE_COUNT +
-          1,
-      ),
-    );
-
-  const visibleTransactionPages =
-    Array.from(
-      {
-        length: Math.min(
-          VISIBLE_PAGE_COUNT,
-          totalTransactionPages,
-        ),
-      },
-      (_, index) =>
-        firstVisiblePage + index,
     );
 
   function changeTransactionFilter(
@@ -1311,75 +1285,15 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {!loading &&
-          !loadError && (
-            <nav
-              className="transaction-pagination"
-              aria-label="최근 거래 내역 페이지"
-            >
-              <button
-                type="button"
-                className="transaction-page-button"
-                aria-label="이전 페이지"
-                disabled={
-                  currentTransactionPage ===
-                  1
-                }
-                onClick={() =>
-                  setTransactionPage(
-                    currentTransactionPage -
-                      1,
-                  )
-                }
-              >
-                ‹
-              </button>
-
-              {visibleTransactionPages.map((page) => (
-                <button
-                  key={page}
-                  type="button"
-                  className={`transaction-page-button${
-                    page ===
-                    currentTransactionPage
-                      ? ' is-active'
-                      : ''
-                  }`}
-                  aria-current={
-                    page ===
-                    currentTransactionPage
-                      ? 'page'
-                      : undefined
-                  }
-                  onClick={() =>
-                    setTransactionPage(
-                      page,
-                    )
-                  }
-                >
-                  {page}
-                </button>
-              ))}
-
-              <button
-                type="button"
-                className="transaction-page-button"
-                aria-label="다음 페이지"
-                disabled={
-                  currentTransactionPage ===
-                  totalTransactionPages
-                }
-                onClick={() =>
-                  setTransactionPage(
-                    currentTransactionPage +
-                      1,
-                  )
-                }
-              >
-                ›
-              </button>
-            </nav>
-          )}
+        {!loading && !loadError && (
+          <Pagination
+            className="transaction-pagination"
+            ariaLabel="최근 거래 내역 페이지"
+            currentPage={currentTransactionPage}
+            totalPages={totalTransactionPages}
+            onChange={setTransactionPage}
+          />
+        )}
       </section>
     </main>
   );

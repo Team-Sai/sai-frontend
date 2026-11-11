@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import LoadingSkeleton from '../common/components/LoadingSkeleton';
+import { Pagination } from '../common/components/Pagination';
 import { useNavigate } from 'react-router-dom';
 import '../contract/shared.css';
 import './ArchivePage.css';
@@ -178,22 +179,13 @@ export default function ArchivePage() {
             )}
           </div>
 
-          {contractData && contractData.totalPages > 1 && (
-            <div className="pager">
-              <button type="button" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-                이전
-              </button>
-              <span className="pager-label">
-                {contractData.currentPage} / {contractData.totalPages}
-              </span>
-              <button
-                type="button"
-                disabled={page >= contractData.totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                다음
-              </button>
-            </div>
+          {contractData && (
+            <Pagination
+              ariaLabel="보관함 목록 페이지"
+              currentPage={contractData.currentPage}
+              totalPages={contractData.totalPages}
+              onChange={setPage}
+            />
           )}
         </>
       ) : (
