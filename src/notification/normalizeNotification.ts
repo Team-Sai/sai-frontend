@@ -45,15 +45,6 @@ export function getNotificationDestination(n: NotificationResponse): Notificatio
   return null;
 }
 
-function formatNotificationAmount(content: string): string {
-  return content.replace(
-      /(\d[\d,]*)(?:\.\d+)?(?=\s*원)/g,
-      // Display whole won by discarding the fractional part; preserve spacing before 원.
-      (_, amount: string) =>
-          Number(amount.replace(/,/g, '')).toLocaleString('ko-KR'),
-  );
-}
-
 /** Pure: callers supply the clock, and React escapes the returned plain text. */
 export function normalizeNotification(n: NotificationResponse, now: number): NotificationView {
   const isSign = ['CONTRACT_REQUESTED', 'CONTRACT_CHANGE', 'REPAYMENT_DUE_REMINDER_D3',
@@ -75,11 +66,7 @@ export function normalizeNotification(n: NotificationResponse, now: number): Not
     categoryLabel: isSign ? '차용증' : !isSettlement ? '시스템'
       : n.settlementType === 'RECURRING' ? '정기정산' : n.settlementType === 'SHARED' ? '공동정산' : '정산',
     title: n.referenceTitle || (participantAdded ? '새로운 정산에 참여자로 등록되었습니다.' : n.title || ''),
-    description: participantAdded
-        ? '참여자로 등록되었습니다.'
-        : isReview
-            ? formatNotificationAmount(n.content || '')
-            : n.content || '',
+    description: participantAdded ? '참여자로 등록되었습니다.' : n.content || '',
     timeLabel: formatNotificationTime(n.createdAt, now),
     createdAt: n.createdAt && Number.isFinite(new Date(n.createdAt).getTime()) ? n.createdAt : null,
     destination: getNotificationDestination(n),
