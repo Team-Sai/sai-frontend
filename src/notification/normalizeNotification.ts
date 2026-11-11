@@ -47,7 +47,8 @@ export function getNotificationDestination(n: NotificationResponse): Notificatio
 
 function formatNotificationAmount(content: string): string {
   return content.replace(
-      /(\d[\d,]*)(?:\.0+)?(?=원)/g,
+      /(\d[\d,]*)(?:\.\d+)?(?=\s*원)/g,
+      // Display whole won by discarding the fractional part; preserve spacing before 원.
       (_, amount: string) =>
           Number(amount.replace(/,/g, '')).toLocaleString('ko-KR'),
   );
