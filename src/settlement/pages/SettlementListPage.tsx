@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { settlementApi } from '../api/settlementApi';
+import { buildSettlementGroups } from '../utils/settlementList';
 import MatchingReviewModal from '../components/MatchingReviewModal';
 import LoadingSkeleton from '../../common/components/LoadingSkeleton';
 import { formatTransactionSyncTime, getLastTransactionSyncAt, recordTransactionSync } from '../../transaction/syncTimestamp';
@@ -20,6 +21,7 @@ interface RecurringGroupToggle {
   id: number;
   open: boolean;
   count: number;
+  totalCount: number;
   onToggle: () => void;
 }
 
@@ -31,14 +33,14 @@ function SettlementRow({ s, group }: {
   return <article className={`settlement-table settlement-row${group ? " settlement-group-heading" : ""}`}>
           <div className="settlement-name">{group ? <button type="button" className="settlement-group-toggle" aria-expanded={group.open} aria-controls={`recurring-cycles-${group.id}`} onClick={group.onToggle}>
             <strong>{title}</strong>
-            <span className="settlement-group-count">회차 {group.count}개</span>
+            <span className="settlement-group-count" title="필터에 맞는 회차 수 / 전체 회차 수">회차 {group.count === group.totalCount ? group.count : `${group.count}/${group.totalCount}`}개</span>
             <span className={`settlement-group-chevron${group.open ? " is-open" : ""}`} aria-hidden="true">›</span>
           </button> : <span>{title}</span>}</div>
           <span className={`type-badge ${s.settlementType === 'RECURRING' ? 'badge-recurring' : 'badge-role'}`}>{s.settlementType === 'RECURRING' ? '정기' : '공동'}</span>
           <span className={`status-badge ${s.role === 'OWNER' ? 'badge-role' : 'badge-debtor'}`}>{s.role === 'OWNER' ? '생성자' : '참여자'}</span>
           <span className="settlement-category">{s.settlementCategory || '-'}</span>
           <span className={`split-badge ${s.splitType === 'CUSTOM' ? 'badge-custom' : 'badge-split'}`}>{s.splitType === 'CUSTOM' ? '직접 설정' : '균등'}</span>
-          <span title={group ? '최신 회차 기준' : undefined} className={`settlement-status status-badge ${s.settlementStatus === 'CLOSED' ? 'badge-completed' : 'badge-progress'}`}>{s.settlementStatus === 'CLOSED' ? '완료' : '진행 중'}</span>
+          <span title={group ? '전체 회차 중 최신 회차 기준' : undefined} className={`settlement-status status-badge ${s.settlementStatus === 'CLOSED' ? 'badge-completed' : 'badge-progress'}`}>{s.settlementStatus === 'CLOSED' ? '완료' : '진행 중'}</span>
           <span>{s.settlementType === 'RECURRING' ? period(s.startDate, s.endDate) : date(s.dueDate)}</span>
           {group ? <Link className="button button-secondary settlement-cycle-button" to={`/settlements/recurring/${group.id}`}>회차별 현황</Link>
             : <Link className="detail-link" to={`/settlements/${s.settlementId}`} aria-label={`${title} 상세 조회`}>›</Link>}
@@ -109,56 +111,8 @@ export default function SettlementListPage() {
 
   const createdNotice=searchParams.get('created');
 
-  const filtered = useMemo(() => {
-    const copy = items.filter((s) => {
-      const keywordMatch = !keyword || String(s.title || '').toLowerCase().includes(keyword.toLowerCase());
-      return keywordMatch && (type === 'ALL' || s.settlementType === type) && (status === 'ALL' || s.settlementStatus === status);
-    });
-    if (sort === 'LATEST') {
-      copy.sort((a, b) => b.settlementId - a.settlementId);
-    }
-
-    if (sort === 'AMOUNT_DESC') {
-      copy.sort(
-        (a, b) => Number(b.totalAmount || 0) - Number(a.totalAmount || 0),
-      );
-    }
-
-    if (sort === 'DEADLINE') {
-      const deadline = (item: SettlementListItem) =>
-        item.settlementType === 'RECURRING'
-          ? item.cycleDate || item.startDate || item.endDate || ''
-          : item.dueDate || '';
-
-      copy.sort((a, b) => deadline(a).localeCompare(deadline(b)));
-    }
-    return copy;
-  }, [items, keyword, type, status, sort]);
-
-  const groups = useMemo(() => {
-    const result: { key: string; recurringId?: number; items: SettlementListItem[] }[] = [];
-    const recurring = new Map<number, typeof result[number]>();
-    for (const item of filtered) {
-      const id = item.settlementType === 'RECURRING' ? item.recurringSettlementId : null;
-      if (id == null) {
-        result.push({ key: `settlement-${item.settlementId}`, items: [item] });
-      } else {
-        let group = recurring.get(id);
-        if (!group) {
-          group = { key: `recurring-${id}`, recurringId: id, items: [] };
-          recurring.set(id, group);
-          result.push(group);
-        }
-        group.items.push(item);
-      }
-    }
-    for (const group of result) {
-      if (group.recurringId != null) {
-        group.items.sort((a, b) => (a.cycleNo ?? 0) - (b.cycleNo ?? 0) || a.settlementId - b.settlementId);
-      }
-    }
-    return result;
-  }, [filtered]);
+  const groups = useMemo(() => buildSettlementGroups(items, { keyword, type, status, sort }),
+    [items, keyword, type, status, sort]);
 
   function toggleGroup(id: number) {
     setExpanded(previous => {
@@ -207,13 +161,13 @@ export default function SettlementListPage() {
 
       <section className="table-card" aria-label="정산 목록">
         <div className="settlement-table settlement-table-head"><span>정산명</span><span>정산 방식</span><span>참여 구분</span><span>정산 항목</span><span>분담 방식</span><span>정산 상태</span><span>정산 기간·기한</span><span>상세</span></div>
-        {isLoading ? <LoadingSkeleton className="loading-skeleton--page" rows={6} /> : listLoadError ? <div className="empty-state" role="alert"><h2>정산 목록을 불러오지 못했습니다.</h2><button className="button button-secondary" type="button" onClick={()=>void load()}>다시 시도</button></div> : filtered.length > 0 ? <div className="settlement-list">{groups.map(group => {
+        {isLoading ? <LoadingSkeleton className="loading-skeleton--page" rows={6} /> : listLoadError ? <div className="empty-state" role="alert"><h2>정산 목록을 불러오지 못했습니다.</h2><button className="button button-secondary" type="button" onClick={()=>void load()}>다시 시도</button></div> : groups.length > 0 ? <div className="settlement-list">{groups.map(group => {
           const id = group.recurringId;
-          if (id == null) return <SettlementRow key={group.key} s={group.items[0]} />;
+          if (id == null) return <SettlementRow key={group.key} s={group.latest} />;
           const open = expanded.has(id);
-          const latest = group.items[group.items.length - 1];
+          const latest = group.latest;
           return <section key={group.key} className={`settlement-recurring-group${open ? " is-expanded" : ""}`} aria-label={latest.title || '정기정산'}>
-            <SettlementRow s={latest} group={{ id, open, count: group.items.length, onToggle: () => toggleGroup(id) }} />
+            <SettlementRow s={latest} group={{ id, open, count: group.items.length, totalCount: group.totalCount, onToggle: () => toggleGroup(id) }} />
             <div className="settlement-cycle-panel" id={`recurring-cycles-${id}`} hidden={!open}>
               <div className="settlement-cycle-grid">{group.items.map(item => <SettlementCycleItem key={item.settlementId} item={item} />)}</div>
             </div>
