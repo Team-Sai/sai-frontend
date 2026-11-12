@@ -22,6 +22,7 @@ export interface SettlementListItem {
   startDate?: string | null;
   endDate?: string | null;
   cycleDate?: string | null;
+  cycleNo?: number | null;
   recurringSettlementId?: number | null;
 }
 
