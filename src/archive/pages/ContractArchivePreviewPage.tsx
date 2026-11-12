@@ -86,9 +86,6 @@ import {
 
 } from "../pdf/downloadContractPdf";
 
-import {
-  downloadRepaymentPdf,
-} from "../pdf/downloadRepaymentPdf";
 
 
 
@@ -595,10 +592,6 @@ const navigate =
 
     );
 
-  const [
-    isRepaymentDownloading,
-    setIsRepaymentDownloading,
-  ] = useState(false);
 
 
 
@@ -932,31 +925,6 @@ const navigate =
     }
   }
 
-  async function handleRepaymentDownloadClick() {
-    if (!contract || isRepaymentDownloading) {
-      return;
-    }
-
-    setIsRepaymentDownloading(true);
-
-    try {
-      await downloadRepaymentPdf(contract.contractId);
-    } catch (downloadError) {
-      console.error(
-        "[ContractArchivePreviewPage] 상환내역서 다운로드 실패",
-        downloadError,
-      );
-
-      alert("상환내역서 PDF 생성 중 오류가 발생했습니다.");
-    } finally {
-      setIsRepaymentDownloading(false);
-    }
-  }
-
-
-
-
-
   /* =========================================================
 
      View Data
@@ -1124,17 +1092,6 @@ const navigate =
 
 
         <div className="preview-toolbar__actions">
-          <button
-            type="button"
-            className="btn btn--ghost"
-            onClick={handleRepaymentDownloadClick}
-            disabled={isRepaymentDownloading || !contract}
-          >
-            {isRepaymentDownloading && (
-              <span className="button-spinner" aria-hidden="true" />
-            )}
-            상환내역서 다운로드
-          </button>
 
         <button
 
