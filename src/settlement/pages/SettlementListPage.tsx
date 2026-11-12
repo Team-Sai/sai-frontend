@@ -16,7 +16,45 @@ function fetchSettlementListData(){
   return Promise.allSettled([settlementApi.list(),settlementApi.summary()]);
 }
 
+interface RecurringGroupToggle {
+  id: number;
+  open: boolean;
+  count: number;
+  onToggle: () => void;
+}
+
+function SettlementRow({ s, group }: {
+  s: SettlementListItem;
+  group?: RecurringGroupToggle;
+}) {
+  const title = `${s.title || '이름 없는 정산'}${!group && s.settlementType === 'RECURRING' && s.cycleNo != null ? ` (${s.cycleNo}회차)` : ''}`;
+  return <article className={`settlement-table settlement-row${group ? " settlement-group-heading" : ""}`}>
+          <div className="settlement-name">{group ? <button type="button" className="settlement-group-toggle" aria-expanded={group.open} aria-controls={`recurring-cycles-${group.id}`} onClick={group.onToggle}>
+            <strong>{title}</strong>
+            <span className="settlement-group-count">회차 {group.count}개</span>
+            <span className={`settlement-group-chevron${group.open ? " is-open" : ""}`} aria-hidden="true">›</span>
+          </button> : <span>{title}</span>}</div>
+          <span className={`type-badge ${s.settlementType === 'RECURRING' ? 'badge-recurring' : 'badge-role'}`}>{s.settlementType === 'RECURRING' ? '정기' : '공동'}</span>
+          <span className={`status-badge ${s.role === 'OWNER' ? 'badge-role' : 'badge-debtor'}`}>{s.role === 'OWNER' ? '생성자' : '참여자'}</span>
+          <span className="settlement-category">{s.settlementCategory || '-'}</span>
+          <span className={`split-badge ${s.splitType === 'CUSTOM' ? 'badge-custom' : 'badge-split'}`}>{s.splitType === 'CUSTOM' ? '직접 설정' : '균등'}</span>
+          <span title={group ? '최신 회차 기준' : undefined} className={`settlement-status status-badge ${s.settlementStatus === 'CLOSED' ? 'badge-completed' : 'badge-progress'}`}>{s.settlementStatus === 'CLOSED' ? '완료' : '진행 중'}</span>
+          <span>{s.settlementType === 'RECURRING' ? period(s.startDate, s.endDate) : date(s.dueDate)}</span>
+          {group ? <Link className="button button-secondary settlement-cycle-button" to={`/settlements/recurring/${group.id}`}>회차별 현황</Link>
+            : <Link className="detail-link" to={`/settlements/${s.settlementId}`} aria-label={`${title} 상세 조회`}>›</Link>}
+        </article>;
+}
+
+function SettlementCycleItem({ item }: { item: SettlementListItem }) {
+  const cycle = item.cycleNo != null ? `${item.cycleNo}회차` : '회차 상세';
+  return <Link className="settlement-cycle-item" to={`/settlements/${item.settlementId}`} aria-label={`${item.title || '정기정산'} (${cycle}) 상세 조회`}>
+    <span className="settlement-cycle-label">{item.title || '정기정산'} ({cycle})</span>
+    <span className="settlement-cycle-action" aria-hidden="true">›</span>
+  </Link>;
+}
+
 export default function SettlementListPage() {
+  const [expanded, setExpanded] = useState<Set<number>>(() => new Set());
   const [items, setItems] = useState<SettlementListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [listLoadError, setListLoadError] = useState(false);
@@ -97,6 +135,40 @@ export default function SettlementListPage() {
     return copy;
   }, [items, keyword, type, status, sort]);
 
+  const groups = useMemo(() => {
+    const result: { key: string; recurringId?: number; items: SettlementListItem[] }[] = [];
+    const recurring = new Map<number, typeof result[number]>();
+    for (const item of filtered) {
+      const id = item.settlementType === 'RECURRING' ? item.recurringSettlementId : null;
+      if (id == null) {
+        result.push({ key: `settlement-${item.settlementId}`, items: [item] });
+      } else {
+        let group = recurring.get(id);
+        if (!group) {
+          group = { key: `recurring-${id}`, recurringId: id, items: [] };
+          recurring.set(id, group);
+          result.push(group);
+        }
+        group.items.push(item);
+      }
+    }
+    for (const group of result) {
+      if (group.recurringId != null) {
+        group.items.sort((a, b) => (a.cycleNo ?? 0) - (b.cycleNo ?? 0) || a.settlementId - b.settlementId);
+      }
+    }
+    return result;
+  }, [filtered]);
+
+  function toggleGroup(id: number) {
+    setExpanded(previous => {
+      const next = new Set(previous);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   async function sync() {
     try {
       setSyncing(true);
@@ -135,16 +207,18 @@ export default function SettlementListPage() {
 
       <section className="table-card" aria-label="정산 목록">
         <div className="settlement-table settlement-table-head"><span>정산명</span><span>정산 방식</span><span>참여 구분</span><span>정산 항목</span><span>분담 방식</span><span>정산 상태</span><span>정산 기간·기한</span><span>상세</span></div>
-        {isLoading ? <LoadingSkeleton className="loading-skeleton--page" rows={6} /> : listLoadError ? <div className="empty-state" role="alert"><h2>정산 목록을 불러오지 못했습니다.</h2><button className="button button-secondary" type="button" onClick={()=>void load()}>다시 시도</button></div> : filtered.length > 0 ? <div className="settlement-list">{filtered.map(s => <article key={s.settlementId} className="settlement-table settlement-row">
-          <div className="settlement-name"><span>{s.title || '이름 없는 정산'}</span></div>
-          <span className={`type-badge ${s.settlementType === 'RECURRING' ? 'badge-recurring' : 'badge-role'}`}>{s.settlementType === 'RECURRING' ? '정기' : '공동'}</span>
-          <span className={`status-badge ${s.role === 'OWNER' ? 'badge-role' : 'badge-debtor'}`}>{s.role === 'OWNER' ? '생성자' : '참여자'}</span>
-          <span>{s.settlementCategory || '-'}</span>
-          <span className={`split-badge ${s.splitType === 'CUSTOM' ? 'badge-custom' : 'badge-split'}`}>{s.splitType === 'CUSTOM' ? '직접 설정' : '균등'}</span>
-          <span className={`status-badge ${s.settlementStatus === 'CLOSED' ? 'badge-completed' : 'badge-progress'}`}>{s.settlementStatus === 'CLOSED' ? '완료' : '진행 중'}</span>
-          <span>{s.settlementType === 'RECURRING' ? period(s.startDate, s.endDate) : date(s.dueDate)}</span>
-          <Link className="detail-link" to={`/settlements/${s.settlementId}`} aria-label={`${s.title || '정산'} 상세 조회`}>›</Link>
-        </article>)}</div> : <div className="empty-state"><div className="empty-icon">₩</div><h2>아직 생성된 정산이 없습니다.</h2><p>공동정산이나 정기정산을 생성하면 이 화면에서 조회할 수 있습니다.</p><Link className="button button-primary" to="/settlements/new">첫 정산 만들기</Link></div>}
+        {isLoading ? <LoadingSkeleton className="loading-skeleton--page" rows={6} /> : listLoadError ? <div className="empty-state" role="alert"><h2>정산 목록을 불러오지 못했습니다.</h2><button className="button button-secondary" type="button" onClick={()=>void load()}>다시 시도</button></div> : filtered.length > 0 ? <div className="settlement-list">{groups.map(group => {
+          const id = group.recurringId;
+          if (id == null) return <SettlementRow key={group.key} s={group.items[0]} />;
+          const open = expanded.has(id);
+          const latest = group.items[group.items.length - 1];
+          return <section key={group.key} className={`settlement-recurring-group${open ? " is-expanded" : ""}`} aria-label={latest.title || '정기정산'}>
+            <SettlementRow s={latest} group={{ id, open, count: group.items.length, onToggle: () => toggleGroup(id) }} />
+            <div className="settlement-cycle-panel" id={`recurring-cycles-${id}`} hidden={!open}>
+              <div className="settlement-cycle-grid">{group.items.map(item => <SettlementCycleItem key={item.settlementId} item={item} />)}</div>
+            </div>
+          </section>;
+        })}</div> : <div className="empty-state"><div className="empty-icon">₩</div><h2>아직 생성된 정산이 없습니다.</h2><p>공동정산이나 정기정산을 생성하면 이 화면에서 조회할 수 있습니다.</p><Link className="button button-primary" to="/settlements/new">첫 정산 만들기</Link></div>}
       </section>
     </main>
     {(toast || createdNotice) && <div className={`toast visible${toast?.error ? ' error' : ''}`} role="status">{toast?.text || `정산 #${createdNotice}이 생성되었습니다.`}</div>}
