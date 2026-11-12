@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import HeaderShell from './HeaderShell';
+import { useHasNewNotification } from '../../notification/useHasNewNotification';
 
 const NAV_ITEMS = [
   {
@@ -27,6 +28,7 @@ const IMPLEMENTED_PATHS = new Set([
 
 export default function Header() {
   const { pathname } = useLocation();
+  const hasNewNotification = useHasNewNotification(pathname === '/notifications');
 
   return (
     <HeaderShell
@@ -87,11 +89,14 @@ export default function Header() {
           </Link>
           <Link
             to="/notifications"
-            className="app-header-profile"
-            aria-label="알림"
+            className="app-header-profile app-header-notification"
+            aria-label={hasNewNotification ? '알림 (새 알림 있음)' : '알림'}
             aria-current={pathname === '/notifications' ? 'page' : undefined}
           >
             <img src="/images/common/notification.svg" alt="" />
+            {hasNewNotification && (
+              <span className="app-header-notification__dot" aria-hidden="true" />
+            )}
           </Link>
           <Link to="/mypage" className="app-header-profile" aria-label="마이페이지">
             <img src="/images/common/profile.svg" alt="" />

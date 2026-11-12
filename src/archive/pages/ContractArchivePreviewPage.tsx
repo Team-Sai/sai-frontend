@@ -90,6 +90,7 @@ import {
 
 
 
+
 const EMPTY_SIGNATURES:
 
   ContractSignatures = {
@@ -595,6 +596,7 @@ const navigate =
 
 
 
+
   /* =========================================================
 
      Load
@@ -923,9 +925,6 @@ const navigate =
     }
   }
 
-
-
-
   /* =========================================================
 
      View Data
@@ -1092,6 +1091,8 @@ const navigate =
 
 
 
+        <div className="preview-toolbar__actions">
+
         <button
 
           type="button"
@@ -1131,6 +1132,7 @@ const navigate =
           PDF 다운로드
 
         </button>
+        </div>
 
 
 

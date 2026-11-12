@@ -209,7 +209,7 @@ margin-top: 8px;
 
 .settlement-list-page .settlement-table {
 display: grid;
-    grid-template-columns: 2.1fr 0.75fr 0.8fr 1fr 0.9fr 1fr 1fr 54px;
+    grid-template-columns: minmax(0, 2.1fr) 0.75fr 0.8fr 1fr 0.9fr 1fr 1fr 112px;
     align-items: center;
     gap: 16px;
 }
@@ -467,4 +467,140 @@ flex: 1;
 }
 .settlement-list-page .summary-foot > span {
     white-space: nowrap;
+}
+
+.settlement-list-page .settlement-group-heading {
+    background: #fff;
+}
+.settlement-list-page .settlement-group-toggle {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+.settlement-list-page .settlement-group-toggle strong { overflow-wrap: anywhere; }
+.settlement-list-page .settlement-cycle-button {
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+.settlement-list-page .settlement-row > .detail-link {
+    justify-self: center;
+}
+
+@media (max-width: 1180px) {
+    .settlement-list-page .settlement-row.settlement-group-heading > .settlement-category,
+    .settlement-list-page .settlement-row.settlement-group-heading > .settlement-status {
+        display: block;
+        grid-row: 2;
+    }
+    .settlement-list-page .settlement-row.settlement-group-heading > .settlement-status {
+        justify-self: end;
+    }
+    .settlement-list-page .settlement-row.settlement-group-heading > .settlement-cycle-button {
+        display: inline-flex;
+        grid-column: 2;
+        grid-row: 1;
+    }
+}
+
+.settlement-list-page .settlement-recurring-group {
+    border-bottom: 1px solid var(--gray-250);
+}
+.settlement-list-page .settlement-recurring-group:last-child {
+    border-bottom: 0;
+}
+.settlement-list-page .settlement-group-heading,
+.settlement-list-page .settlement-group-heading:last-child {
+    border-bottom: 0;
+}
+.settlement-list-page .settlement-recurring-group.is-expanded .settlement-group-toggle strong {
+    color: #087653;
+}
+.settlement-list-page .settlement-group-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: #788392;
+    font-size: 22px;
+    font-weight: 400;
+    transition: transform 0.15s ease;
+}
+.settlement-list-page .settlement-group-chevron.is-open {
+    transform: rotate(90deg);
+    color: #087653;
+}
+.settlement-list-page .settlement-group-count {
+    padding: 3px 7px;
+    border-radius: 5px;
+    background: #f2f5f4;
+    color: #63716d;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+.settlement-list-page .settlement-cycle-panel {
+    border-top: 1px solid var(--gray-250);
+}
+.settlement-list-page .settlement-cycle-grid {
+    display: flex;
+    flex-direction: column;
+}
+.settlement-list-page .settlement-cycle-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 112px;
+    align-items: center;
+    gap: 16px;
+    min-height: 74px;
+    padding: 16px 24px;
+    background: #fff;
+    border-bottom: 1px solid var(--gray-250);
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+.settlement-list-page .settlement-cycle-item:last-child {
+    border-bottom: 0;
+}
+.settlement-list-page .settlement-cycle-item:hover {
+    background: #f8faf9;
+}
+.settlement-list-page .settlement-cycle-item:focus-visible,
+.settlement-list-page .settlement-group-toggle:focus-visible {
+    outline: 2px solid #0f8a5f;
+    outline-offset: -3px;
+}
+.settlement-list-page .settlement-cycle-label {
+    min-width: 0;
+    padding-inline-start: 2em;
+    color: #151922;
+    font-size: 14px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+.settlement-list-page .settlement-cycle-action {
+    justify-self: center;
+    color: #26313d;
+    font-size: 22px;
+}
+@media (max-width: 1180px) {
+    .settlement-list-page .settlement-cycle-item {
+        grid-template-columns: minmax(0, 1fr) 34px;
+        padding: 18px;
+        gap: 10px;
+    }
 }

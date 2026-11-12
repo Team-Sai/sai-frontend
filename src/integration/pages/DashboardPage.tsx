@@ -7,6 +7,7 @@ import {
 import type { CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingSkeleton from '../../common/components/LoadingSkeleton';
+import { Pagination } from '../../common/components/Pagination';
 
 import { dashboardApi } from '../api/dashboardApi';
 
@@ -24,6 +25,28 @@ const transactionStatusLabels: Record<string, string> = {
   COMPLETED: '완료',
   IN_PROGRESS: '진행 중',
 };
+
+type TransactionTypeFilter =
+  | 'ALL'
+  | 'LOAN'
+  | 'SETTLEMENT';
+
+type TransactionStatusFilter =
+  | 'ALL'
+  | 'IN_PROGRESS'
+  | 'COMPLETED';
+
+const transactionStatusFilters: {
+  value: TransactionStatusFilter;
+  label: string;
+}[] = [
+  { value: 'ALL', label: '전체' },
+  { value: 'IN_PROGRESS', label: '진행 중' },
+  { value: 'COMPLETED', label: '완료' },
+];
+
+const TRANSACTIONS_PER_PAGE = 5;
+
 
 const currencyFormatter =
   new Intl.NumberFormat('ko-KR');
@@ -252,11 +275,22 @@ export default function DashboardPage() {
     transactionFilter,
     setTransactionFilter,
   ] =
-    useState<
-      | 'ALL'
-      | 'LOAN'
-      | 'SETTLEMENT'
-    >('ALL');
+    useState<TransactionTypeFilter>(
+      'ALL',
+    );
+
+  const [
+    statusFilter,
+    setStatusFilter,
+  ] =
+    useState<TransactionStatusFilter>(
+      'ALL',
+    );
+
+  const [
+    transactionPage,
+    setTransactionPage,
+  ] = useState(1);
 
   const [
     summaryIndex,
@@ -440,27 +474,62 @@ export default function DashboardPage() {
     }, [calendarDays]);
 
   const filteredTransactions =
-    useMemo(() => {
-      const filtered =
-        transactionFilter ===
-        'ALL'
-          ? recentTransactions
-          : recentTransactions.filter(
-              (
-                transaction,
-              ) =>
-                transaction.type ===
-                transactionFilter,
-            );
+    useMemo(
+      () =>
+        recentTransactions.filter(
+          (transaction) =>
+            (transactionFilter ===
+              'ALL' ||
+              transaction.type ===
+                transactionFilter) &&
+            (statusFilter ===
+              'ALL' ||
+              transaction.status ===
+                statusFilter),
+        ),
+      [
+        recentTransactions,
+        transactionFilter,
+        statusFilter,
+      ],
+    );
 
-      return filtered.slice(
-        0,
-        5,
-      );
-    }, [
-      recentTransactions,
-      transactionFilter,
-    ]);
+  const totalTransactionPages =
+    Math.max(
+      1,
+      Math.ceil(
+        filteredTransactions.length /
+          TRANSACTIONS_PER_PAGE,
+      ),
+    );
+
+  const currentTransactionPage =
+    Math.min(
+      transactionPage,
+      totalTransactionPages,
+    );
+
+  const pagedTransactions =
+    filteredTransactions.slice(
+      (currentTransactionPage - 1) *
+        TRANSACTIONS_PER_PAGE,
+      currentTransactionPage *
+        TRANSACTIONS_PER_PAGE,
+    );
+
+  function changeTransactionFilter(
+    filter: TransactionTypeFilter,
+  ): void {
+    setTransactionFilter(filter);
+    setTransactionPage(1);
+  }
+
+  function changeStatusFilter(
+    filter: TransactionStatusFilter,
+  ): void {
+    setStatusFilter(filter);
+    setTransactionPage(1);
+  }
 
   const completionRate =
     Math.min(
@@ -661,12 +730,12 @@ export default function DashboardPage() {
             요약 현황
           </p>
 
-          <p
+          <div
             key={summaryIndex}
             className="summary-sentence is-summary-entering"
           >
             {renderSummary()}
-          </p>
+          </div>
         </div>
       </section>
 
@@ -1012,61 +1081,88 @@ export default function DashboardPage() {
             최근 거래 내역
           </h2>
 
-          <div
-            className="filter-tabs"
-            role="tablist"
-            aria-label="거래 유형 필터"
-          >
-            <button
-              className={`filter-tab${
-                transactionFilter ===
-                'ALL'
-                  ? ' is-active'
-                  : ''
-              }`}
-              type="button"
-              onClick={() =>
-                setTransactionFilter(
-                  'ALL',
+          <div className="transaction-filters">
+            <select
+              className="status-filter-select"
+              aria-label="거래 상태 필터"
+              value={statusFilter}
+              onChange={(event) =>
+                changeStatusFilter(
+                  event.target
+                    .value as TransactionStatusFilter,
                 )
               }
             >
-              전체
-            </button>
-
-            <button
-              className={`filter-tab${
-                transactionFilter ===
-                'LOAN'
-                  ? ' is-active'
-                  : ''
-              }`}
-              type="button"
-              onClick={() =>
-                setTransactionFilter(
-                  'LOAN',
-                )
-              }
+              {transactionStatusFilters.map(
+                ({ value, label }) => (
+                  <option
+                    key={value}
+                    value={value}
+                  >
+                    {value === 'ALL'
+                      ? '상태: 전체'
+                      : label}
+                  </option>
+                ),
+              )}
+            </select>
+  
+            <div
+              className="filter-tabs"
+              role="tablist"
+              aria-label="거래 유형 필터"
             >
-              계약
-            </button>
-
-            <button
-              className={`filter-tab${
-                transactionFilter ===
-                'SETTLEMENT'
-                  ? ' is-active'
-                  : ''
-              }`}
-              type="button"
-              onClick={() =>
-                setTransactionFilter(
-                  'SETTLEMENT',
-                )
-              }
-            >
-              정산
-            </button>
+              <button
+                className={`filter-tab${
+                  transactionFilter ===
+                  'ALL'
+                    ? ' is-active'
+                    : ''
+                }`}
+                type="button"
+                onClick={() =>
+                  changeTransactionFilter(
+                    'ALL',
+                  )
+                }
+              >
+                전체
+              </button>
+  
+              <button
+                className={`filter-tab${
+                  transactionFilter ===
+                  'LOAN'
+                    ? ' is-active'
+                    : ''
+                }`}
+                type="button"
+                onClick={() =>
+                  changeTransactionFilter(
+                    'LOAN',
+                  )
+                }
+              >
+                계약
+              </button>
+  
+              <button
+                className={`filter-tab${
+                  transactionFilter ===
+                  'SETTLEMENT'
+                    ? ' is-active'
+                    : ''
+                }`}
+                type="button"
+                onClick={() =>
+                  changeTransactionFilter(
+                    'SETTLEMENT',
+                  )
+                }
+              >
+                정산
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1109,7 +1205,7 @@ export default function DashboardPage() {
                 표시할 거래 내역이 없습니다.
               </div>
             ) : (
-              filteredTransactions.map(
+              pagedTransactions.map(
                 (
                   transaction,
                   index,
@@ -1188,6 +1284,16 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+
+        {!loading && !loadError && (
+          <Pagination
+            className="transaction-pagination"
+            ariaLabel="최근 거래 내역 페이지"
+            currentPage={currentTransactionPage}
+            totalPages={totalTransactionPages}
+            onChange={setTransactionPage}
+          />
+        )}
       </section>
     </main>
   );

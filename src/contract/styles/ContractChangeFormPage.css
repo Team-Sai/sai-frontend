@@ -336,3 +336,6 @@
     padding: 18px;
   }
 }
+
+.current-contract__terms { white-space: pre-line; }  /* [추가조항 1] 줄바꿈 유지 */
+.current-contract__note { margin: 12px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }

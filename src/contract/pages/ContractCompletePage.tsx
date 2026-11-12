@@ -31,7 +31,7 @@ export default function ContractCompletePage() {
 
   return (
     <div className="page">
-      <Stepper variant={isChangeFlow ? 'changeApproval' : 'create'} currentStep={4} />
+      <Stepper variant={isChangeFlow ? 'changeApproval' : 'create'} currentStep={4} completed />
 
       <div className="success-container">
         <header className="success-header">
@@ -82,7 +82,7 @@ export default function ContractCompletePage() {
             <span>차용증 확인</span>
           </Button>
 
-          <Button type="button" variant="text" className="complete-action complete-action--secondary" onClick={() => navigate('/integration/dashboard')}>
+          <Button type="button" variant="text" className="complete-action complete-action--secondary" onClick={() => navigate('/contracts/dashboard')}>
             <svg className="complete-action__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <rect x="3" y="3" width="7" height="9" />
               <rect x="14" y="3" width="7" height="5" />

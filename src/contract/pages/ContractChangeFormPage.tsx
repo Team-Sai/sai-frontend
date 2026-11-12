@@ -51,7 +51,6 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
   const [newRepaymentDate, setNewRepaymentDate] = useState(
     draft?.newRepaymentDate ?? "",
   );
-  const [newTerms, setNewTerms] = useState(draft?.newTerms ?? "");
 
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -81,11 +80,9 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
       newMaturityDate ||
       newInterestRate ||
       newRepaymentType ||
-      newRepaymentDate ||
-      newTerms.trim();
-
+      newRepaymentDate;      
     if (!hasAnyChange) {
-      return "변경할 계약 조건을 입력해주세요.";
+      return "만기일·이율·상환 방식·상환일 중 하나 이상을 바꿔 주세요.";
     }
 
     if (!changeReason.trim()) {
@@ -138,7 +135,7 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
         newInterestRate,
         newRepaymentType,
         newRepaymentDate,
-        newTerms,
+        newTerms: "", // 특약은 변경 요청에서 바꾸지 않는다
       });
     } catch {
       setSubmitError("입력 내용을 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
@@ -184,11 +181,11 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
         <form className="change-form" onSubmit={handleSubmit}>
           <div className="change-form__section-heading">
             <h2>변경할 내용</h2>
-            <span>변경할 항목만 입력해주세요.</span>
+            <span>만기일·이율·상환 방식·상환일 중 하나 이상을 바꿔야 요청할 수 있어요.</span>
           </div>
 
           <div className="change-form__field change-form__field--wide">
-            <label htmlFor="changeReason">변경 사유</label>
+            <label htmlFor="changeReason">변경 사유 (필수)</label>
             <textarea
               id="changeReason"
               value={changeReason}
@@ -254,16 +251,6 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
             </div>
           </div>
 
-          <div className="change-form__field change-form__field--wide">
-            <label htmlFor="newTerms">특약사항</label>
-            <textarea
-              id="newTerms"
-              value={newTerms}
-              onChange={(e) => setNewTerms(e.target.value)}
-              placeholder="변경할 특약사항을 입력해주세요."
-            />
-          </div>
-
           {submitError && <p className="form-error" role="alert">{submitError}</p>}
 
           <div className="change-form__actions">
@@ -291,13 +278,18 @@ function ContractChangeFormContent({ contractId }: { contractId: string }) {
             <dt>상환일</dt>
             <dd>매월 {current.repaymentDay}일</dd>
             <dt>특약사항</dt>
-            <dd>{current.terms || "없음"}</dd>
+            <dd className="current-contract__terms">{current.terms || "없음"}</dd>
           </dl>
+          <p className="current-contract__note">
+            🔒 특약사항은 다른 조건과 얽혀 있어 변경 요청에서 바꿀 수 없어요.
+            특약을 바꾸려면 상대방과 상의한 뒤 새 차용증을 작성해 주세요.
+            조건을 바꾸면 기존 특약과 맞는지도 함께 확인해 주세요.
+          </p>
         </div>
       </div>
 
       <p className="disclaimer">
-        * 본 변경 요청서에 기재된 내용(특약사항 포함)은 당사자 간 입력 정보를
+        * 본 변경 요청서에 기재된 내용은 당사자 간 입력 정보를
         기반으로 기록되는 것으로, 서명 및 본인확인 절차의 방식에 따라 그 법적
         효력의 범위나 효력 발생 요건에 관한 해석이 달라질 수 있어 구체적인 법적
         효력 여부는 별도 확인이 필요할 수 있습니다.

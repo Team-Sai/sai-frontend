@@ -52,8 +52,7 @@
 
 .tab-btn:focus-visible,
 .archive-card:focus-visible,
-.btn-pdf-download:focus-visible,
-.pager button:focus-visible {
+.btn-pdf-download:focus-visible {
   outline: 3px solid rgba(15, 138, 95, 0.28);
   outline-offset: 2px;
 }
@@ -223,39 +222,6 @@
   color: #667085;
   font-size: 13px;
   line-height: 1.5;
-}
-
-.pager {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-}
-
-.pager button {
-  min-height: 38px;
-  padding: 0 16px;
-  border: 1px solid #d9dee8;
-  border-radius: 8px;
-  background: #fff;
-  color: #344054;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.pager button:disabled {
-  color: #98a2b3;
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-
-.pager-label {
-  color: #667085;
-  font-size: 13px;
-  font-weight: 600;
 }
 
 @media (max-width: 1180px) {

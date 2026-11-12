@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import LoadingSkeleton from '../common/components/LoadingSkeleton';
+import { Pagination } from '../common/components/Pagination';
 import { useNavigate } from 'react-router-dom';
 import '../contract/shared.css';
 import './ArchivePage.css';
 import { getArchiveContracts, getArchiveSettlements } from './api/archiveApi';
 import { downloadContractPdf } from './pdf/downloadContractPdf';
+import { downloadRepaymentPdf } from './pdf/downloadRepaymentPdf';
 import { downloadSettlementPdf } from './pdf/downloadSettlementPdf';
 import {
   ARCHIVE_CONTRACT_STATUS_LABELS,
@@ -26,7 +28,7 @@ export default function ArchivePage() {
   const [settlements, setSettlements] = useState<ArchiveSettlementRow[] | null>(null);
   const [loadedKey, setLoadedKey] = useState<string | null>(null);
   const [error, setError] = useState<{ key: string; message: string } | null>(null);
-  const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const requestKey = `${activeTab}:${page}`;
   const isLoading = loadedKey !== requestKey;
   const visibleError = error?.key === requestKey ? error.message : null;
@@ -76,7 +78,7 @@ export default function ArchivePage() {
     event.stopPropagation();
     if (downloadingId !== null) return;
 
-    setDownloadingId(contractId);
+    setDownloadingId(`contract:${contractId}`);
     try {
       await downloadContractPdf(contractId);
     } catch {
@@ -86,11 +88,25 @@ export default function ArchivePage() {
     }
   }
 
+  async function handleRepaymentPdfClick(event: React.MouseEvent, contractId: number) {
+    event.stopPropagation();
+    if (downloadingId !== null) return;
+
+    setDownloadingId(`repayment:${contractId}`);
+    try {
+      await downloadRepaymentPdf(contractId);
+    } catch {
+      alert('상환내역서 PDF 생성 중 오류가 발생했습니다.');
+    } finally {
+      setDownloadingId(null);
+    }
+  }
+
   async function handleSettlementPdfClick(event: React.MouseEvent, settlementId: number) {
     event.stopPropagation();
     if (downloadingId !== null) return;
 
-    setDownloadingId(settlementId);
+    setDownloadingId(`settlement:${settlementId}`);
     try {
       await downloadSettlementPdf(settlementId);
     } catch {
@@ -168,9 +184,17 @@ export default function ArchivePage() {
                       type="button"
                       className="btn-pdf-download"
                       disabled={downloadingId !== null}
+                      onClick={(event) => handleRepaymentPdfClick(event, contract.contractId)}
+                    >
+                      <>{downloadingId === `repayment:${contract.contractId}` && <span className="button-spinner" aria-hidden="true" />}상환내역서 다운로드</>
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-pdf-download"
+                      disabled={downloadingId !== null}
                       onClick={(event) => handleContractPdfClick(event, contract.contractId)}
                     >
-                      <>{downloadingId === contract.contractId && <span className="button-spinner" aria-hidden="true" />}PDF 다운로드</>
+                      <>{downloadingId === `contract:${contract.contractId}` && <span className="button-spinner" aria-hidden="true" />}PDF 다운로드</>
                     </button>
                   </div>
                 </div>
@@ -178,22 +202,13 @@ export default function ArchivePage() {
             )}
           </div>
 
-          {contractData && contractData.totalPages > 1 && (
-            <div className="pager">
-              <button type="button" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-                이전
-              </button>
-              <span className="pager-label">
-                {contractData.currentPage} / {contractData.totalPages}
-              </span>
-              <button
-                type="button"
-                disabled={page >= contractData.totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                다음
-              </button>
-            </div>
+          {contractData && (
+            <Pagination
+              ariaLabel="보관함 목록 페이지"
+              currentPage={contractData.currentPage}
+              totalPages={contractData.totalPages}
+              onChange={setPage}
+            />
           )}
         </>
       ) : (
@@ -233,7 +248,7 @@ export default function ArchivePage() {
                     disabled={downloadingId !== null}
                     onClick={(event) => handleSettlementPdfClick(event, settlement.settlementId)}
                   >
-                    <>{downloadingId === settlement.settlementId && <span className="button-spinner" aria-hidden="true" />}PDF 다운로드</>
+                    <>{downloadingId === `settlement:${settlement.settlementId}` && <span className="button-spinner" aria-hidden="true" />}PDF 다운로드</>
                   </button>
                 </div>
               </div>

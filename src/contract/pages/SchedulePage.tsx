@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import LoadingSkeleton from "../../common/components/LoadingSkeleton";
 import { useParams, useNavigate } from "react-router-dom";
 import MatchingReviewModal from "../../settlement/components/MatchingReviewModal";
-import { settlementApi } from "../../settlement/api/settlementApi";
 import { formatTransactionSyncTime, getLastTransactionSyncAt, recordTransactionSync } from "../../transaction/syncTimestamp";
 import "../../settlement/styles/settlement-common.css";
 import "../../settlement/styles/settlement-detail.css";
@@ -165,9 +164,9 @@ function ScheduleContent({ contractId }: { contractId: string }) {
   async function syncTransactions() {
     try {
       setIsSyncing(true);
-      const result = isCreditor
-        ? await settlementApi.syncAll()
-        : await syncContractRepayments(Number(contractId));      setSyncTime(formatTransactionSyncTime(recordTransactionSync()));
+      // 이 계약의 입금만 매칭한다. 전체 동기화를 하면 다른 계약 회차가 후보로 섞여 정확한 금액도 자동 납부되지 않는다.
+      const result = await syncContractRepayments(Number(contractId));
+      setSyncTime(formatTransactionSyncTime(recordTransactionSync()));
       showToast(`동기화 완료: 자동반영 ${result.appliedCount ?? 0}건, 확인필요 ${result.needsCheckCount ?? 0}건, 미매칭 ${result.unmatchedCount ?? 0}건`);
       setIsLoading(true);
       setError(null);
@@ -406,9 +405,9 @@ function ScheduleContent({ contractId }: { contractId: string }) {
                           <td>{formatWon(row.totalPaymentDue)}</td>
                           <td>{paidAt ? <span className="payment-date-time"><span>{paidAt.date}</span><span>{paidAt.time}</span></span> : "-"}</td>
                           <td>
-                            {row.status === "PENDING" && (row.paidAmount ?? 0) > 0 ? (
-                              <span className="status-chip status-partial">
-                                ● 부분납부 중 ({formatWon(row.paidAmount ?? 0)})
+                            {(row.paidAmount ?? 0) > 0 && (row.status === "PENDING" || row.status === "OVERDUE") ? (
+                              <span className={`status-chip ${row.status === "OVERDUE" ? rowStatusClass(row.status) : "status-partial"}`}>
+                                ● {row.status === "OVERDUE" ? "연체" : "부분납부 중"} ({formatWon(row.paidAmount ?? 0)} 납부)
                               </span>
                             ) : (
                               <span className={`status-chip ${rowStatusClass(row.status)}`}>
@@ -461,7 +460,7 @@ function ScheduleContent({ contractId }: { contractId: string }) {
             setReloadKey((current) => current + 1);
           }
         }}
-        options={{ reviewChannel: "TRANSACTION_HISTORY", targetType: "LOAN" }}
+      options={{ reviewChannel: "TRANSACTION_HISTORY", targetType: "LOAN", aggregateId: Number(contractId) }}
       />
     )}
     {toast && <div className={`toast visible${toast.error ? " error" : ""}`} role={toast.error ? "alert" : "status"}>{toast.text}</div>}

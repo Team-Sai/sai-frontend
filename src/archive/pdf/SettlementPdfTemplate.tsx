@@ -1,6 +1,17 @@
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
-import type { ReactNode } from "react";
-import { registerPdfFonts, PDF_SANS_FONT_FAMILY } from "./fonts";
+import { Document, Page, View, Text } from "@react-pdf/renderer";
+import { registerPdfFonts } from "./fonts";
+import {
+  PDF_COLORS,
+  formatPdfAmount as formatAmount,
+  formatPdfDateTime as formatDateTime,
+  pdfStyles as styles,
+} from "./pdfStyles";
+import {
+  DataTableHeader,
+  InfoLabel,
+  InfoValue,
+  type DataColumn,
+} from "./PdfTable";
 import {
   ARCHIVE_SETTLEMENT_STATUS_LABELS,
   ARCHIVE_SETTLEMENT_TYPE_LABELS,
@@ -11,228 +22,18 @@ import {
 
 registerPdfFonts();
 
-const COLORS = {
-  primary: "#006E2A",
-  text: "#1a1a1a",
-  muted: "#697080",
-  border: "#CFD5E2",
-  labelBg: "#f3f4f5",
-  theadBg: "#f0f7f2",
-  paidBg: "#e6f4ec",
-  paidText: "#0b3d2e",
-  partialBg: "#fff4e0",
-  partialText: "#a66a00",
-  unpaidBg: "#fdeee6",
-  unpaidText: "#a63d1a",
-};
-
 const OBLIGATION_STATUS_BADGE: Record<
   string,
   { bg: string; color: string; label: string }
 > = {
-  PAID: { bg: COLORS.paidBg, color: COLORS.paidText, label: "완납" },
+  PAID: { bg: PDF_COLORS.paidBg, color: PDF_COLORS.paidText, label: "완납" },
   PARTIALLY_PAID: {
-    bg: COLORS.partialBg,
-    color: COLORS.partialText,
+    bg: PDF_COLORS.partialBg,
+    color: PDF_COLORS.partialText,
     label: "부분납부",
   },
-  UNPAID: { bg: COLORS.unpaidBg, color: COLORS.unpaidText, label: "미납" },
+  UNPAID: { bg: PDF_COLORS.unpaidBg, color: PDF_COLORS.unpaidText, label: "미납" },
 };
-
-function formatAmount(amount: number | null | undefined): string {
-  return `${Number(amount ?? 0).toLocaleString("ko-KR")}원`;
-}
-
-function formatDateTime(isoString: string | null | undefined): string {
-  if (!isoString) return "-";
-  const date = new Date(isoString);
-  if (Number.isNaN(date.getTime())) return "-";
-
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-const styles = StyleSheet.create({
-  page: {
-    fontFamily: PDF_SANS_FONT_FAMILY,
-    fontSize: 9,
-    color: COLORS.text,
-    padding: "12mm 8mm",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  title: {
-    color: COLORS.primary,
-    fontSize: 16,
-    fontWeight: 700,
-    letterSpacing: 2,
-  },
-  ref: {
-    flexDirection: "row",
-    color: COLORS.muted,
-    fontSize: 8,
-  },
-  article: {
-    marginBottom: 16,
-  },
-  clause: {
-    color: COLORS.primary,
-    fontWeight: 700,
-    fontSize: 9.5,
-    marginBottom: 6,
-  },
-  notice: {
-    color: COLORS.muted,
-    fontSize: 9,
-  },
-  noticeArticle: {
-    marginTop: 20,
-    paddingTop: 12,
-    borderTopWidth: 0.75,
-    borderTopColor: COLORS.border,
-  },
-  noticeList: {
-    marginTop: 8,
-  },
-  noticeListItem: {
-    color: COLORS.muted,
-    fontSize: 8,
-    lineHeight: 1.6,
-    marginBottom: 6,
-  },
-
-  infoTable: {
-    borderTopWidth: 1.5,
-    borderTopColor: COLORS.primary,
-    borderLeftWidth: 0.75,
-    borderLeftColor: COLORS.border,
-  },
-  row: {
-    flexDirection: "row",
-  },
-  infoLabelCell: {
-    width: "20%",
-    backgroundColor: COLORS.labelBg,
-    color: COLORS.muted,
-    fontWeight: 700,
-    fontSize: 8.5,
-    padding: 6,
-    borderRightWidth: 0.75,
-    borderRightColor: COLORS.border,
-    borderBottomWidth: 0.75,
-    borderBottomColor: COLORS.border,
-  },
-  infoValueCell: {
-    width: "30%",
-    backgroundColor: "#ffffff",
-    fontSize: 8.5,
-    padding: 6,
-    borderRightWidth: 0.75,
-    borderRightColor: COLORS.border,
-    borderBottomWidth: 0.75,
-    borderBottomColor: COLORS.border,
-  },
-  infoValueCellWide: {
-    width: "80%",
-  },
-  readonlyValue: {
-    color: COLORS.primary,
-    fontWeight: 700,
-  },
-
-  dataTable: {
-    borderTopWidth: 1.5,
-    borderTopColor: COLORS.primary,
-    borderLeftWidth: 0.75,
-    borderLeftColor: COLORS.border,
-  },
-  dataHeaderCell: {
-    backgroundColor: COLORS.theadBg,
-    color: COLORS.primary,
-    fontWeight: 700,
-    fontSize: 8,
-    padding: 6,
-    borderRightWidth: 0.75,
-    borderRightColor: COLORS.border,
-    borderBottomWidth: 0.75,
-    borderBottomColor: COLORS.border,
-  },
-  dataCell: {
-    fontSize: 8,
-    padding: 6,
-    borderRightWidth: 0.75,
-    borderRightColor: COLORS.border,
-    borderBottomWidth: 0.75,
-    borderBottomColor: COLORS.border,
-  },
-  dataCellAmount: {
-    textAlign: "right",
-  },
-  dataCellEmpty: {
-    width: "100%",
-    textAlign: "center",
-    color: "#999999",
-    padding: 12,
-  },
-  badge: {
-    alignSelf: "flex-start",
-    borderRadius: 6,
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-    fontSize: 7.5,
-    fontWeight: 700,
-  },
-});
-
-function InfoLabel({ children }: { children: ReactNode }) {
-  return <Text style={styles.infoLabelCell}>{children}</Text>;
-}
-
-function InfoValue({
-  children,
-  readonly,
-  wide,
-}: {
-  children: ReactNode;
-  readonly?: boolean;
-  wide?: boolean;
-}) {
-  return (
-    <Text
-      style={[
-        styles.infoValueCell,
-        wide ? styles.infoValueCellWide : undefined,
-        readonly ? styles.readonlyValue : undefined,
-      ]}
-    >
-      {children}
-    </Text>
-  );
-}
-
-interface DataColumn {
-  label: string;
-  width: string;
-}
-
-function DataTableHeader({ columns }: { columns: DataColumn[] }) {
-  return (
-    <View style={styles.row} wrap={false}>
-      {columns.map((col) => (
-        <Text
-          key={col.label}
-          style={[styles.dataHeaderCell, { width: col.width }]}
-        >
-          {col.label}
-        </Text>
-      ))}
-    </View>
-  );
-}
 
 interface SettlementPdfTemplateProps {
   preview: SettlementArchivePreview;

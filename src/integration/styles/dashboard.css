@@ -327,13 +327,25 @@ body.integration-page button {
 }
 
 .attention-list {
+  --attention-item-height: 60px;
+  --attention-gap: 17px;
+  --attention-visible-count: 4;
+
   display: grid;
-  gap: 17px;
+  gap: var(--attention-gap);
   margin-top: 16px;
+  /* 4건까지 보이고 나머지는 목록 안에서 스크롤한다. */
+  max-height: calc(
+    var(--attention-item-height) * var(--attention-visible-count) +
+      var(--attention-gap) * (var(--attention-visible-count) - 1)
+  );
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 }
 
 .attention-item {
-  min-height: 60px;
+  min-height: var(--attention-item-height, 60px);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -460,6 +472,38 @@ body.integration-page button {
   background: var(--green);
   color: #fff;
   box-shadow: none;
+}
+
+.transaction-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-filter-select {
+  height: 34px;
+  padding: 0 28px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat right 10px center;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  appearance: none;
+}
+
+.status-filter-select:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 1px;
+}
+
+.transaction-pagination {
+  margin: 0;
+  padding: 16px 0 18px;
+  border-top: 1px solid var(--line);
 }
 
 .transaction-table {
@@ -611,6 +655,10 @@ body.integration-page button {
     flex-direction: column;
     align-items: flex-start;
     padding: 18px;
+  }
+
+  .transaction-filters {
+    flex-wrap: wrap;
   }
 
   .transaction-row {

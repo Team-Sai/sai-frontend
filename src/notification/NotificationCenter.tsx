@@ -3,6 +3,7 @@ import type { MouseEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../common/components/Button";
 import LoadingSkeleton from "../common/components/LoadingSkeleton";
+import { Pagination } from "../common/components/Pagination";
 import { getContractDetail } from "../contract/api/contractApi";
 import MatchingReviewModal from "../matching/MatchingReviewModal";
 import type { MatchingReviewSource } from "../matching/types";
@@ -22,12 +23,15 @@ const categories: { value: NotificationCategory; label: string }[] = [
   { value: "SYSTEM", label: "시스템" },
 ];
 
+const NOTIFICATIONS_PER_PAGE = 10;
+
 export default function NotificationCenter() {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<NotificationView[] | null>(
     null,
   );
   const [category, setCategory] = useState<NotificationCategory>("ALL");
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [source, setSource] = useState<MatchingReviewSource | null>(null);
@@ -107,6 +111,15 @@ export default function NotificationCenter() {
     notifications?.filter(
       (item) => category === "ALL" || item.category === category,
     ) ?? [];
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filtered.length / NOTIFICATIONS_PER_PAGE),
+  );
+  const currentPage = Math.min(page, totalPages);
+  const paged = filtered.slice(
+    (currentPage - 1) * NOTIFICATIONS_PER_PAGE,
+    currentPage * NOTIFICATIONS_PER_PAGE,
+  );
 
   return (
     <section className={styles.page} aria-labelledby="notification-heading">
@@ -124,7 +137,10 @@ export default function NotificationCenter() {
               role="tab"
               className={`${styles.filter} ${category === item.value ? styles.active : ""}`}
               aria-selected={category === item.value}
-              onClick={() => setCategory(item.value)}
+              onClick={() => {
+                setCategory(item.value);
+                setPage(1);
+              }}
             >
               {item.label}
             </Button>
@@ -154,7 +170,7 @@ export default function NotificationCenter() {
                 : "해당 알림이 없습니다."}
             </li>
           )}
-          {filtered.map((item, index) => (
+          {paged.map((item, index) => (
             <li key={item.id ?? `missing-${index}`} className={styles.card}>
               <div className={styles.message}>
                 <div className={styles.titleRow}>
@@ -208,6 +224,14 @@ export default function NotificationCenter() {
             </li>
           ))}
         </ul>
+      )}
+      {notifications !== null && (
+        <Pagination
+          ariaLabel="알림 목록 페이지"
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onChange={setPage}
+        />
       )}
       {source && (
         <MatchingReviewModal
