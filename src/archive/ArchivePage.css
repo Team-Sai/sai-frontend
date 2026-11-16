@@ -192,6 +192,185 @@
   opacity: 0.65;
 }
 
+/* ---------- 차용증 카드 + 버전 토글 ---------- */
+
+.archive-contract-item {
+  border-bottom: 1px solid #e6eaf0;
+}
+
+.archive-contract-item:last-child {
+  border-bottom: 0;
+}
+
+.archive-card.archive-card--toggle {
+  padding: 0;
+  border-bottom: 0;
+}
+
+.archive-card-toggle {
+  width: 100%;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.archive-card-toggle:focus-visible,
+.archive-version-row:focus-visible {
+  outline: 3px solid rgba(15, 138, 95, 0.28);
+  outline-offset: -3px;
+}
+
+.archive-card-toggle__label {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.archive-card-toggle__chevron {
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 160ms ease, margin 160ms ease;
+}
+
+.archive-contract-item.is-expanded .archive-card-toggle__chevron {
+  margin-top: 4px;
+  transform: rotate(-135deg);
+}
+
+.archive-contract-item.is-expanded .archive-card-toggle__label {
+  color: #0f8a5f;
+}
+
+.archive-version-panel {
+  padding: 0 24px 18px;
+  background: #fff;
+}
+
+.archive-version-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #e6eaf0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.archive-version-row {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #e6eaf0;
+  background: #f8fafb;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+
+.archive-version-row:last-child {
+  border-bottom: 0;
+}
+
+.archive-version-row:hover {
+  background: #f0f9f4;
+}
+
+.archive-version-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.archive-version-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #151922;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.version-badge {
+  min-width: 32px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #151922;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.archive-version-row.is-current .version-badge {
+  background: #0f8a5f;
+}
+
+.version-current {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #e9f7f0;
+  color: #0f8a5f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.version-ended {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #edf0f5;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.archive-version-row:not(.is-current) .archive-version-name {
+  color: #667085;
+}
+
+.archive-version-status {
+  min-height: 56px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e6eaf0;
+  border-radius: 8px;
+  background: #f8fafb;
+  color: #667085;
+  font-size: 13px;
+}
+
+.archive-version-retry {
+  margin-left: auto;
+  padding: 6px 12px;
+  border: 1px solid #d9dee8;
+  border-radius: 6px;
+  background: #fff;
+  color: #344054;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .empty-state,
 .error-state {
   min-height: 260px;
@@ -263,6 +442,35 @@
 
   .card-actions {
     justify-content: flex-end;
+  }
+
+  .archive-card.archive-card--toggle {
+    padding: 0;
+  }
+
+  .archive-card-toggle {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .archive-version-panel {
+    padding: 0 16px 16px;
+  }
+
+  .archive-version-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .archive-version-info,
+  .archive-version-row .card-actions {
+    width: 100%;
+  }
+
+  .archive-version-row .card-actions {
+    flex-wrap: wrap;
   }
 
   .empty-state,

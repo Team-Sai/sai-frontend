@@ -8,9 +8,8 @@ import { getArchiveContracts, getArchiveSettlements } from './api/archiveApi';
 import { downloadContractPdf } from './pdf/downloadContractPdf';
 import { downloadRepaymentPdf } from './pdf/downloadRepaymentPdf';
 import { downloadSettlementPdf } from './pdf/downloadSettlementPdf';
+import ArchiveContractCard, { type ContractDownloadKind } from './components/ArchiveContractCard';
 import {
-  ARCHIVE_CONTRACT_STATUS_LABELS,
-  ARCHIVE_ROLE_LABELS,
   ARCHIVE_SETTLEMENT_STATUS_LABELS,
   ARCHIVE_SETTLEMENT_TYPE_LABELS,
   type ArchiveContractListResponse,
@@ -74,29 +73,22 @@ export default function ArchivePage() {
     setPage(1);
   }
 
-  async function handleContractPdfClick(event: React.MouseEvent, contractId: number) {
-    event.stopPropagation();
+  async function handleContractDownload(kind: ContractDownloadKind, contractId: number) {
     if (downloadingId !== null) return;
 
-    setDownloadingId(`contract:${contractId}`);
+    setDownloadingId(`${kind}:${contractId}`);
     try {
-      await downloadContractPdf(contractId);
+      if (kind === 'contract') {
+        await downloadContractPdf(contractId);
+      } else {
+        await downloadRepaymentPdf(contractId);
+      }
     } catch {
-      alert('차용증 PDF 생성 중 오류가 발생했습니다.');
-    } finally {
-      setDownloadingId(null);
-    }
-  }
-
-  async function handleRepaymentPdfClick(event: React.MouseEvent, contractId: number) {
-    event.stopPropagation();
-    if (downloadingId !== null) return;
-
-    setDownloadingId(`repayment:${contractId}`);
-    try {
-      await downloadRepaymentPdf(contractId);
-    } catch {
-      alert('상환내역서 PDF 생성 중 오류가 발생했습니다.');
+      alert(
+        kind === 'contract'
+          ? '차용증 PDF 생성 중 오류가 발생했습니다.'
+          : '상환내역서 PDF 생성 중 오류가 발생했습니다.',
+      );
     } finally {
       setDownloadingId(null);
     }
@@ -160,44 +152,12 @@ export default function ArchivePage() {
               </div>
             ) : (
               contractData.contracts.map((contract) => (
-                <div
+                <ArchiveContractCard
                   key={contract.contractId}
-                  className="archive-card"
-                  onClick={() => navigate(`/archive/contracts/${contract.contractId}`)}
-                >
-                  <div className="archive-card-main">
-                  <div className="archive-card-title">
-                    <span className="archive-item-name">{contract.contractAlias}</span>
-                      <span className={`role-badge ${contract.role === 'CREDITOR' ? 'creditor' : 'debtor'}`}>
-                        {ARCHIVE_ROLE_LABELS[contract.role]}
-                      </span>
-                      <span className={`status-pill ${contract.contractStatus === 'ONGOING' ? 'ongoing' : 'completed'}`}>
-                        {ARCHIVE_CONTRACT_STATUS_LABELS[contract.contractStatus]}
-                      </span>
-                    </div>
-                    <div className="archive-card-sub">
-                      원금 {contract.principalAmount.toLocaleString('ko-KR')}원 · 만기 {contract.maturityDate}
-                    </div>
-                  </div>
-                  <div className="card-actions">
-                    <button
-                      type="button"
-                      className="btn-pdf-download"
-                      disabled={downloadingId !== null}
-                      onClick={(event) => handleRepaymentPdfClick(event, contract.contractId)}
-                    >
-                      <>{downloadingId === `repayment:${contract.contractId}` && <span className="button-spinner" aria-hidden="true" />}상환내역서 다운로드</>
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-pdf-download"
-                      disabled={downloadingId !== null}
-                      onClick={(event) => handleContractPdfClick(event, contract.contractId)}
-                    >
-                      <>{downloadingId === `contract:${contract.contractId}` && <span className="button-spinner" aria-hidden="true" />}PDF 다운로드</>
-                    </button>
-                  </div>
-                </div>
+                  contract={contract}
+                  downloadingId={downloadingId}
+                  onDownload={handleContractDownload}
+                />
               ))
             )}
           </div>
